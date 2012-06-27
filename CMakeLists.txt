@@ -134,9 +134,10 @@ include(DefineSkeletonGenerationTargetsIfPossible)
 #---------------------------------------------------------
 set(CPACK_GENERATOR DEB)
 set(CPACK_SOURCE_GENERATOR TBZ2)
+set(CPACK_SOURCE_PACKAGE_FILE_NAME "${PROJECT_NAME}-${ZENCXX_VERSION}")
 
 # Include CPack support
-include(CPackComponent)
+include(CPack)
 include(AddPackage)
 
 add_package(
