@@ -18,12 +18,20 @@ set(ZENCXX_MAJOR 0)
 set(ZENCXX_MINOR 1)
 set(ZENCXX_PATCH 0)
 set(ZENCXX_VERSION ${ZENCXX_MAJOR}.${ZENCXX_MINOR}.${ZENCXX_PATCH})
+
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
 #---------------------------------------------------------
 # Section: Include aux cmake functions
 #---------------------------------------------------------
+
+# Standard
 include(CTest)
+include(GNUInstallDirs)
+set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/zencxx-${ZENCXX_VERSION})
+set(CMAKE_INSTALL_PKGLIBDIR ${CMAKE_INSTALL_LIBDIR}/zencxx-${ZENCXX_VERSION})
+
+# Custom (from package's cmake/modules/ directory)
 include(AddBoostTests)
 # Allow testing using CTest
 enable_testing()
@@ -32,7 +40,7 @@ enable_testing()
 # Section: Find used stuff
 #---------------------------------------------------------
 find_package(
-    Boost 1.47 REQUIRED COMPONENTS
+    Boost 1.49 REQUIRED COMPONENTS
     # Lets keep libs list sorted... :)
     unit_test_framework
   )
@@ -71,44 +79,38 @@ set(CMAKE_CXX_FLAGS "-pipe -std=c++0x -Wno-multichar ${CMAKE_CXX_FLAGS}")
 
 # If CMAKE_BUILD_TYPE is not set, assume Debug
 if (NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE "Debug")
+    set(CMAKE_BUILD_TYPE "Debug")
 endif()
 
 # Setup compiler options depending on build type
 message(STATUS "Setting options for ${CMAKE_BUILD_TYPE} build type")
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  # Show all warnings in debug mode
-  set(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -Wall")
-  # Allow additional security measures
-  add_definitions(-D_FORTIFY_SOURCE=2)
+    # Show all warnings in debug mode
+    set(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -Wall")
+    # Allow additional security measures
+    add_definitions(-D_FORTIFY_SOURCE=2)
 else()
-  # More linker optimizations in release mode
-  set(CMAKE_EXE_LINKER_FLAGS_RELEASE
-      "-Wl,-O1 -Wl,--sort-common ${CMAKE_EXE_LINKER_FLAGS_RELEASE}"
-    )
-  set(CMAKE_MODULE_LINKER_FLAGS_RELEASE
-      "-Wl,-O1 -Wl,--sort-common ${CMAKE_MODULE_LINKER_FLAGS_RELEASE}"
-    )
+    # More linker optimizations in release mode
+    set(CMAKE_EXE_LINKER_FLAGS_RELEASE
+        "-Wl,-O1 -Wl,--sort-common ${CMAKE_EXE_LINKER_FLAGS_RELEASE}"
+      )
+    set(CMAKE_MODULE_LINKER_FLAGS_RELEASE
+        "-Wl,-O1 -Wl,--sort-common ${CMAKE_MODULE_LINKER_FLAGS_RELEASE}"
+      )
 endif()
 
 #---------------------------------------------------------
 # Section: Misc actions
 #---------------------------------------------------------
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-  set(CPACK_BUILD_FLAVOUR "-dbg")
+    set(CPACK_BUILD_FLAVOUR "-dbg")
 else()
-  set(CPACK_BUILD_FLAVOUR "")
+    set(CPACK_BUILD_FLAVOUR "")
 endif()
 
-
-#---------------------------------------------------------
-# Section: Package options
-#---------------------------------------------------------
-
-set(HDONLY_PACKAGE_NAME "libzencxx-devel")
-set(HDONLY_PACKAGE_VERSION "1")
-set(HDONLY_PACKAGE_DESCRIPTION_SUMMARY "ZEN C++ library: Header only libraries")
-set(HDONLY_PACKAGE_DESCRIPTION "Libraries that doesn't require building")
+# Set a project-wide name for unit tests executable
+# (a target to be build in every tests/ directories)
+set(UNIT_TESTS unit_tests)
 
 #---------------------------------------------------------
 # Section: Define some helpful targets (using included)
@@ -118,12 +120,34 @@ set(HDONLY_PACKAGE_DESCRIPTION "Libraries that doesn't require building")
 #---------------------------------------------------------
 
 get_directory_property(CHECK_HEADER_DEFINITIONS_LIST COMPILE_DEFINITIONS)
-foreach(_DEFINE ${CHECK_HEADER_DEFINITIONS_LIST})
-  set(CHECK_HEADER_DEFINITIONS "-D${_DEFINE} ${CHECK_HEADER_DEFINITIONS}")
+foreach(_define ${CHECK_HEADER_DEFINITIONS_LIST})
+    set(CHECK_HEADER_DEFINITIONS "-D${_define} ${CHECK_HEADER_DEFINITIONS}")
 endforeach()
 include(DefineDoxyDocsTargetIfPossible)
 include(DefineCheckHeadersTarget)
 include(DefineSkeletonGenerationTargetsIfPossible)
+
+#---------------------------------------------------------
+# Section: Package options
+# ALERT It should be after subdirs traversal
+#       to make sure that all vars r defined!
+#---------------------------------------------------------
+set(CPACK_GENERATOR DEB)
+set(CPACK_SOURCE_GENERATOR TBZ2)
+
+# Include CPack support
+include(CPackComponent)
+include(AddPackage)
+
+add_package(
+    NAME libzencxx-dev
+    SUMMARY "ZEN C++ library: Header only libraries"
+    DESCRIPTION "Libraries that doesn't require building"
+    PACKAGE_VERSION 0ubuntu1
+    DEPENDS boost
+    SET_DEFAULT_CONFIG_CPACK
+  )
+message(STATUS "${LIBZENCXX_DEV_PACKAGE}")
 
 #---------------------------------------------------------
 # Section: Dive into subdirs after main configuration

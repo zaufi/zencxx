@@ -56,8 +56,10 @@ struct has_left_shift_impl
   typedef boost::mpl::bool_<value> type;
 };
 
-// template <typename L, typename R>
-// constexpr bool has_left_shift_impl<L, R>::value;
+#if 0
+template <typename L, typename R>
+constexpr bool has_left_shift_impl<L, R>::value;
+#endif
 }                                                           // namespace details
 
 /**
