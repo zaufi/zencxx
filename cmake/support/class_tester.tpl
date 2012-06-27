@@ -12,7 +12,7 @@
  * \date [+ (shell "LC_ALL=C date") +] -- Initial design
  */
 /*
- * [+ (lgpl "libzencxx" "" " * ") +]
+[+ (lgpl "libzencxx" "" " * ") +]
  */
 
 // Project specific includes
@@ -40,7 +40,7 @@ namespace dbg = zencxx::debug;
 // using boost::test_tools::output_test_stream;
 
 // Your first test function :)
-BOOST_AUTO_TEST_CASE([+ classname +]Test)
+BOOST_AUTO_TEST_CASE([+ classname +]_test)
 {
     // Your test code here...
 }

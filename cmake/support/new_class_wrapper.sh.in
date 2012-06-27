@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Copyright 2011 Alex Turbov <i.zaufi@gmail.com>
 #
 # Helper to generate class skeletons

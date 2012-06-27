@@ -1,3 +1,4 @@
+# kate: hl cmake;
 #
 # Copyright 2011 by Alex Turbov <i.zaufi@gmail.com>
 #
@@ -8,12 +9,13 @@
 cmake_minimum_required(VERSION 2.6)
 
 # Enable non unique target names in different subdirs
+# (used for unit tests)
 cmake_policy(SET CMP0002 OLD)
 
 project(libzencxx CXX)
 
 set(ZENCXX_MAJOR 0)
-set(ZENCXX_MINOR 4)
+set(ZENCXX_MINOR 1)
 set(ZENCXX_PATCH 0)
 set(ZENCXX_VERSION ${ZENCXX_MAJOR}.${ZENCXX_MINOR}.${ZENCXX_PATCH})
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
@@ -23,6 +25,8 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH}
 #---------------------------------------------------------
 include(CTest)
 include(AddBoostTests)
+# Allow testing using CTest
+enable_testing()
 
 #---------------------------------------------------------
 # Section: Find used stuff
@@ -33,15 +37,10 @@ find_package(
     unit_test_framework
   )
 
-
-#---------------------------------------------------------
-# Section: Package options
-#---------------------------------------------------------
-
-
 #---------------------------------------------------------
 # Section: Configure builing process
 #---------------------------------------------------------
+
 # Allow GNU extensions
 add_definitions(-D_GNU_SOURCE)
 
@@ -70,6 +69,11 @@ set(CMAKE_MODULE_LINKER_FLAGS "-Wl,--as-needed ${CMAKE_MODULE_LINKER_FLAGS}")
 # Set generic compiler flags
 set(CMAKE_CXX_FLAGS "-pipe -std=c++0x -Wno-multichar ${CMAKE_CXX_FLAGS}")
 
+# If CMAKE_BUILD_TYPE is not set, assume Debug
+if (NOT CMAKE_BUILD_TYPE)
+  set(CMAKE_BUILD_TYPE "Debug")
+endif()
+
 # Setup compiler options depending on build type
 message(STATUS "Setting options for ${CMAKE_BUILD_TYPE} build type")
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -90,6 +94,21 @@ endif()
 #---------------------------------------------------------
 # Section: Misc actions
 #---------------------------------------------------------
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  set(CPACK_BUILD_FLAVOUR "-dbg")
+else()
+  set(CPACK_BUILD_FLAVOUR "")
+endif()
+
+
+#---------------------------------------------------------
+# Section: Package options
+#---------------------------------------------------------
+
+set(HDONLY_PACKAGE_NAME "libzencxx-devel")
+set(HDONLY_PACKAGE_VERSION "1")
+set(HDONLY_PACKAGE_DESCRIPTION_SUMMARY "ZEN C++ library: Header only libraries")
+set(HDONLY_PACKAGE_DESCRIPTION "Libraries that doesn't require building")
 
 #---------------------------------------------------------
 # Section: Define some helpful targets (using included)
@@ -109,3 +128,4 @@ include(DefineSkeletonGenerationTargetsIfPossible)
 #---------------------------------------------------------
 # Section: Dive into subdirs after main configuration
 #---------------------------------------------------------
+add_subdirectory(zencxx)
