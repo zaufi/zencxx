@@ -19,7 +19,7 @@ set(ZENCXX_MINOR 1)
 set(ZENCXX_PATCH 0)
 set(ZENCXX_VERSION ${ZENCXX_MAJOR}.${ZENCXX_MINOR}.${ZENCXX_PATCH})
 
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
 #---------------------------------------------------------
 # Section: Include aux cmake functions
@@ -111,6 +111,22 @@ endif()
 # Set a project-wide name for unit tests executable
 # (a target to be build in every tests/ directories)
 set(UNIT_TESTS unit_tests)
+include(CMakePackageConfigHelpers)
+configure_package_config_file(
+    ${CMAKE_SOURCE_DIR}/cmake/modules/LibZenCXXConfig.cmake.in
+    ${CMAKE_BINARY_DIR}/LibZenCXXConfig.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+    PATH_VARS CMAKE_INSTALL_PREFIX CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR
+  )
+write_basic_package_version_file(
+    ${CMAKE_BINARY_DIR}/LibZenCXXConfigVersion.cmake
+    VERSION ${ZENCXX_VERSION}
+    COMPATIBILITY AnyNewerVersion
+  )
+install(
+    FILES ${CMAKE_BINARY_DIR}/LibZenCXXConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/LibZenCXXConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+  )
 
 #---------------------------------------------------------
 # Section: Define some helpful targets (using included)
@@ -148,7 +164,6 @@ add_package(
     DEPENDS boost
     SET_DEFAULT_CONFIG_CPACK
   )
-message(STATUS "${LIBZENCXX_DEV_PACKAGE}")
 
 #---------------------------------------------------------
 # Section: Dive into subdirs after main configuration
