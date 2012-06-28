@@ -1,12 +1,12 @@
 /**
  * \file
  *
- * \brief Class tester for \c has_left_shift
+ * \brief Class tester for \c zencxx::has_left_shift
  *
  * \date Wed Jun 27 02:48:18 MSK 2012 -- Initial design
  */
 /*
- * libzencxx is free software: you can redistribute it and/or modify it
+ * ZenCxx is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -42,4 +42,9 @@
 BOOST_AUTO_TEST_CASE(has_left_shift_test)
 {
     BOOST_CHECK_EQUAL((zencxx::has_left_shift<int, int>::type::value), true);
+    BOOST_CHECK_EQUAL((zencxx::has_left_shift<std::ostream, int>::type::value), true);
+    BOOST_CHECK_EQUAL((zencxx::has_left_shift<std::ostream, std::string>::type::value), true);
+
+    BOOST_CHECK_EQUAL((zencxx::has_left_shift<std::string, std::string>::type::value), false);
+    BOOST_CHECK_EQUAL((zencxx::has_left_shift<int, std::string>::type::value), false);
 }

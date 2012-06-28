@@ -13,7 +13,7 @@
  * \date [+ (shell "LC_ALL=C date") +] -- Initial design
  */
 /*
-[+ (lgpl "libzencxx" "" " * ") +]
+[+ (lgpl "ZenCxx" "" " * ") +]
  */[+define incguard+]__[+ (string-upcase (get "guard_base")) +]__[+ (string-upcase (get "filename")) +]_H__[+enddef +][+
 IF ( == (suffix) "hh") +]
 [+(out-move (sprintf "%s.hh" (get "filename"))) +]

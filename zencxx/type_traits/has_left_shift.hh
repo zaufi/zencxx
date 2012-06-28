@@ -6,7 +6,7 @@
  * \date Wed Jun 27 02:11:39 MSK 2012 -- Initial design
  */
 /*
- * libzencxx is free software: you can redistribute it and/or modify it
+ * ZenCxx is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -56,10 +56,8 @@ struct has_left_shift_impl
   typedef boost::mpl::bool_<value> type;
 };
 
-#if 0
 template <typename L, typename R>
 constexpr bool has_left_shift_impl<L, R>::value;
-#endif
 }                                                           // namespace details
 
 /**

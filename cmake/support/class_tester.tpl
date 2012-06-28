@@ -12,7 +12,7 @@
  * \date [+ (shell "LC_ALL=C date") +] -- Initial design
  */
 /*
-[+ (lgpl "libzencxx" "" " * ") +]
+[+ (lgpl "ZenCxx" "" " * ") +]
  */
 
 // Project specific includes
