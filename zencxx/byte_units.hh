@@ -20,8 +20,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__BYTE_UNITS_H__
-# define __ZENCXX__BYTE_UNITS_H__
+#ifndef __ZENCXX__BYTE_UNITS_HH__
+# define __ZENCXX__BYTE_UNITS_HH__
 
 // Project specific includes
 
@@ -82,4 +82,4 @@ constexpr std::size_t operator"" _YiB(const unsigned long long size)
 }
 
 }                                                           // namespace zencxx
-#endif                                                      // __ZENCXX__BYTE_UNITS_H__
+#endif                                                      // __ZENCXX__BYTE_UNITS_HH__

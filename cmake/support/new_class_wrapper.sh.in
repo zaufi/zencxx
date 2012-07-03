@@ -3,6 +3,13 @@
 #
 # Helper to generate class skeletons
 #
+# TODO Add parameters to control what to generate: header only and/or implementation
+#
+# TODO Guess `subdir' from `ns' and vise versa if smth absent
+#
+# TODO Add parameter to control filename if latter isn't same as a class name... or maybe
+#      better to generate a file w/o predefined class if `fn' specified instead of `class'
+#
 
 . ${CMAKE_SOURCE_DIR}/cmake/support/output-helpers.sh
 
