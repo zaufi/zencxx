@@ -36,7 +36,8 @@ namespace boost { namespace mpl {
  * \c boost::mpl::back specialization
  *
  * \todo I have no idea why \c back_impl (and \c pop_back_impl) specialization
- * can't be found by gcc 4.7.1 :( But this one works! Isn't it shouldn't?
+ * can't be found by gcc 4.7.1 :( Or it shouldn't anyway?
+ * But this one works!
  */
 template <typename... Types, typename T>
 struct back<zencxx::mpl::seq<Types..., T>>

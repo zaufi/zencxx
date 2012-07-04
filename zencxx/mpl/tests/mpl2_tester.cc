@@ -22,7 +22,7 @@
 
 // Project specific includes
 #include <zencxx/mpl/eval.hh>
-#include <zencxx/mpl/vector.hh>
+#include <zencxx/mpl/seq.hh>
 #include <zencxx/debug/type_name.hh>
 
 // Standard includes

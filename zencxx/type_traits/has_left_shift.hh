@@ -24,47 +24,37 @@
 # define __ZENCXX__TYPE_TRAITS__HAS_LEFT_SHIFT_HH__
 
 // Project specific includes
+# include <zencxx/type_traits/details/expression_validity_checker.hh>
 
 // Standard includes
-# include <boost/mpl/bool.hpp>
 
-namespace zencxx { namespace details {
-struct has_left_shift_tag {};
+namespace zencxx {
+ZEN_TT_EXPR_CHECKER(has_left_shift, (typename L, typename R), (L, R), (std::declval<L>() << std::declval<R>()));
 
-struct has_left_shift_any
+#if 0
+template <typename L, typename R>
+class has_left_shift
 {
-    template <typename T>
-    has_left_shift_any(const T&);
+    typedef char yes_type;
+    typedef char (&no_type)[2];
+
+    struct checker
+    {
+        template <typename NL, typename NR>
+        static no_type test(...);
+
+        template <typename NL, typename NR>
+        static yes_type test(decltype(std::declval<NL>() << std::declval<NR>(), void())*);
+    };
+
+public:
+    constexpr static bool value = std::is_same<
+        decltype(checker::template test<L, R>(0))
+      , yes_type
+      >::value;
+    typedef std::integral_constant<bool, value> type;
 };
-
-has_left_shift_tag operator<<(const has_left_shift_any&, const has_left_shift_any&);
-
-template <typename L, typename R>
-struct has_left_shift_impl
-{
-  typedef char no_type;
-  struct yes_type { char m_padding[8]; };
-
-  static no_type check(has_left_shift_tag);
-  template <typename... T>
-  static yes_type check(T&&...);
-
-  static L* l;
-  static R* r;
-
-  constexpr static bool value = sizeof(yes_type) == sizeof(check(*l << *r));
-  typedef boost::mpl::bool_<value> type;
-};
-
-template <typename L, typename R>
-constexpr bool has_left_shift_impl<L, R>::value;
-}                                                           // namespace details
-
-/**
- * \brief Metafunction to determine is \c operator<< available for given types
- */
-template <typename L, typename R>
-struct has_left_shift : public details::has_left_shift_impl<L, R> {};
+#endif
 
 }                                                           // namespace zencxx
 #endif                                                      // __ZENCXX__TYPE_TRAITS__HAS_LEFT_SHIFT_HH__

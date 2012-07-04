@@ -46,19 +46,41 @@ struct pop_back_impl<zencxx::mpl::details::variadic_sequence_tag>
     template <typename Seq>
     struct apply;
 };
+
+/**
+ * \brief \c boost::mpl::pop_back specialization
+ *
+ * ... just copy everything from \c begin to \c size-1 to a new container.
+ *
+ * \note Because better specialization doesn't works (dunno why), lets do a copy...
+ */
 template <>
 template <typename... Types>
 struct pop_back_impl<zencxx::mpl::details::variadic_sequence_tag>::apply<zencxx::mpl::seq<Types...>>
 {
-#if 0
-    typedef float type;
-#else
     typedef typename zencxx::mpl::copy_range_c<
         zencxx::mpl::seq<Types...>
       , 0
       , sizeof...(Types) - 1
       >::type type;
-#endif
+};
+
+/// \todo WHY this specialization can't be found??? (it never works actually)
+template <>
+template <typename... Types, typename T>
+struct pop_back_impl<zencxx::mpl::details::variadic_sequence_tag>::apply<zencxx::mpl::seq<Types..., T>>
+{
+    typedef typename zencxx::mpl::seq<Types...> type;
+};
+
+/**
+ * Specialization for last item in a sequence... just to avoid more template instantiations.
+ */
+template <>
+template <typename T>
+struct pop_back_impl<zencxx::mpl::details::variadic_sequence_tag>::apply<zencxx::mpl::seq<T>>
+{
+    typedef typename zencxx::mpl::seq<> type;
 };
 
 /**

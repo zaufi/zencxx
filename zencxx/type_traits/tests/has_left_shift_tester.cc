@@ -22,6 +22,8 @@
 
 // Project specific includes
 #include <zencxx/type_traits/has_left_shift.hh>
+// Debugging helpers from zencxx::debug namespace
+#include <zencxx/debug/type_name.hh>
 
 // Standard includes
 // ALERT The following #define must be enabled only in one translation unit
@@ -32,19 +34,39 @@
 // Include the following file if u need to validate some text results
 // #include <boost/test/output_test_stream.hpp>
 #include <iostream>
+#include <string>
 
 // Uncomment if u want to use boost test output streams.
 //  Then just output smth to it and valida an output by
 //  BOOST_CHECK(out_stream.is_equal("Test text"))
 // using boost::test_tools::output_test_stream;
 
-// Your first test function :)
+namespace dbg = zencxx::debug;
+using zencxx::has_left_shift;
+
+namespace {
+struct test {};
+}                                                           // anonymous namespace
+
 BOOST_AUTO_TEST_CASE(has_left_shift_test)
 {
-    BOOST_CHECK_EQUAL((zencxx::has_left_shift<int, int>::type::value), true);
-    BOOST_CHECK_EQUAL((zencxx::has_left_shift<std::ostream, int>::type::value), true);
-    BOOST_CHECK_EQUAL((zencxx::has_left_shift<std::ostream, std::string>::type::value), true);
+    static_assert(has_left_shift<int, int>::value, "true expected");
+    static_assert(has_left_shift<std::ostream, int>::value, "true expected");
+    static_assert(has_left_shift<std::ostream, std::string>::value, "true expected");
+    static_assert(has_left_shift<std::ostream&, const std::string&>::value, "true expected");
+    static_assert(has_left_shift<std::ostream&, std::string&&>::value, "true expected");
 
-    BOOST_CHECK_EQUAL((zencxx::has_left_shift<std::string, std::string>::type::value), false);
-    BOOST_CHECK_EQUAL((zencxx::has_left_shift<int, std::string>::type::value), false);
+    static_assert(has_left_shift<std::string, std::string>::value == false, "false expected");
+    static_assert(has_left_shift<int, std::string>::value == false, "false expected");
+    static_assert(has_left_shift<int, test>::value == false, "false expected");
+    static_assert(has_left_shift<int*, test>::value == false, "false expected");
+    static_assert(has_left_shift<test, test>::value == false, "false expected");
+    static_assert(has_left_shift<std::ostream&, test&&>::value == false, "false expected");
+#if 0
+    static_assert(has_left_shift<std::ostream, test>::value == false, "false expected");
+#endif
+#if 0
+    std::cout << dbg::type_name(decltype(std::ostream() << test())()) << std::endl;
+#endif
+
 }
