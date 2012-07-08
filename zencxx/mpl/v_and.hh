@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief \c zencxx::mpl::has_type metafunction
+ * \brief Variadic metafunction to calculate logic AND expression
  *
- * \date Wed Jul  4 05:07:08 MSK 2012 -- Initial design
+ * \date Sun Jul  8 06:36:29 MSK 2012 -- Initial design
  */
 /*
  * ZenCxx is free software: you can redistribute it and/or modify it
@@ -20,22 +20,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__MPL__HAS_TYPE_HH__
-# define __ZENCXX__MPL__HAS_TYPE_HH__
+#ifndef __ZENCXX__MPL__V_AND_HH__
+# define __ZENCXX__MPL__V_AND_HH__
 
 // Project specific includes
-# include <zencxx/type_traits/details/expression_validity_checker.hh>
 
 // Standard includes
-# include <boost/mpl/has_xxx.hpp>
+# include <boost/mpl/bool.hpp>
+# include <boost/mpl/eval_if.hpp>
 
 namespace zencxx { namespace mpl {
+
 /**
- * \attention Nowadays (boost <= 1.50) \c has_type metafunction placed in the
- * \c boost::mpl::aux, so we can't use it here (yep, it's undocumented
- * implementation details), so we have to define our own... and better one
- * because of new features of C++11 :))
+ * \brief True variadic analog of \c boost::mpl::and_
+ *
+ * Generic template accept at least two parameters
  */
-ZEN_TT_EXPR_CHECKER(has_type, (typename T), (T), std::declval<typename T::type>());
+template <typename T, typename... Tail>
+struct v_and : boost::mpl::eval_if<T, v_and<Tail...>, boost::mpl::false_>
+{
+};
+
+/**
+ * \brief True variadic analog of \c boost::mpl::and_
+ *
+ * Single parameter specialization
+ */
+template <typename T>
+struct v_and<> : boost::bool_<T::type::value>
+{
+};
+
 }}                                                          // namespace mpl, zencxx
-#endif                                                      // __ZENCXX__MPL__HAS_TYPE_HH__
+#endif                                                      // __ZENCXX__MPL__V_AND_HH__

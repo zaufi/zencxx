@@ -29,32 +29,27 @@
 // Standard includes
 
 namespace zencxx {
+/// Generate \c has_left_shift metafunction
 ZEN_TT_EXPR_CHECKER(has_left_shift, (typename L, typename R), (L, R), (std::declval<L>() << std::declval<R>()));
 
-#if 0
-template <typename L, typename R>
-class has_left_shift
-{
-    typedef char yes_type;
-    typedef char (&no_type)[2];
-
-    struct checker
-    {
-        template <typename NL, typename NR>
-        static no_type test(...);
-
-        template <typename NL, typename NR>
-        static yes_type test(decltype(std::declval<NL>() << std::declval<NR>(), void())*);
-    };
-
-public:
-    constexpr static bool value = std::is_same<
-        decltype(checker::template test<L, R>(0))
-      , yes_type
-      >::value;
-    typedef std::integral_constant<bool, value> type;
-};
-#endif
-
+/**
+ * \struct has_left_shift
+ * \brief Metafunction to check if expression <tt>l << r</tt> is valid
+ *
+ * ... where \c l is a variable of type \c L and \c r has type of \c R.
+ *
+ * \tparam L left side type
+ * \tparam R right side type
+ *
+ * Example:
+ * \code
+ *  static_assert(has_left_shift<int, int>::value, "int can be shifted by int");
+ *  static_assert(
+ *      has_left_shift<std::ostream&, const std::string&>::value
+ *    , "string expected to be streamable"
+ *    );
+ *  static_assert(has_left_shift<int, std::string>::value, "int can't' be shifted by std::string");
+ * \endcode
+ */
 }                                                           // namespace zencxx
 #endif                                                      // __ZENCXX__TYPE_TRAITS__HAS_LEFT_SHIFT_HH__

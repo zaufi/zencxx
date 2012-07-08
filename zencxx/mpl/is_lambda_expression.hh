@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Class \c zencxx::mpl::is_lambda_expression (interface)
+ * \brief Metafunction to check if given expression is a lambda one
  *
  * \date Wed Jul  4 07:04:54 MSK 2012 -- Initial design
  */
@@ -24,6 +24,9 @@
 # define __ZENCXX__MPL__IS_LAMBDA_EXPRESSION_HH__
 
 // Project specific includes
+# include <zencxx/mpl/arg.hh>
+# include <zencxx/mpl/v_or.hh>
+# include <zencxx/mpl/placeholders.hh>
 
 // Standard includes
 # include <boost/mpl/bool.hpp>
@@ -31,12 +34,20 @@
 namespace zencxx { namespace mpl {
 
 /**
- * \brief Class \c is_lambda_expression
+ * \brief Metafunction to check if given expression is a lambda one
  */
 template <typename Expr>
-struct is_lambda_expression
+struct is_lambda_expression : public boost::mpl::false_
+{};
+
+template <int N>
+struct is_lambda_expression<arg<N>> : public boost::mpl::true_
+{};
+
+template <typename R, typename... Args>
+struct is_lambda_expression<R(Args...)>
+  : v_or<is_lambda_expression<R>, is_lambda_expression<Args>...>::type
 {
-    typedef boost::mpl::false_ type;
 };
 
 }}                                                          // namespace mpl, zencxx

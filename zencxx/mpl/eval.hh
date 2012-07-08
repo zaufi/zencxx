@@ -33,21 +33,12 @@ namespace zencxx { namespace mpl {
  * \page ctexpr Compile-time expressions
  *
  * There are few types of <em>compile-time expressions</em> possible:
- * - <tt>sequence()</tt> -- applicable for sequence types to initialize an empty sequence.
- * Example:
- * \code
- *  using empty_vector = boost::mpl::vector();
- * \endcode
- * - <tt>sequence(type1[, ...[, typeN]])</tt> -- applicable for sequence types to initialize
- * a sequence w/ given set of types. Example:
- * \code
- *  using integrals = zencxx::mpl::seq(char, short, int, long, long long);
- * \endcode
  * - <tt>fn(param1[, ...[, paramN]])</tt> -- call to metafunction class w/ given parameter list.
  * Being a metafunction class, \c fn must have a nested \c apply metafunction.
  * Example:
  * \code
- *  using arithmetic = join(integrals, seq(float, double, long double));
+ *  typedef seq<char, short, int, long, long long> integrals;
+ *  using arithmetic = join(integrals, make_seq(float, double, long double));
  * \endcode
  *
  * To evaluate an expression, one have to "call" the \c eval metafunction like this:
@@ -58,6 +49,25 @@ namespace zencxx { namespace mpl {
  * It is possible to create a lambda expressions w/ usual syntax of placeholders:
  * \code
  *  using append_if_absent = eval_if(is_same(find_if(_1, _2), end(_1)), push_back(_1, _2), _1);
+ * \endcode
+ *
+ * ... or even smth like this:
+ * \code
+ *  using binrary_action = _1(_2, _3);
+ * \endcode
+ *
+ * After construction one may bind parameters:
+ * \code
+ *  using expr = bind(append_if_absent, integrals, __int128);
+ *  using result = eval<expr>::type;
+ *  // result is `seq<char, short, int, long, long long, __int128>'
+ * \endcode
+ *
+ * \todo to make a partial application expression:
+ * \code
+ *  using expr = bind(binrary_action, pair<_2, integrals>, pair<_3, __int128>);
+ *  using result = eval<expr>::type;
+ *  // result is `seq<char, short, int, long, long long, __int128>'
  * \endcode
  *
  * \todo TBD

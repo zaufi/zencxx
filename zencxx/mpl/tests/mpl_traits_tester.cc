@@ -80,6 +80,8 @@ BOOST_AUTO_TEST_CASE(has_type_test)
     static_assert(mpl::has_type<has_type>::value == true, "type expected");
     static_assert(mpl::has_type<mpl::seq<>>::value == true, "type expected");
     static_assert(mpl::has_type<mpl::seq<char>>::value == true, "type expected");
+
+    // Check a metafunction
     static_assert(mpl::has_type<std::is_same<char, int>>::value == true, "type expected");
     static_assert(mpl::has_type<boost::mpl::push_back<mpl::seq<>, int>>::value == true, "type expected");
 }
@@ -91,6 +93,10 @@ BOOST_AUTO_TEST_CASE(has_apply_test)
 
     static_assert(mpl::has_apply<has_apply0>::value == true, "apply expected");
     static_assert(mpl::has_apply<has_apply1, int>::value == true, "apply expected");
+
+    // Make and check a metafunction class
+    using pb = boost::mpl::quote2<boost::mpl::push_back>;
+    static_assert(mpl::has_apply<pb, mpl::seq<>, int>::value == true, "apply expected");
 }
 
 #if 0

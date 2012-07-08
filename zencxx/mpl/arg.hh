@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief \c zencxx::mpl::has_type metafunction
+ * \brief Class \c zencxx::mpl::arg (interface)
  *
- * \date Wed Jul  4 05:07:08 MSK 2012 -- Initial design
+ * \date Sun Jul  8 06:10:48 MSK 2012 -- Initial design
  */
 /*
  * ZenCxx is free software: you can redistribute it and/or modify it
@@ -20,22 +20,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__MPL__HAS_TYPE_HH__
-# define __ZENCXX__MPL__HAS_TYPE_HH__
+#ifndef __ZENCXX__MPL__ARG_HH__
+# define __ZENCXX__MPL__ARG_HH__
 
 // Project specific includes
-# include <zencxx/type_traits/details/expression_validity_checker.hh>
+# include <zencxx/mpl/v_at.hh>
 
 // Standard includes
-# include <boost/mpl/has_xxx.hpp>
 
 namespace zencxx { namespace mpl {
+
 /**
- * \attention Nowadays (boost <= 1.50) \c has_type metafunction placed in the
- * \c boost::mpl::aux, so we can't use it here (yep, it's undocumented
- * implementation details), so we have to define our own... and better one
- * because of new features of C++11 :))
+ * \brief [Type brief class description here]
+ *
+ * [More detailed description here]
+ *
  */
-ZEN_TT_EXPR_CHECKER(has_type, (typename T), (T), std::declval<typename T::type>());
+template <int N>
+struct arg
+{
+    template <typename... Args>
+    struct apply : v_at_c<N, Args...>
+    {};
+};
+
 }}                                                          // namespace mpl, zencxx
-#endif                                                      // __ZENCXX__MPL__HAS_TYPE_HH__
+#endif                                                      // __ZENCXX__MPL__ARG_HH__

@@ -22,6 +22,7 @@
 
 // Project specific includes
 #include <zencxx/mpl/eval.hh>
+#include <zencxx/mpl/eval_if.hh>
 #include <zencxx/mpl/seq.hh>
 // Debugging helpers from zencxx::debug namespace
 #include <zencxx/debug/type_name.hh>
@@ -42,34 +43,6 @@ namespace mpl = zencxx::mpl;
 namespace zencxx { namespace mpl {
 using identity = boost::mpl::quote1<boost::mpl::identity>;
 using push_back = boost::mpl::quote2<boost::mpl::push_back>;
-
-struct eval_if
-{
-    template <typename Cond, typename Then, typename Otherwise>
-    struct apply
-    {
-        typedef typename boost::mpl::eval_if<
-            typename eval<Cond>::type
-          , eval<Then>
-          , eval<Otherwise>
-          >::type type;
-    };
-};
-
-template <>
-template <typename... Args>
-struct eval_impl<call_meta_function_class_tag>::apply<eval_if(Args...)>
-{
-    typedef typename eval_if::template apply<Args...>::type type;
-};
-
-template <>
-template <typename... Args>
-struct eval_impl<call_meta_function_class_tag>::apply<eval_if(*)(Args...)>
-{
-    typedef typename eval_if::template apply<Args...>::type type;
-};
-
 }}                                                          // namespace mpl, zencxx
 
 
@@ -88,6 +61,15 @@ BOOST_AUTO_TEST_CASE(eval_test2)
     using result = mpl::eval<expr>::type;
     std::cout << dbg::type_name(result()) << std::endl;
 }
+
+#if 0
+BOOST_AUTO_TEST_CASE(seq_init_test)
+{
+    using expr = mpl::seq(char, short, int);
+    using result = mpl::eval<expr>::type;
+    std::cout << dbg::type_name(result()) << std::endl;
+}
+#endif
 
 namespace {
 struct incomplete;
@@ -119,7 +101,7 @@ BOOST_AUTO_TEST_CASE(eval_if_test)
     }
 }
 
-BOOST_AUTO_TEST_CASE(eval_if_test2)
+BOOST_AUTO_TEST_CASE(boost_eval_if_test)
 {
     {
         typedef boost::mpl::eval_if<
@@ -137,4 +119,14 @@ BOOST_AUTO_TEST_CASE(eval_if_test2)
           >::type result;
         std::cout << dbg::type_name(result()) << std::endl;
     }
+}
+
+BOOST_AUTO_TEST_CASE(lambda_eval_test)
+{
+    using push_expr = mpl::push_back(mpl::_1, mpl::_2);
+    using result = mpl::is_lambda_expression<push_expr>::type;
+    static_assert(result::value, "lambda expression expected");
+#if 0
+    std::cout << __PRETTY_FUNCTION__ << ": " << dbg::type_name(result()) << std::endl;
+#endif
 }
