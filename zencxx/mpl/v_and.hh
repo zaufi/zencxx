@@ -34,10 +34,25 @@ namespace zencxx { namespace mpl {
 /**
  * \brief True variadic analog of \c boost::mpl::and_
  *
- * Generic template accept at least two parameters
+ * Generic template isn't defined
  */
 template <typename T, typename... Tail>
 struct v_and : boost::mpl::eval_if<T, v_and<Tail...>, boost::mpl::false_>
+{
+};
+
+/**
+ * \brief True variadic analog of \c boost::mpl::and_
+ *
+ * Specialization to accept at least two parameters
+ */
+template <typename T1, typename T2, typename... Tail>
+struct v_and<T1, T2, Tail...>
+  : boost::mpl::eval_if<
+      T1
+    , v_and<T2, Tail...>
+    , boost::mpl::false_
+    >
 {
 };
 
