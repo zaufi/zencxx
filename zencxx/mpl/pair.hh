@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Class \c zencxx::mpl::arg (interface)
+ * \brief Class \c zencxx::mpl::pair (interface)
  *
- * \date Sun Jul  8 06:10:48 MSK 2012 -- Initial design
+ * \date Sun Jul  8 20:43:05 MSK 2012 -- Initial design
  */
 /*
  * ZenCxx is free software: you can redistribute it and/or modify it
@@ -20,30 +20,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__MPL__ARG_HH__
-# define __ZENCXX__MPL__ARG_HH__
+#ifndef __ZENCXX__MPL__PAIR_HH__
+# define __ZENCXX__MPL__PAIR_HH__
 
 // Project specific includes
-# include <zencxx/mpl/v_at.hh>
 
 // Standard includes
-# include <boost/mpl/identity.hpp>
+# include <boost/mpl/pair.hpp>
+# include <boost/mpl/quote.hpp>
 
 namespace zencxx { namespace mpl {
 
 /**
- * \brief [Type brief class description here]
- *
- * [More detailed description here]
- *
+ * \brief Metafunction class to produce MPL pairs
  */
-template <int N>
-struct arg
+struct pair
 {
-    template <typename... Args>
-    struct apply : v_at_c<N - 1, Args...>
-    {};
+    template <typename T1, typename T2>
+    struct apply
+    {
+        typedef boost::mpl::pair<T1, T2> type;
+    };
 };
 
+/// Metafunction class to access first element of pair
+typedef boost::mpl::quote1<boost::mpl::first> first;
+
+/// Metafunction class to access second element of pair
+typedef boost::mpl::quote1<boost::mpl::second> second;
+
 }}                                                          // namespace mpl, zencxx
-#endif                                                      // __ZENCXX__MPL__ARG_HH__
+#endif                                                      // __ZENCXX__MPL__PAIR_HH__

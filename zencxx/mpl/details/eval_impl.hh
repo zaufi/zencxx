@@ -54,14 +54,26 @@ struct eval_impl<call_meta_function_class_tag>::apply<R(*)(Args...)>
 
 
 template <>
-struct eval_impl<meta_function_tag>
+struct eval_impl<lambda_expression_tag>
 {
-    template <typename Expr>
-    struct apply
-    {
-        typedef typename Expr::type type;
-    };
+    template <typename...>
+    struct apply;
 };
+
+template <>
+template <typename R, typename... Args, typename... Params>
+struct eval_impl<lambda_expression_tag>::apply<R(Args...), Params...>
+  : R::template apply<Args..., Params...>
+{
+};
+
+template <>
+template <typename R, typename... Args, typename... Params>
+struct eval_impl<lambda_expression_tag>::apply<R(*)(Args...), Params...>
+  : R::template apply<Args..., Params...>
+{
+};
+
 
 template <>
 struct eval_impl<ordinal_type_tag>

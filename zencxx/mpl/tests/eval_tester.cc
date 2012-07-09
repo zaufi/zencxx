@@ -21,6 +21,7 @@
  */
 
 // Project specific includes
+#include <zencxx/mpl/bind.hh>
 #include <zencxx/mpl/eval.hh>
 #include <zencxx/mpl/eval_if.hh>
 #include <zencxx/mpl/seq.hh>
@@ -51,7 +52,7 @@ BOOST_AUTO_TEST_CASE(simple_eval_test)
     typedef mpl::seq<> seq_t;
     using expr = mpl::push_back(seq_t, char);
     using result = mpl::eval<expr>::type;
-    std::cout << dbg::type_name(result()) << std::endl;
+    static_assert(std::is_same<result, mpl::seq<char>>::value, "mpl::seq<char> expected");
 }
 
 BOOST_AUTO_TEST_CASE(eval_test2)
@@ -59,7 +60,7 @@ BOOST_AUTO_TEST_CASE(eval_test2)
     typedef mpl::seq<> seq_t;
     using expr = mpl::push_back(mpl::push_back(seq_t, int), char);
     using result = mpl::eval<expr>::type;
-    std::cout << dbg::type_name(result()) << std::endl;
+    static_assert(std::is_same<result, mpl::seq<int, char>>::value, "mpl::seq<int, char> expected");
 }
 
 #if 0
@@ -88,7 +89,10 @@ BOOST_AUTO_TEST_CASE(eval_if_test)
     {
         using expr = mpl::eval_if(boost::mpl::true_, int, incomplete);
         using result = mpl::eval<expr>::type;
-        std::cout << dbg::type_name(result()) << std::endl;
+        static_assert(
+            std::is_same<result, int>::value
+          , "int expected"
+          );
     }
     {
         using expr = mpl::eval_if(
@@ -97,7 +101,10 @@ BOOST_AUTO_TEST_CASE(eval_if_test)
           , not_for_integrals<int>
           );
         using result = mpl::eval<expr>::type;
-        std::cout << dbg::type_name(result()) << std::endl;
+        static_assert(
+            std::is_same<result, not_for_integrals<complete>>::value
+          , "not_for_integrals<complete> expected"
+          );
     }
 }
 
@@ -109,7 +116,10 @@ BOOST_AUTO_TEST_CASE(boost_eval_if_test)
           , boost::mpl::identity<int>
           , boost::mpl::identity<incomplete>
           >::type result;
-        std::cout << dbg::type_name(result()) << std::endl;
+        static_assert(
+            std::is_same<result, int>::value
+          , "int expected"
+          );
     }
     {
         typedef boost::mpl::eval_if<
@@ -117,16 +127,60 @@ BOOST_AUTO_TEST_CASE(boost_eval_if_test)
           , boost::mpl::identity<not_for_integrals<complete>>
           , boost::mpl::identity<not_for_integrals<int>>
           >::type result;
-        std::cout << dbg::type_name(result()) << std::endl;
+        static_assert(
+            std::is_same<result, not_for_integrals<complete>>::value
+          , "not_for_integrals<complete> expected"
+          );
     }
 }
 
 BOOST_AUTO_TEST_CASE(lambda_eval_test)
 {
     using push_expr = mpl::push_back(mpl::_1, mpl::_2);
-    using result = mpl::is_lambda_expression<push_expr>::type;
-    static_assert(result::value, "lambda expression expected");
+    {
+        using result = mpl::is_lambda_expression<push_expr>::type;
+        static_assert(result::value, "lambda expression expected");
+    }
+
+    {
+        using nulary_mf = mpl::bind(push_expr, mpl::seq<>, char);
+        static_assert(mpl::is_lambda_expression<nulary_mf>::value, "lambda expression expected");
+
+        using result = mpl::eval<nulary_mf>::type;
+        static_assert(
+            std::is_same<result, mpl::seq<char>>::value
+          , "seq<char> expected"
+          );
+    }
+
+    {
+        using more_push_expr = mpl::push_back(push_expr, char);
+        static_assert(mpl::is_lambda_expression<more_push_expr>::value, "lambda expression expected");
+
+        using nulary_mf = mpl::bind(more_push_expr, mpl::seq<>, char);
+
+        using result = mpl::eval<nulary_mf>::type;
 #if 0
-    std::cout << __PRETTY_FUNCTION__ << ": " << dbg::type_name(result()) << std::endl;
+        std::cout << __PRETTY_FUNCTION__ << ": " << dbg::type_name(result()) << std::endl;
 #endif
+        static_assert(
+            std::is_same<result, mpl::seq<char, char>>::value
+          , "seq<char, char> expected"
+          );
+    }
 }
+
+#ifdef ZENCXX_PLAYGROUND
+using nf = mpl::bind(push_expr, mpl::seq<>, char);
+
+using f = mpl::bind(mpl::_1, mpl::seq<>, char);
+using nf = mpl::bind(f, mpl::push_back);
+
+using f = mpl::bind(mpl::_1, mpl::_2, mpl::_3);
+using uf = mpl::bind(f, mpl::pair(mpl::_1, mpl::push_back), mpl::pair(mpl::_2, mpl::seq<>));
+
+// given: _1, _3
+// rest: _2, _4
+
+// out: unary fn w/ _1, _2
+#endif                                                      // ZENCXX_PLAYGROUND

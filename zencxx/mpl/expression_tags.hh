@@ -24,8 +24,6 @@
 # define __ZENCXX__MPL__EXPRESSION_TAGS_HH__
 
 // Project specific includes
-# include <zencxx/mpl/has_apply.hh>
-# include <zencxx/mpl/has_type.hh>
 # include <zencxx/mpl/is_lambda_expression.hh>
 
 // Standard includes
@@ -34,10 +32,7 @@
 namespace zencxx { namespace mpl {
 
 struct call_meta_function_class_tag;
-struct call_meta_function_tag;
 struct lambda_expression_tag;
-struct meta_function_class_tag;
-struct meta_function_tag;
 struct ordinal_type_tag;
 struct unsupported_meta_expressoin;
 
@@ -49,7 +44,7 @@ template <
             std::is_pointer<Expr>::value
          && std::is_function<typename std::remove_pointer<Expr>::type>::value
           )
-  , bool = has_type<Expr>::value
+  , bool = is_lambda_expression<Expr>::value
   >
 struct tagger;
 #if 0
@@ -58,22 +53,18 @@ struct tagger;
 };
 #endif
 
+// metafunction call and is not lambda
 template <typename Expr>
 struct tagger<Expr, true, false>
 {
     typedef call_meta_function_class_tag type;
 };
 
+// metafunction call and lambda
 template <typename Expr>
 struct tagger<Expr, true, true>
 {
-    typedef call_meta_function_tag type;
-};
-
-template <typename Expr>
-struct tagger<Expr, false, true>
-{
-    typedef meta_function_tag type;
+    typedef lambda_expression_tag type;
 };
 
 template <typename Expr>

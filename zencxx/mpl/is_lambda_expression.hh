@@ -46,7 +46,13 @@ struct is_lambda_expression<arg<N>> : public boost::mpl::true_
 
 template <typename R, typename... Args>
 struct is_lambda_expression<R(Args...)>
-  : v_or<is_lambda_expression<R>, is_lambda_expression<Args>...>::type
+  : v_or<is_lambda_expression<R>, is_lambda_expression<Args>...>
+{
+};
+
+template <typename R, typename... Args>
+struct is_lambda_expression<R(*)(Args...)>
+  : v_or<is_lambda_expression<R>, is_lambda_expression<Args>...>
 {
 };
 
