@@ -26,7 +26,6 @@
 // Project specific includes
 
 // Standard includes
-# include <boost/mpl/bool.hpp>
 # include <boost/mpl/eval_if.hpp>
 
 namespace zencxx { namespace mpl {
@@ -36,10 +35,8 @@ namespace zencxx { namespace mpl {
  *
  * Generic template isn't defined
  */
-template <typename T, typename... Tail>
-struct v_and : boost::mpl::eval_if<T, v_and<Tail...>, boost::mpl::false_>
-{
-};
+template <typename...>
+struct v_and;
 
 /**
  * \brief True variadic analog of \c boost::mpl::and_
@@ -52,7 +49,7 @@ struct v_and<T1, T2, Tail...>
       T1
     , v_and<T2, Tail...>
     , boost::mpl::false_
-    >
+    >::type
 {
 };
 
@@ -62,7 +59,7 @@ struct v_and<T1, T2, Tail...>
  * Single parameter specialization
  */
 template <typename T>
-struct v_and<> : boost::bool_<T::type::value>
+struct v_and<T> : boost::mpl::bool_<T::type::value>
 {
 };
 

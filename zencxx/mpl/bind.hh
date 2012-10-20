@@ -24,10 +24,7 @@
 # define __ZENCXX__MPL__BIND_HH__
 
 // Project specific includes
-# include <zencxx/mpl/details/resolve_args.hh>
-# include <zencxx/mpl/eval.hh>
-# include <zencxx/mpl/is_lambda_expression.hh>
-# include <zencxx/mpl/seq.hh>
+# include <zencxx/mpl/details/bind_impl.hh>
 
 // Standard includes
 
@@ -36,36 +33,18 @@ namespace zencxx { namespace mpl {
 /**
  * \brief Metafunction class to produce argument binding expressions
  *
- * \todo More docs
+ * \c bind can be used for function composition and/or argument binding.
+ * There is two forms of \c bind calls possible:
+ * \li to make a lambda expression:
+ * \code
+ *  using push_expr = bind(push_back, _1, _2);
+ * \endcode
  */
 struct bind
 {
     template <typename F, typename... Params>
-    struct apply;
-};
-
-template <typename R, typename... Args, typename... Params>
-struct bind::apply<R(Args...), Params...>
-{
-    static_assert(
-        is_lambda_expression<R(Args...)>::value
-      , "MPL lambda expression expected as first parameter of mpl::bind"
-      );
-
-    typedef typename mpl::apply<details::resolve_args<R(Args...)>, Params...>::type expr;
-    typedef typename eval<expr>::type type;
-};
-
-template <typename R, typename... Args, typename... Params>
-struct bind::apply<R(*)(Args...), Params...>
-{
-    static_assert(
-        is_lambda_expression<R(Args...)>::value
-      , "MPL lambda expression expected as first parameter of mpl::bind"
-      );
-
-    typedef typename mpl::apply<details::resolve_args<R(Args...)>, Params...>::type expr;
-    typedef typename eval<expr>::type type;
+    struct apply : details::bind_impl<F, Params...>
+    {};
 };
 
 }}                                                          // namespace mpl, zencxx

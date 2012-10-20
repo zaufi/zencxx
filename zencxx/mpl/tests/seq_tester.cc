@@ -43,6 +43,7 @@
 #include <boost/mpl/clear.hpp>
 #include <boost/mpl/empty.hpp>
 #include <boost/mpl/fold.hpp>
+#include <boost/mpl/iter_fold.hpp>
 #include <boost/mpl/front.hpp>
 #include <boost/mpl/is_sequence.hpp>
 #include <boost/mpl/pop_back.hpp>
@@ -270,7 +271,7 @@ struct fold_visitor<void, void>
 
 }                                                           // anonymous namespace
 
-BOOST_AUTO_TEST_CASE(fold_test)
+BOOST_AUTO_TEST_CASE(seq_fold_test)
 {
     typedef mpl::seq<char, short, int, long, long long, float, double, long double> seq_t;
     boost::mpl::fold<
@@ -280,7 +281,17 @@ BOOST_AUTO_TEST_CASE(fold_test)
       >::type::spam();
 }
 
-BOOST_AUTO_TEST_CASE(inserter_test)
+BOOST_AUTO_TEST_CASE(seq_iter_fold_test)
+{
+    typedef mpl::seq<char, short, int, long, long long, float, double, long double> seq_t;
+    boost::mpl::iter_fold<
+        seq_t
+      , fold_visitor<>
+      , fold_visitor<boost::mpl::_, boost::mpl::_>
+      >::type::spam();
+}
+
+BOOST_AUTO_TEST_CASE(seq_inserter_test)
 {
     typedef boost::mpl::back_inserter<mpl::seq<>> inserter_t;
     typedef boost::mpl::apply<

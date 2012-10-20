@@ -20,8 +20,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__MPL__APPLY_HH__
-# define __ZENCXX__MPL__APPLY_HH__
+#ifndef __ZENCXX__MPL__V_APPLY_HH__
+# define __ZENCXX__MPL__V_APPLY_HH__
 
 // Project specific includes
 # include <zencxx/mpl/has_apply.hh>
@@ -41,7 +41,7 @@ namespace zencxx { namespace mpl {
  * \tparam Args parameters pack to apply
  */
 template <typename F, typename... Args>
-struct apply
+struct v_apply
 {
     static_assert(
         has_apply<F, Args...>::value
@@ -56,7 +56,7 @@ struct apply
  * \sa \c zencxx::mpl::apply
  */
 template <typename F>
-struct apply<F>
+struct v_apply<F>
 {
     static_assert(
         has_apply<F>::value
@@ -66,4 +66,4 @@ struct apply<F>
 };
 
 }}                                                          // namespace mpl, zencxx
-#endif                                                      // __ZENCXX__MPL__APPLY_HH__
+#endif                                                      // __ZENCXX__MPL__V_APPLY_HH__

@@ -1,5 +1,6 @@
 set(UNIT_TESTS_SOURCES
     copy_range_tester.cc
+    mpl_logic_tester.cc
     mpl_traits_tester.cc
     eval_tester.cc
     seq_tester.cc

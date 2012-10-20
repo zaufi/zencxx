@@ -25,7 +25,7 @@
 
 // Project specific includes
 # include <zencxx/mpl/arg.hh>
-# include <zencxx/mpl/apply.hh>
+# include <zencxx/mpl/v_apply.hh>
 
 // Standard includes
 # include <boost/mpl/identity.hpp>
@@ -50,7 +50,7 @@ template <int N>
 struct resolve_args<arg<N>>
 {
     template <typename... Params>
-    struct apply : mpl::apply<arg<N>, Params...>
+    struct apply : v_apply<arg<N>, Params...>
     {};
 };
 
@@ -60,8 +60,8 @@ struct resolve_args<R(Args...)>
     template <typename... Params>
     struct apply
       : make_function_pointer<
-            typename mpl::apply<resolve_args<R>, Params...>::type
-          , typename mpl::apply<resolve_args<Args>, Params...>::type...
+            typename v_apply<resolve_args<R>, Params...>::type
+          , typename v_apply<resolve_args<Args>, Params...>::type...
           >
     {};
 };
@@ -72,8 +72,8 @@ struct resolve_args<R(*)(Args...)>
     template <typename... Params>
     struct apply
       : make_function_pointer<
-            typename mpl::apply<resolve_args<R>, Params...>::type
-          , typename mpl::apply<resolve_args<Args>, Params...>::type...
+            typename v_apply<resolve_args<R>, Params...>::type
+          , typename v_apply<resolve_args<Args>, Params...>::type...
           >
     {};
 };

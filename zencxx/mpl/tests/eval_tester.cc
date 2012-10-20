@@ -24,6 +24,7 @@
 #include <zencxx/mpl/bind.hh>
 #include <zencxx/mpl/eval.hh>
 #include <zencxx/mpl/eval_if.hh>
+#include <zencxx/mpl/iter_fold.hh>
 #include <zencxx/mpl/seq.hh>
 // Debugging helpers from zencxx::debug namespace
 #include <zencxx/debug/type_name.hh>
@@ -35,6 +36,9 @@
 #include <boost/mpl/quote.hpp>
 #include <boost/mpl/eval_if.hpp>
 #include <boost/mpl/identity.hpp>
+#include <boost/mpl/apply.hpp>
+#include <boost/mpl/bind.hpp>
+#include <boost/mpl/lambda.hpp>
 #include <iostream>
 #include <utility>
 
@@ -46,6 +50,7 @@ using identity = boost::mpl::quote1<boost::mpl::identity>;
 using push_back = boost::mpl::quote2<boost::mpl::push_back>;
 }}                                                          // namespace mpl, zencxx
 
+#define mpl_eval(Expr) mpl::eval<Expr>::type
 
 BOOST_AUTO_TEST_CASE(simple_eval_test)
 {
@@ -59,18 +64,9 @@ BOOST_AUTO_TEST_CASE(eval_test2)
 {
     typedef mpl::seq<> seq_t;
     using expr = mpl::push_back(mpl::push_back(seq_t, int), char);
-    using result = mpl::eval<expr>::type;
+    using result = mpl_eval(expr);
     static_assert(std::is_same<result, mpl::seq<int, char>>::value, "mpl::seq<int, char> expected");
 }
-
-#if 0
-BOOST_AUTO_TEST_CASE(seq_init_test)
-{
-    using expr = mpl::seq(char, short, int);
-    using result = mpl::eval<expr>::type;
-    std::cout << dbg::type_name(result()) << std::endl;
-}
-#endif
 
 namespace {
 struct incomplete;
@@ -134,6 +130,14 @@ BOOST_AUTO_TEST_CASE(boost_eval_if_test)
     }
 }
 
+BOOST_AUTO_TEST_CASE(bind_form_1_test)
+{
+    // Use bind to make a lambda
+    using push_expr = mpl::bind(mpl::push_back, mpl::_1, mpl::_2);
+    using result = mpl::is_lambda_expression<push_expr>::type;
+    static_assert(result::value, "lambda expression expected");
+}
+
 BOOST_AUTO_TEST_CASE(lambda_eval_test)
 {
     using push_expr = mpl::push_back(mpl::_1, mpl::_2);
@@ -170,7 +174,57 @@ BOOST_AUTO_TEST_CASE(lambda_eval_test)
     }
 }
 
+// namespace {
+/**
+ * \brief Class \c test
+ */
+struct test
+{
+    template <typename State, typename Iter>
+    struct apply
+    {
+        struct type
+        {
+            static void spam()
+            {
+                State::spam();
+                std::cout << "Current type: " << dbg::type_name(Iter()) << std::endl;
+            }
+        };
+    };
+    static void spam()
+    {
+        std::cout << "Initial state" << std::endl;
+    }
+};
+// }                                                           // anonymous namespace
+
+BOOST_AUTO_TEST_CASE(iter_fold_test)
+{
+    typedef mpl::seq<char, short, int> seq_t;
+    using expr = mpl::iter_fold(seq_t, test, test(mpl::_1, mpl::_2));
+    using result = mpl::eval<expr>::type;
+    std::cout << dbg::type_name(result()) << std::endl;
+    std::cout << "Invoke spam chain:" << std::endl;
+    result::spam();
+}
+
+#if 0
+BOOST_AUTO_TEST_CASE(fold_test)
+{
+    typedef mpl::seq<char, short, int> seq_t;
+    using expr = mpl::fold(seq_t, test, test(mpl::_1, mpl::_2));
+    using result = mpl::eval<expr>::type;
+    std::cout << dbg::type_name(result()) << std::endl;
+    std::cout << "Invoke spam chain:" << std::endl;
+    result::spam();
+}
+#endif
+
 #ifdef ZENCXX_PLAYGROUND
+
+using r = fold(vec_of_vec, seq<>, fold(_2, _1, protect(push_back(_1, _2))));
+using z = bind(push_back, _1, char);
 using nf = mpl::bind(push_expr, mpl::seq<>, char);
 
 using f = mpl::bind(mpl::_1, mpl::seq<>, char);
@@ -184,3 +238,49 @@ using uf = mpl::bind(f, mpl::pair(mpl::_1, mpl::push_back), mpl::pair(mpl::_2, m
 
 // out: unary fn w/ _1, _2
 #endif                                                      // ZENCXX_PLAYGROUND
+namespace {
+/**
+ * \brief Metafunction class \c test
+ */
+struct sample_mfc
+{
+    template <typename T1, typename T2, typename T3>
+    struct apply
+    {
+        typedef std::tuple<T1, T2, T3> type;
+    };
+};
+
+template <typename T1, typename T2>
+struct sample_mf
+{
+    typedef std::pair<T1, T2> type;
+};
+
+}                                                           // anonymous namespace
+
+BOOST_AUTO_TEST_CASE(boost_mpl_test)
+{
+#if 0
+    typedef boost::mpl::bind<sample_mfc, boost::mpl::_1, boost::mpl::_2, char> bind1;
+    typedef boost::mpl::bind<boost::mpl::protect<bind1>::type, char, boost::mpl::_1> bind2;
+    typedef boost::mpl::bind<boost::mpl::protect<bind2>::type, int> bind3;
+    typedef boost::mpl::apply<bind3>::type result;
+#endif
+    using pe = mpl::push_back(mpl::seq<>, mpl::_1);
+    using result = mpl::push_back(pe, int);
+    std::cout << "*** " << dbg::type_name(sample_mf<result, void>()) << std::endl;
+    //
+#if 0
+    std::cout << dbg::type_name(boost::mpl::lambda<sample_mf<boost::mpl::_1, boost::mpl::_2>>::type()) << std::endl;
+#endif
+#if 0
+
+#endif
+#if 0
+    typedef boost::mpl::bind<boost::mpl::lambda<bind1>::type, int, mpl::_1> bind2;
+    typedef boost::mpl::bind<boost::mpl::lambda<bind2>::type, char> bind3;
+    typedef boost::mpl::apply<bind3>::type result;
+    std::cout << dbg::type_name(result()) << std::endl;
+#endif
+}
