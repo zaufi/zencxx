@@ -38,24 +38,24 @@
  * Generate expression validity checkers using modern C++11 features
  * like \c decltype and variadic macros.
  */
-# define ZEN_TT_EXPR_CHECKER(Name, ParamsTuple, TestCallParamsTuple, Expr)  \
-namespace details {                                                         \
-struct BOOST_PP_CAT(Name, _checker)                                         \
-{                                                                           \
-    typedef char yes_type;                                                  \
-    typedef char (&no_type)[2];                                             \
-    template <BOOST_PP_TUPLE_ENUM(ParamsTuple)>                             \
-    static no_type test(...);                                               \
-    template <BOOST_PP_TUPLE_ENUM(ParamsTuple)>                             \
-    static yes_type test(decltype((Expr), void())*);                        \
-};                                                                          \
-}                                                                           \
-template <BOOST_PP_TUPLE_ENUM(ParamsTuple)>                                 \
-struct Name : std::is_same<                                                 \
-        decltype(details::BOOST_PP_CAT(Name, _checker)::template test<      \
-            BOOST_PP_TUPLE_ENUM(TestCallParamsTuple)                        \
-          >(0))                                                             \
-      , details::BOOST_PP_CAT(Name, _checker)::yes_type                     \
+# define ZEN_TT_EXPR_CHECKER(Name, ParamsTuple, TestCallParamsTuple, Expr) \
+namespace details {                                                        \
+struct BOOST_PP_CAT(Name, _checker)                                        \
+{                                                                          \
+    typedef char yes_type;                                                 \
+    typedef char (&no_type)[2];                                            \
+    template <BOOST_PP_TUPLE_ENUM(ParamsTuple)>                            \
+    static no_type test(...);                                              \
+    template <BOOST_PP_TUPLE_ENUM(ParamsTuple)>                            \
+    static yes_type test(decltype((Expr), void())*);                       \
+};                                                                         \
+}                                                                          \
+template <BOOST_PP_TUPLE_ENUM(ParamsTuple)>                                \
+struct Name : std::is_same<                                                \
+        decltype(details::BOOST_PP_CAT(Name, _checker)::template test<     \
+            BOOST_PP_TUPLE_ENUM(TestCallParamsTuple)                       \
+          >(0))                                                            \
+      , details::BOOST_PP_CAT(Name, _checker)::yes_type                    \
       > {}
 
 #endif                                                      // __ZENCXX__TYPE_TRAITS__DETAILS__EXPRESSION_VALIDITY_CHECKER_HH__

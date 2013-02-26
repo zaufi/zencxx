@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2011 Alex Turbov <i.zaufi@gmail.com>
+# Copyright 2011-2013 by Alex Turbov <i.zaufi@gmail.com>
 #
 # Helper to generate class skeletons
 #
@@ -16,7 +16,7 @@
 show_help()
 {
     einfo "Use 'make new-class class=ClassName subdir=path/from/src/root [ns=namespaces::list]'"
-    einfo "Exmaple: make new-class class=some_class subdir=zencxx/debug ns=zencxx::debug"
+    einfo "Example: make new-class class=some_class subdir=zencxx/debug ns=zencxx::debug"
 }
 
 if [ -z "$class" ]; then

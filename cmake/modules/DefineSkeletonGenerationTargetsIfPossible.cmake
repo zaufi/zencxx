@@ -1,4 +1,4 @@
-# Copyright 2011 Alex Turbov <i.zaufi@gmail.com>
+# Copyright 2011-2013 Alex Turbov <i.zaufi@gmail.com>
 
 # check if autogen is even installed
 find_program(AUTOGEN_EXECUTABLE autogen)

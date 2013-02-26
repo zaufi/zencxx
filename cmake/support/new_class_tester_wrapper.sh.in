@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2011 Alex Turbov <i.zaufi@gmail.com>
+# Copyright 2011-2013 by Alex Turbov <i.zaufi@gmail.com>
 #
 # Helper to generate class skeletons
 #
@@ -9,7 +9,7 @@
 show_help()
 {
     einfo "Use 'make new-class-tester class=ClassName [subdir=path/from/src/root]'"
-    einfo "Exmaple: make new-class class=some_class"
+    einfo "Example: make new-class class=some_class"
 }
 
 if [ -z "$class" ]; then

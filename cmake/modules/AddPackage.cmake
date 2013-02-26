@@ -1,4 +1,4 @@
-# Copyright 2011 by Alex Turbov <i.zaufi@gmail.com>
+# Copyright 2011-2013 by Alex Turbov <i.zaufi@gmail.com>
 #
 # Command to add a target to make a specified package.
 #

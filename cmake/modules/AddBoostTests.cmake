@@ -1,4 +1,4 @@
-# Copyright 2011,2012 by Alex Turbov <i.zaufi@gmail.com>
+# Copyright 2011-2013 by Alex Turbov <i.zaufi@gmail.com>
 #
 # Integrate Boost unit tests into cmake infrastructure
 #
@@ -19,7 +19,7 @@
 
 include(CMakeParseArguments)
 
-function (add_boost_tests)
+function(add_boost_tests)
     set(options CATCH_SYSTEM_ERRORS NO_CATCH_SYSTEM_ERRORS)
     set(one_value_args WORKING_DIRECTORY TARGET)
     set(multi_value_args SOURCES)
@@ -61,7 +61,7 @@ function (add_boost_tests)
     foreach(source ${add_boost_tests_SOURCES})
         file(READ "${source}" contents)
         # Append BOOST_AUTO_TEST_CASEs
-        string(REGEX MATCHALL "BOOST_AUTO_TEST_CASE\\(([A-Za-z0-9_]+)\\)" found_tests ${contents})
+        string(REGEX MATCHALL "BOOST_AUTO_TEST_CASE\\(([A-Za-z0-9_]+)\\)" found_tests "${contents}")
         foreach(hit ${found_tests})
             string(REGEX REPLACE ".*\\(([A-Za-z0-9_]+)\\).*" "\\1" test_name ${hit})
             add_test(
@@ -71,7 +71,7 @@ function (add_boost_tests)
             )
         endforeach()
         # Append BOOST_FIXTURE_TEST_CASEs
-        string(REGEX MATCHALL "BOOST_FIXTURE_TEST_SUITE\\(([A-Za-z_0-9]+), ([A-Za-z_0-9]+)\\)" found_tests ${contents})
+        string(REGEX MATCHALL "BOOST_FIXTURE_TEST_SUITE\\(([A-Za-z_0-9]+), ([A-Za-z_0-9]+)\\)" found_tests "${contents}")
         foreach(hit ${found_tests})
             string(REGEX REPLACE ".*\\(([A-Za-z_0-9]+), ([A-Za-z_0-9]+)\\).*" "\\1" test_name ${hit})
             add_test(

@@ -1,5 +1,5 @@
 #
-# Copyright 2012 by Alex Turbov <i.zaufi@gmail.com>
+# Copyright 2012-2013 by Alex Turbov <i.zaufi@gmail.com>
 #
 
 set(ZENCXX_VERSION ${ZENCXX_VERSION})

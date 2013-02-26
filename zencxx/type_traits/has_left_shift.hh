@@ -48,7 +48,7 @@ ZEN_TT_EXPR_CHECKER(has_left_shift, (typename L, typename R), (L, R), (std::decl
  *      has_left_shift<std::ostream&, const std::string&>::value
  *    , "string expected to be streamable"
  *    );
- *  static_assert(has_left_shift<int, std::string>::value, "int can't' be shifted by std::string");
+ *  static_assert(has_left_shift<int, std::string>::value, "int can't be shifted by std::string");
  * \endcode
  */
 }                                                           // namespace zencxx
