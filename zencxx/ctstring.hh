@@ -24,8 +24,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__CSTRING_HH__
-# define __ZENCXX__CSTRING_HH__
+#ifndef __ZENCXX__CTSTRING_HH__
+# define __ZENCXX__CTSTRING_HH__
 
 // Project specific includes
 
@@ -115,4 +115,4 @@ constexpr inline const char* strrchr(const char (&str)[N], int c)
 }
 
 }}                                                          // namespace ct, zencxx
-#endif                                                      // __ZENCXX__CSTRING_HH__
+#endif                                                      // __ZENCXX__CTSTRING_HH__

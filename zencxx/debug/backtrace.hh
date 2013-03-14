@@ -25,11 +25,11 @@
 
 // Project specific includes
 # if defined(__linux__)
-#   include <src/common/debug/details/backtrace_impl_linux.hh>
+#   include <zencxx/debug/details/backtrace_impl_linux.hh>
 #   define ZENCXX_BACKTRACE_IMPL_NS linux_impl
 # else
 #   warning "This platform have no backtrace class implementation yet!"
-#   include <src/common/debug/details/backtrace_impl_dummy.hh>
+#   include <zencxx/debug/details/backtrace_impl_dummy.hh>
 #   define ZENCXX_BACKTRACE_IMPL_NS dummy_impl
 # endif                                                     // defined(__linux__)
 

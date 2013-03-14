@@ -1,4 +1,7 @@
-set(ZENCXX_SOURCES )
+set(
+    ZENCXX_SOURCES
+    exception.cc
+  )
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     set(ZENCXX_EXTRA_SOURCES debug/details/backtrace_impl_linux.cc)
@@ -36,3 +39,8 @@ install(
 
 add_subdirectory(mpl)
 add_subdirectory(type_traits)
+
+# Compile tests only if needed
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
