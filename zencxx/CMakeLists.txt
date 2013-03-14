@@ -1,5 +1,6 @@
 set(
     ZENCXX_SOURCES
+    debug/dump_memory.cc
     exception.cc
   )
 

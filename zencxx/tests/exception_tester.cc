@@ -58,7 +58,7 @@ namespace {
 void throw_try_again()
 {
     ZENCXX_THROW(my::exception_group::try_again())
-      << zencxx::exception::reason("Resouerce busy! Try again later...");
+      << zencxx::exception::reason("Resource busy! Try again later...");
 }
 
 void throw_invalid_command(const char* const command)
