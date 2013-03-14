@@ -28,7 +28,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 # Standard
 include(CTest)
 include(GNUInstallDirs)
-set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/zencxx-${ZENCXX_VERSION})
+set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/zencxx-${ZENCXX_VERSION}/zencxx)
 set(CMAKE_INSTALL_PKGLIBDIR ${CMAKE_INSTALL_LIBDIR}/zencxx-${ZENCXX_VERSION})
 
 # Custom (from package's cmake/modules/ directory)
@@ -125,7 +125,7 @@ write_basic_package_version_file(
   )
 install(
     FILES ${CMAKE_BINARY_DIR}/LibZenCXXConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/LibZenCXXConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}-${ZENCXX_VERSION}
   )
 
 #---------------------------------------------------------

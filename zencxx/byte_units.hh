@@ -3,7 +3,7 @@
  *
  * \brief User defined literals for bytes measurement (mostly for fun ;-)
  *
- * \date Thu Jun 28 04:57:50 MSK 2012 -- Initial design
+ * \date Tue Jun 19 19:57:43 MSK 2012 -- Initial design
  */
 /*
  * ZenCxx is free software: you can redistribute it and/or modify it

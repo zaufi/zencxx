@@ -3,7 +3,7 @@
  *
  * \brief Get type name as string
  *
- * \date Fri Jun 29 06:43:43 MSK 2012 -- Initial design
+ * \date Fri Sep 10 13:05:20 MSD 2010 -- Initial design
  */
 /*
  * ZenCxx is free software: you can redistribute it and/or modify it
@@ -57,9 +57,30 @@ inline std::string demangle_name(const char* const name)
 
 /**
  * \brief Get type name as string
+ *
+ * This function convinient to use when there is a variable of given type
+ * \c T exists or can be easily declared (default constructed). Otherwise
+ * one may use overload and specify the desired type as a template
+ * parameter.
+ *
+ * \overload
  */
 template <typename T>
 inline std::string type_name(const T&)
+{
+    return demangle_name(typeid(T).name());
+}
+
+/**
+ * \brief Get type name as string
+ *
+ * Use this function when you have no variable of given type \c T and
+ * it can't be declared (due inaccessible constructors for example).
+ *
+ * \overload
+ */
+template <typename T>
+inline std::string type_name()
 {
     return demangle_name(typeid(T).name());
 }
