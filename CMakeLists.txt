@@ -1,6 +1,6 @@
 # kate: hl cmake;
 #
-# Copyright 2011 by Alex Turbov <i.zaufi@gmail.com>
+# Copyright 2011-2013 by Alex Turbov <i.zaufi@gmail.com>
 #
 
 #---------------------------------------------------------
@@ -42,6 +42,7 @@ enable_testing()
 find_package(
     Boost 1.49 REQUIRED COMPONENTS
     # Lets keep libs list sorted... :)
+    system
     unit_test_framework
   )
 
@@ -129,6 +130,56 @@ install(
   )
 
 #---------------------------------------------------------
+# Section: Package options
+# ALERT It should be after subdirs traversal
+#       to make sure that all vars r defined!
+#---------------------------------------------------------
+
+# Obtain distribution codename according LSB
+include(GetDistribInfo)
+
+# Specifying precise versions of some packages which are distinct
+# in different distributions.
+if(DISTRIB_CODENAME STREQUAL "quantal")
+  set(BOOST_VERSION_PKG_DEP "1.50.0")
+elseif(DISTRIB_CODENAME STREQUAL "precise")
+  set(BOOST_VERSION_PKG_DEP "1.48.0")
+else()
+  message(STATUS "WARNING: Target distribution codename is unknown! Do not even try to build .deb packages!")
+endif()
+
+# Include CPack support
+include(CPack)
+set(CPACK_GENERATOR DEB)
+set(CPACK_SOURCE_GENERATOR TBZ2)
+include(AddPackage)
+
+add_package(
+    NAME libzencxx
+    SUMMARY "ZEN C++ library"
+    DESCRIPTION "Redistributable library"
+    HOMEPAGE "https://github.com/zaufi/zencxx"
+    PACKAGE_VERSION "0ubuntu1"
+    SECTION "libs"
+    DEPENDS "libstdc++6 (>= 4.6)" libboost-system${BOOST_VERSION_PKG_DEP}
+  )
+
+add_package(
+    NAME libzencxx-dev
+    SUMMARY "Developer files for ZEN C++ library"
+    DESCRIPTION "C++ header and cmake configuration support files"
+    HOMEPAGE "https://github.com/zaufi/zencxx"
+    PACKAGE_VERSION "0ubuntu1"
+    SECTION "devel"
+    DEPENDS "libboost-dev-all"
+  )
+
+#---------------------------------------------------------
+# Section: Dive into subdirs after main configuration
+#---------------------------------------------------------
+add_subdirectory(zencxx)
+
+#---------------------------------------------------------
 # Section: Define some helpful targets (using included)
 #          functions.
 # ALERT It should be at the bottom!
@@ -139,33 +190,14 @@ get_directory_property(CHECK_HEADER_DEFINITIONS_LIST COMPILE_DEFINITIONS)
 foreach(_define ${CHECK_HEADER_DEFINITIONS_LIST})
     set(CHECK_HEADER_DEFINITIONS "-D${_define} ${CHECK_HEADER_DEFINITIONS}")
 endforeach()
-include(DefineDoxyDocsTargetIfPossible)
 include(DefineCheckHeadersTarget)
+include(DefineDoxyDocsTargetIfPossible)
 include(DefineSkeletonGenerationTargetsIfPossible)
 
-#---------------------------------------------------------
-# Section: Package options
-# ALERT It should be after subdirs traversal
-#       to make sure that all vars r defined!
-#---------------------------------------------------------
-set(CPACK_GENERATOR DEB)
-set(CPACK_SOURCE_GENERATOR TBZ2)
-set(CPACK_SOURCE_PACKAGE_FILE_NAME "${PROJECT_NAME}-${ZENCXX_VERSION}")
+include(UsePCHFile)
 
-# Include CPack support
-include(CPack)
-include(AddPackage)
-
-add_package(
-    NAME libzencxx-dev
-    SUMMARY "ZEN C++ library: Header only libraries"
-    DESCRIPTION "Libraries that doesn't require building"
-    PACKAGE_VERSION 0ubuntu1
-    DEPENDS boost
-    SET_DEFAULT_CONFIG_CPACK
+use_pch_file(
+    PCH_FILE ${CMAKE_BINARY_DIR}/zencxx-pch.hh
+    EXCLUDE_DIRS cmake docs tests
+#     EXCLUDE_HEADERS ext/hash_set ext/hash_map
   )
-
-#---------------------------------------------------------
-# Section: Dive into subdirs after main configuration
-#---------------------------------------------------------
-add_subdirectory(zencxx)

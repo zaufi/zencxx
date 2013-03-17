@@ -1,6 +1,12 @@
 #
 # Copyright 2012-2013 by Alex Turbov <i.zaufi@gmail.com>
 #
+# TODO Move some common/generic options to loadable configuration
+# w/ ability to override 'em on per package basis
+#
+# TODO Get rid also from all 'hardcoded' options to make this
+# script really generic!
+#
 
 set(ZENCXX_VERSION ${ZENCXX_VERSION})
 
@@ -13,11 +19,11 @@ set(CPACK_BUILD_FLAVOUR ${CPACK_BUILD_FLAVOUR})
 set(CPACK_PACKAGE_VENDOR "Alex Turbov")
 set(CPACK_PACKAGE_CONTACT "i.zaufi@gmail.com")
 
-
-set(CPACK_RESOURCE_FILE_LICENSE LGPL-3)
-set(CPACK_RESOURCE_FILE_README README.md)
+set(CPACK_RESOURCE_FILE_LICENSE ${PACKAGE_SOURCE_DIR}/LGPL-3)
+set(CPACK_RESOURCE_FILE_README ${PACKAGE_SOURCE_DIR}/README.md)
 
 set(CPACK_INSTALL_CMAKE_PROJECTS "${CMAKE_BINARY_DIR};${PACKAGE_NAME};${PACKAGE_NAME};/")
+set(CPACK_INSTALL_PREFIX "/usr")
 
 set(CPACK_PACKAGE_NAME ${PACKAGE_NAME})
 set(CPACK_PACKAGE_VERSION ${CPACK_PACKAGE_VERSION})
@@ -27,6 +33,7 @@ set(CPACK_SET_DESTDIR "ON")
 
 # Debian specifics
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}")
+set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "${CPACK_DEBIAN_PACKAGE_HOMEPAGE}")
 
 configure_file(
     ${CMAKE_SOURCE_DIR}/cmake/cpack/CMakeCPackOptions.cmake.in

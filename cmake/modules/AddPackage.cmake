@@ -13,16 +13,19 @@
 #       SET_DEFAULT_CONFIG_CPACK
 #     )
 #
-# TODO Add `fakeroot' and `cpack' programs detection
+# TODO Add `cpack' programs detection
 #
-
+# TODO Add param to specify more .deb specific params like:
+#   CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
+#   CPACK_DEBIAN_PACKAGE_REPLACES
+#
 
 include(CMakeParseArguments)
 
 function(add_package)
     set(options SET_DEFAULT_CONFIG_CPACK)
-    set(one_value_args NAME SUMMARY DESCRIPTION PACKAGE_VERSION)
-    set(multi_value_args DEPENDS)
+    set(one_value_args NAME SUMMARY DESCRIPTION PACKAGE_VERSION SECTION HOMEPAGE)
+    set(multi_value_args DEPENDS REPLACES)
     cmake_parse_arguments(add_package "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
     # Check mandatory parameters
@@ -55,10 +58,14 @@ function(add_package)
     else()
         set(CPACK_PACKAGE_VERSION "${add_package_PACKAGE_VERSION}")
     endif()
+    # package homepage
+    if(add_package_HOMEPAGE)
+        set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "${add_package_HOMEPAGE}")
+    endif()
     # dependencies list
     if(add_package_DEPENDS)
         # Form a comma separated list of dependencies from a cmake's list
-        string(REPLACE ";" ", " CPACK_DEBIAN_PACKAGE_DEPENDS "${${NAME}_PACKAGE_DEPENDS}")
+        string(REPLACE ";" ", " CPACK_DEBIAN_PACKAGE_DEPENDS "${add_package_DEPENDS}")
     endif()
 
     # Generate a package specific cpack's config file to be used

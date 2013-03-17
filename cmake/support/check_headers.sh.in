@@ -10,11 +10,11 @@
 cxx_bin=`basename ${CMAKE_CXX_COMPILER}`
 
 includes="-I${CMAKE_SOURCE_DIR} -I${CMAKE_BINARY_DIR}"
-for hdr_file_path in `find -L ${CMAKE_SOURCE_DIR} -type f -a -name '*.h' | grep -v docs/`; do
+for hdr_file_path in `find -L ${CMAKE_SOURCE_DIR} -type f -a -name '*.hh' | grep -v docs/`; do
   hdr=`sed 's,${CMAKE_SOURCE_DIR}/,,' <<<$hdr_file_path`
   h=`sed 's,/,_,g' <<<$hdr`
   ebegin $hdr
-  f=$h.cpp
+  f=$h.cc
   l=$h.log
   o=$h.o
   echo "#include <$hdr>" > $f
