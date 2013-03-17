@@ -17,7 +17,15 @@ project(libzencxx CXX)
 set(ZENCXX_MAJOR 0)
 set(ZENCXX_MINOR 1)
 set(ZENCXX_PATCH 0)
-set(ZENCXX_VERSION ${ZENCXX_MAJOR}.${ZENCXX_MINOR}.${ZENCXX_PATCH})
+# Include build number if specified
+# NOTE This feature used by build server to make a packages that
+# would differ from previous build.
+if (ZENCXX_BUILD_NUMBER)
+    set(ZENCXX_VERSION ${ZENCXX_MAJOR}.${ZENCXX_MINOR}.${ZENCXX_PATCH}.${ZENCXX_BUILD_NUMBER})
+else()
+    set(ZENCXX_VERSION ${ZENCXX_MAJOR}.${ZENCXX_MINOR}.${ZENCXX_PATCH})
+endif()
+message(STATUS "Configuring ESSE Project ${ESSE_VERSION}")
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
@@ -40,7 +48,7 @@ enable_testing()
 # Section: Find used stuff
 #---------------------------------------------------------
 find_package(
-    Boost 1.49 REQUIRED COMPONENTS
+    Boost 1.48 REQUIRED COMPONENTS
     # Lets keep libs list sorted... :)
     system
     unit_test_framework
@@ -127,6 +135,7 @@ write_basic_package_version_file(
 install(
     FILES ${CMAKE_BINARY_DIR}/LibZenCXXConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/LibZenCXXConfigVersion.cmake
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}-${ZENCXX_VERSION}
+    COMPONENT ${LIBZENCXX_DEV_PACKAGE}
   )
 
 #---------------------------------------------------------
@@ -141,11 +150,23 @@ include(GetDistribInfo)
 # Specifying precise versions of some packages which are distinct
 # in different distributions.
 if(DISTRIB_CODENAME STREQUAL "quantal")
-  set(BOOST_VERSION_PKG_DEP "1.50.0")
+  set(BOOST_DEV_VERSION_PKG_DEP "1.50")
 elseif(DISTRIB_CODENAME STREQUAL "precise")
-  set(BOOST_VERSION_PKG_DEP "1.48.0")
+  set(BOOST_DEV_VERSION_PKG_DEP "1.48")
 else()
   message(STATUS "WARNING: Target distribution codename is unknown! Do not even try to build .deb packages!")
+endif()
+set(BOOST_VERSION_PKG_DEP "${BOOST_DEV_VERSION_PKG_DEP}.0")
+
+if(
+     CMAKE_BUILD_TYPE STREQUAL "Debug"
+  OR CMAKE_BUILD_TYPE STREQUAL "DebugFull"
+  OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo"
+  )
+  set(CMAKE_INSTALL_DO_STRIP OFF)
+  set(CPACK_BUILD_FLAVOUR "-dbg")
+else()
+  set(CPACK_BUILD_FLAVOUR "")
 endif()
 
 # Include CPack support
@@ -161,7 +182,8 @@ add_package(
     HOMEPAGE "https://github.com/zaufi/zencxx"
     PACKAGE_VERSION "0ubuntu1"
     SECTION "libs"
-    DEPENDS "libstdc++6 (>= 4.6)" libboost-system${BOOST_VERSION_PKG_DEP}
+    DEPENDS "libstdc++6 (>= 4.6)" "libboost-system${BOOST_VERSION_PKG_DEP}"
+    REPLACES "libzencxx (<= ${ZENCXX_VERSION})"
   )
 
 add_package(
@@ -171,7 +193,8 @@ add_package(
     HOMEPAGE "https://github.com/zaufi/zencxx"
     PACKAGE_VERSION "0ubuntu1"
     SECTION "devel"
-    DEPENDS "libboost-dev-all"
+    DEPENDS "libboost${BOOST_DEV_VERSION_PKG_DEP}-all-dev"
+    REPLACES "libzencxx-dev (<= ${ZENCXX_VERSION})"
   )
 
 #---------------------------------------------------------

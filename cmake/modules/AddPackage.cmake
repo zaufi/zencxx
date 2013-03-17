@@ -67,6 +67,11 @@ function(add_package)
         # Form a comma separated list of dependencies from a cmake's list
         string(REPLACE ";" ", " CPACK_DEBIAN_PACKAGE_DEPENDS "${add_package_DEPENDS}")
     endif()
+    # replaces list
+    if(add_package_REPLACES)
+        # Form a comma separated list of dependencies from a cmake's list
+        string(REPLACE ";" ", " CPACK_DEBIAN_PACKAGE_REPLACES "${add_package_REPLACES}")
+    endif()
 
     # Generate a package specific cpack's config file to be used
     # at custom execution command...

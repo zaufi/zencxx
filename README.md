@@ -12,7 +12,7 @@ Requirements
 ============
 
 * gcc >= 4.7 (http://gcc.gnu.org)
-* boost >= 1.49.0 (http://boost.org)
+* boost >= 1.48.0 (http://boost.org)
 * cmake >= 2.6 (http://cmake.org)
 
 To build documentation:
