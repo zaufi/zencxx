@@ -82,4 +82,22 @@ const debug::location& exception::where() const
     return EMPTY;
 }
 
+/**
+ * \return \c true if some other exception has attached to this one
+ */
+bool exception::has_nested_exception() const
+{
+    return get<nested_exception_info>() != nullptr;
+}
+
+/**
+ * Throws a nested exception if attached, otherwise calls \c std::terminate.
+ */
+void exception::rethrow_nested_exception() const
+{
+    if (auto* ptr = get<nested_exception_info>())
+        std::rethrow_exception(*ptr);
+    std::terminate();
+}
+
 }                                                           // namespace zencxx

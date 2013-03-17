@@ -23,10 +23,6 @@
 // Project specific includes
 #include <zencxx/exception.hh>
 // Debugging helpers from zencxx::debug namespace
-#if 0
-#include <zencxx/debug/dump_memory.hh>
-#include <zencxx/debug/out_any.hh>
-#endif
 #include <zencxx/debug/type_name.hh>
 
 // Standard includes
@@ -51,6 +47,9 @@ struct exception_group : public zencxx::exception
 
 struct exception_group::try_again : public exception_group {};
 struct exception_group::invalid_command : public exception_group {};
+
+struct other_exception : public zencxx::exception {};
+
 }                                                           // namespace my
 
 namespace {
@@ -175,5 +174,50 @@ BOOST_AUTO_TEST_CASE(exception_test_4)
     catch (...)
     {
         handle_base_exception();
+    }
+}
+
+namespace {
+void throw_nested_exception_1()
+{
+    try
+    {
+        throw_try_again();
+    }
+    catch (const my::exception_group&)
+    {
+        ZENCXX_THROW(my::other_exception())
+          << zencxx::exception::reason("Some other exception")
+          << zencxx::exception::current_exception()
+          ;
+    }
+}
+}                                                           // anonymous namespace
+
+BOOST_AUTO_TEST_CASE(exception_test_5)
+{
+    try
+    {
+        throw_nested_exception_1();
+    }
+    catch (const my::other_exception& e)
+    {
+        BOOST_REQUIRE_EQUAL(e.has_nested_exception(), true);
+        try
+        {
+            e.rethrow_nested_exception();
+        }
+        catch (const my::exception_group::try_again& ne)
+        {
+            BOOST_TEST_PASSPOINT();
+        }
+        catch (...)
+        {
+            BOOST_FAIL("Unexpected exception");
+        }
+    }
+    catch (...)
+    {
+        BOOST_FAIL("Unexpected exception");
     }
 }

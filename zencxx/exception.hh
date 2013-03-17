@@ -80,6 +80,8 @@ public:
     /// \note According 5.8.2.1 lifetime of all \c type_info instances is the program end,
     /// so it is safe to refer pointers to that instances anytime/anywhere.
     typedef boost::error_info<struct tag_original_type_info, const char* const> original_type_info;
+    /// Type of nested exception attched to this exception
+    typedef boost::error_info<struct tag_exception, std::exception_ptr> nested_exception_info;
 
     /// Default constructor would attach backtrace to \c this instance
     /// Drop 2 frames by default: backtrace and this exception class ctors
@@ -110,6 +112,47 @@ public:
     static reason_info_string reason(const boost::format&);
     //@}
 
+    static nested_exception_info wrap(std::exception_ptr e)
+    {
+        return nested_exception_info(e);
+    }
+
+    /**
+     * \brief Get current exception pointer
+     *
+     * This function can be used to attach currently caught exception to another one.
+     * The typical usage as following:
+     * \code
+     *  try
+     *  {
+     *  }
+     *  catch (const some::exception&)
+     *  {
+     *      ZENCXX_THROW(other::exception()) << zencxx::exception::current_exception();
+     *  }
+     * \endcode
+     *
+     * To check if just caught exception has some nested one use \c has_nested_exception
+     * member of this class. Then you may rethrow it if needed.
+     *
+     * \sa \c has_nested_exception
+     * \sa \c rethrow_nested_exception
+     */
+    static nested_exception_info current_exception()
+    {
+        assert("This function must be called in catch() block only!" && std::uncaught_exception());
+        return nested_exception_info(std::current_exception());
+    }
+
+    /**
+     * \brief Attach a copy of exception \c E as a nested exception
+     */
+    template <typename E>
+    static nested_exception_info attach_exception(const E& e)
+    {
+        return std::make_exception_ptr(std::forward<E>(e));
+    }
+
     /// \name Functions to get various details attached to exception
     //@{
     /// Generic getter of attached data
@@ -130,6 +173,12 @@ public:
 
     /// Get attached location in source code
     const debug::location& where() const;
+
+    /// Check if nested exception present
+    bool has_nested_exception() const;
+
+    /// Rethrow nested exception if any
+    /*[[noreturn]]*/ void rethrow_nested_exception() const;
     //@}
 
     /**
@@ -137,7 +186,7 @@ public:
      *
      * Actually, in the real world there is no need to call this method :)
      * But it maybe helpful anyway, for example when your program terminates
-     * cuz uncaught exeption (it is OK for actively developed programs) u may
+     * cuz uncaught exception (it is OK for actively developed programs) u may
      * register <em>verbose termination handler</em> and be able to see
      * more info (including \c what() string) before your binary flush a core
      * file. It will help u to realize where is a problem. To register a
