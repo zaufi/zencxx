@@ -3,7 +3,7 @@ What is this?
 
 I started this project as attempt to collect in one single place all my code
 which is being highly reusable was copy-n-pasted many times from project to project.
-The second goal is to make it easy reusable in any of my future
+The second goal is to make it easy to reuse in any of my future
 projects as an external dependency w/o necessity to copy-n-paste and/or fixing
 code style and other bullshit...
 
