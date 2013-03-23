@@ -2,6 +2,8 @@ set(
     ZENCXX_SOURCES
     debug/dump_memory.cc
     exception.cc
+    os/daemon_application.cc
+    os/exception.cc
   )
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -16,6 +18,7 @@ add_library(
 
 target_link_libraries(
     zencxx
+    ${Boost_SYSTEM_LIBRARY}
   )
 
 install(
