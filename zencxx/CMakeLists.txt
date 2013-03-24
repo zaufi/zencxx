@@ -4,6 +4,7 @@ set(
     exception.cc
     os/daemon_application.cc
     os/exception.cc
+    os/signal/mask.cc
   )
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -35,7 +36,7 @@ install(
   )
 
 install(
-    DIRECTORY debug
+    DIRECTORY debug os
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     COMPONENT ${LIBZENCXX_DEV_PACKAGE}
     FILES_MATCHING PATTERN "*.hh"
