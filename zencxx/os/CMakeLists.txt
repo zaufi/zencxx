@@ -5,6 +5,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
         zencxxos
         exception.cc
         signal/mask.cc
+        utils.cc
       )
 
     generate_export_header(
