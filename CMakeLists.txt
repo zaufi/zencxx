@@ -44,6 +44,8 @@ include(AddBoostTests)
 # Allow testing using CTest
 enable_testing()
 
+include(GenerateExportHeader)
+
 #---------------------------------------------------------
 # Section: Find used stuff
 #---------------------------------------------------------

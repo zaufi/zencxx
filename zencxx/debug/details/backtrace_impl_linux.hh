@@ -24,6 +24,7 @@
 # define __ZENCXX__DEBUG__DETAILS__BACKTRACE_IMPL_LINUX_HH__
 
 // Project specific includes
+# include <zencxx/details/export.hh>
 
 // Standard includes
 # include <iosfwd>
@@ -44,7 +45,7 @@ namespace zencxx { namespace debug { namespace details { inline namespace linux_
  * and do 'transformation' on the fly (on iterator dereference).
  *
  */
-class backtrace
+class ZENCXX_EXPORT backtrace
 {
 public:
     constexpr static unsigned DEFAULT_STACK_DEPTH = 100;
@@ -82,11 +83,11 @@ public:
     stack_type stack() const;
 
 private:
-    std::vector<void*> m_backtrace;                          ///< Stack trace: array of void pointers
+    std::vector<void*> m_backtrace;                         ///< Stack trace: array of void pointers
 };
 
 /// Make \c backtrace printable to C++ output streams
-std::ostream& operator<<(std::ostream&, const backtrace&);
+ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, const backtrace&);
 
 }}}}                                                        // namespace linux_impl, details, debug, zencxx
 #endif                                                      // __ZENCXX__DEBUG__DETAILS__BACKTRACE_IMPL_LINUX_HH__

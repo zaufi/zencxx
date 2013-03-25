@@ -1,9 +1,15 @@
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
+    add_compiler_export_flags()
 
     add_library(
         zencxxos
         exception.cc
         signal/mask.cc
+      )
+
+    generate_export_header(
+        zencxxos
+        EXPORT_FILE_NAME details/export.hh
       )
 
     target_link_libraries(

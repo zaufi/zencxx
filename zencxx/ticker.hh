@@ -27,6 +27,7 @@
 # define __ZENCXX__TICKER_HH__
 
 // Project specific includes
+# include <zencxx/details/export.hh>
 # include <zencxx/details/registered_job.hh>
 # include <zencxx/exception.hh>
 
@@ -43,15 +44,14 @@ namespace zencxx {
 /**
  * \brief Manage execution of periodic jobs
  */
-class ticker
-  : public std::enable_shared_from_this<ticker>
+class ZENCXX_EXPORT ticker : public std::enable_shared_from_this<ticker>
 {
     /// Type to hold all registered jobs
     typedef std::unordered_map<unsigned, details::registered_job> registered_jobs;
 
 public:
     /// Class to represent a registered job to the "external world"
-    class job
+    class ZENCXX_EXPORT job
     {
         friend class ticker;
 
@@ -63,7 +63,7 @@ public:
         job(
             std::weak_ptr<ticker>&& parent_ticker           ///< Pointer to parent ticker
           , const unsigned job_id                           ///< ID of the registered job
-          );
+          ) ZENCXX_NO_EXPORT;
 
     public:
         /// Allows default initialization for STL containers compatibility
@@ -91,10 +91,10 @@ public:
     };
     friend class job;
     /// Ticker's exceptions group
-    struct exception : public zencxx::exception
+    ZENCXX_EXPORT struct exception : public zencxx::exception
     {
-      struct resource_error;
-      struct stale_job;
+        ZENCXX_EXPORT struct resource_error;
+        ZENCXX_EXPORT struct stale_job;
     };
 
     /// The only way to make an instance of \c ticker class
@@ -123,25 +123,25 @@ public:
 
   private:
     /// Use given logger and I/O service
-    ticker(boost::asio::io_service&/*, log4cxx::LoggerPtr*/);
+    ZENCXX_NO_EXPORT ticker(boost::asio::io_service&/*, log4cxx::LoggerPtr*/);
     /// Delete copy ctor
     ticker(const ticker&) = delete;
     /// Delete copy-assign operator
     ticker& operator=(const ticker&) = delete;
 
-    void job_has_to(registered_jobs::iterator, const char* const) const;
+    ZENCXX_NO_EXPORT void job_has_to(registered_jobs::iterator, const char* const) const;
     /// Append a job to the list of registered jobs
     job append_job(details::registered_job&&);
-    /// Put given job into a schedule (w/ lock acquired)
-    void reschedule_job(registered_jobs::iterator, const boost::mutex::scoped_lock&);
-    void one_time_job_handler(registered_jobs::iterator, const boost::system::error_code&);
-    void periodic_job_handler(registered_jobs::iterator, const boost::system::error_code&);
-    void remove_if_needed(registered_jobs::iterator);
-    void remove_if_needed(registered_jobs::iterator, boost::mutex::scoped_lock&);
-    void remove_job(const unsigned);                        ///< As is
+    /// Put a given job into a schedule (w/ lock acquired)
+    ZENCXX_NO_EXPORT void reschedule_job(registered_jobs::iterator, const boost::mutex::scoped_lock&);
+    ZENCXX_NO_EXPORT void one_time_job_handler(registered_jobs::iterator, const boost::system::error_code&);
+    ZENCXX_NO_EXPORT void periodic_job_handler(registered_jobs::iterator, const boost::system::error_code&);
+    ZENCXX_NO_EXPORT void remove_if_needed(registered_jobs::iterator);
+    ZENCXX_NO_EXPORT void remove_if_needed(registered_jobs::iterator, boost::mutex::scoped_lock&);
+    void remove_job(const unsigned);
     void remove_job(registered_jobs::iterator, boost::mutex::scoped_lock&);
-    void pause_job(const unsigned);                         ///< As is
-    void resume_job(const unsigned);                        ///< As is
+    void pause_job(const unsigned);
+    void resume_job(const unsigned);
 
     /// \name MT-safe members
     //@{
@@ -226,7 +226,7 @@ inline std::shared_ptr<ticker> ticker::create(
 #endif
   )
 {
-  return std::shared_ptr<ticker>(new ticker(srv/*, parent_logger*/));
+    return std::shared_ptr<ticker>(new ticker(srv/*, parent_logger*/));
 }
 
 inline ticker::ticker(boost::asio::io_service& srv/*, log4cxx::LoggerPtr parent_logger*/)
@@ -293,12 +293,6 @@ inline ticker::job ticker::call(
               )
           )
       );
-}
-
-inline void ticker::remove_if_needed(registered_jobs::iterator job_it)
-{
-    boost::mutex::scoped_lock l(m_jobs_mut);                // Guard iterator access under the lock
-    remove_if_needed(job_it, l);
 }
 
 inline void ticker::remove_job(const unsigned job_id)

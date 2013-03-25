@@ -1,3 +1,5 @@
+add_compiler_export_flags()
+
 set(
     ZENCXX_SOURCES
     debug/dump_memory.cc
@@ -15,6 +17,11 @@ add_library(
     ${ZENCXX_EXTRA_SOURCES}
   )
 
+generate_export_header(
+    zencxx
+    EXPORT_FILE_NAME details/export.hh
+  )
+
 target_link_libraries(
     zencxx
     ${Boost_SYSTEM_LIBRARY}
@@ -23,7 +30,7 @@ target_link_libraries(
 
 set_target_properties(
     zencxx
-    PROPERTIES VERSION "0.0" SOVERSION "0.0"
+    PROPERTIES VERSION "0.0"
   )
 
 install(
@@ -40,7 +47,7 @@ install(
   )
 
 install(
-    DIRECTORY debug os
+    DIRECTORY debug os ${CMAKE_CURRENT_BINARY_DIR}/details
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     COMPONENT ${LIBZENCXX_DEV_PACKAGE}
     FILES_MATCHING PATTERN "*.hh"

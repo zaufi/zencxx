@@ -24,11 +24,12 @@
 # define __ZENCXX__DEBUG__DUMP_MEMORY_HH__
 
 // Project specific includes
+# include <zencxx/details/export.hh>
 
 // Standard includes
-#  include <iosfwd>
-#  include <string>
-#  include <vector>
+# include <iosfwd>
+# include <string>
+# include <vector>
 
 namespace zencxx { namespace debug {
 
@@ -60,7 +61,7 @@ namespace zencxx { namespace debug {
  * \todo Detect dump width dynamically depending on terminal size. Use manipulator
  *       to turn ON/OFF this behaviour.
  */
-class dump_memory
+class ZENCXX_EXPORT dump_memory
 {
 public:
     /// General constructor
@@ -83,7 +84,7 @@ public:
      * \todo Is there some useful manipulators possible? I mean
      * to change formatting/style or smth of printed dumps...
      */
-    friend std::ostream& operator<<(std::ostream&, const dump_memory&);
+    friend ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, const dump_memory&);
 
 private:
     const void* const m_ptr;                                ///< Pointer to memory block

@@ -158,7 +158,7 @@ ticker::job ticker::append_job(details::registered_job&& job_info)
             m_jobs.erase(new_job);
         ZENCXX_THROW(exception::resource_error()) << exception::reason("Not enough memory to register a job");
     }
-    assert("Sanity check" && new_job != end(m_jobs) && id);
+    assert("Sanity check" && new_job != end(m_jobs));
     assert(
         "Postcondition check state failed"
       && (details::registered_job::state::stopped == new_job->second.m_state
@@ -301,6 +301,12 @@ void ticker::periodic_job_handler(registered_jobs::iterator job_it, const boost:
         // Check if job needs to be removed
         remove_if_needed(job_it);
     }
+}
+
+inline void ticker::remove_if_needed(registered_jobs::iterator job_it)
+{
+    boost::mutex::scoped_lock l(m_jobs_mut);                // Guard iterator access under the lock
+    remove_if_needed(job_it, l);
 }
 
 void ticker::remove_if_needed(registered_jobs::iterator job_it, boost::mutex::scoped_lock&)

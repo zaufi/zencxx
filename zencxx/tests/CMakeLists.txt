@@ -1,6 +1,7 @@
 set(
     UNIT_TESTS_SOURCES
     exception_tester.cc
+    ticker_tester.cc
   )
 
 add_executable(

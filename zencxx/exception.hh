@@ -27,6 +27,7 @@
 # include <zencxx/debug/backtrace.hh>
 # include <zencxx/debug/location.hh>
 # include <zencxx/debug/type_name.hh>
+# include <zencxx/details/export.hh>
 
 // Standard includes
 # include <boost/exception/diagnostic_information.hpp>
@@ -63,7 +64,7 @@ namespace zencxx {
  * \note See unit tests for usage examples
  * \todo More elaborate description and code examples.
  */
-class exception
+class ZENCXX_EXPORT exception
   : virtual public std::exception
   , virtual public boost::exception
 {
