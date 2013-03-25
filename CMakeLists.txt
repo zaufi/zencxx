@@ -51,6 +51,7 @@ find_package(
     Boost 1.48 REQUIRED COMPONENTS
     # Lets keep libs list sorted... :)
     system
+    thread
     unit_test_framework
   )
 

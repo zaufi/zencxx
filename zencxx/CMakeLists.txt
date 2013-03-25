@@ -2,9 +2,7 @@ set(
     ZENCXX_SOURCES
     debug/dump_memory.cc
     exception.cc
-    os/daemon_application.cc
-    os/exception.cc
-    os/signal/mask.cc
+    ticker.cc
   )
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -20,6 +18,12 @@ add_library(
 target_link_libraries(
     zencxx
     ${Boost_SYSTEM_LIBRARY}
+    ${Boost_THREAD_LIBRARY}
+  )
+
+set_target_properties(
+    zencxx
+    PROPERTIES VERSION "0.0" SOVERSION "0.0"
   )
 
 install(
@@ -43,6 +47,7 @@ install(
   )
 
 add_subdirectory(mpl)
+add_subdirectory(os)
 add_subdirectory(type_traits)
 
 # Compile tests only if needed
