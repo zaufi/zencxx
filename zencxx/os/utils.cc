@@ -4,6 +4,9 @@
  * \brief OS related utility functions (implementation)
  *
  * \date Sun Apr 17 04:41:41 MSD 2011 -- Initial design
+ *
+ * \todo It would be nice to have a wrapper around users database
+ * (as iterator for example, or view-like 'container')
  */
 /*
  * ZenCxx is free software: you can redistribute it and/or modify it
@@ -39,36 +42,46 @@ namespace zencxx { namespace os { namespace {
 const size_t GET_USER_INFO_EMERGENCY_BUFFER_SIZE = 1024;
 }                                                           // anonymous namespace
 
-
-uid_t change_effective_user(const std::string& user)
+/**
+ * \invariant User name must be non empty string
+ * \todo Add overload for <tt>const char*</tt>?
+ */
+uid_t ZENCXXOS_EXPORT get_user_uid(const std::string& user)
 {
-    uid_t uid;
-    if (!user.empty())
-    {
-        /// \todo It would be nice to have a wrapper around users database
-        /// (Iterator for example)
-        passwd user_info;
-        passwd* result = 0;
-        long bufsize = sysconf(_SC_GETPW_R_SIZE_MAX);
-        if (-1 == bufsize)                                  // indeterminate
-            bufsize = GET_USER_INFO_EMERGENCY_BUFFER_SIZE;  // should be more than enough
+    assert("Username must be non empty string" && !user.empty());
 
-        std::unique_ptr<char[]> buf(new char[bufsize]);
-        int rc = getpwnam_r(user.c_str(), &user_info, buf.get(), bufsize, &result);
-        if (0 == rc)
-        {
-            if (result)
-            {
-                rc = setuid(uid = user_info.pw_uid);
-                if (-1 == rc) ZENCXX_THROW(exception("setuid"))
-                  << zencxx::exception::reason("Unable to change user.");
-            }
-            else ZENCXX_THROW(exception(ENOENT, "getpwnam_r"))
-              << zencxx::exception::reason("Unable to change user.");
-        }
-        else ZENCXX_THROW(exception(rc, "getpwnam_r"))
-          << zencxx::exception::reason("Unable to change user.");
+    uid_t uid;
+    passwd user_info;
+    passwd* result = nullptr;
+    auto bufsize = sysconf(_SC_GETPW_R_SIZE_MAX);
+    if (-1 == bufsize)                                  // value was indeterminate
+        bufsize = GET_USER_INFO_EMERGENCY_BUFFER_SIZE;  // should be more than enough
+
+    std::unique_ptr<char[]> buf(new char[bufsize]);
+    int rc = getpwnam_r(user.c_str(), &user_info, buf.get(), bufsize, &result);
+    if (0 == rc)
+    {
+        if (result)
+            uid = user_info.pw_uid;
+        else
+            ZENCXX_THROW(exception(ENOENT, "getpwnam_r"))
+              << zencxx::exception::reason("Unable to get user UID.");
     }
+    else
+        ZENCXX_THROW(exception(rc, "getpwnam_r"))
+          << zencxx::exception::reason("Unable to get user UID.");
+    return uid;
+}
+
+/**
+ * \todo Add overload for <tt>const char*</tt>?
+ */
+uid_t change_effective_user(const uid_t uid)
+{
+    const auto rc = setuid(uid);
+    if (-1 == rc)
+        ZENCXX_THROW(exception("setuid"))
+          << zencxx::exception::reason("Unable to change user.");
     return uid;
 }
 
