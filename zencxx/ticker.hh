@@ -187,8 +187,7 @@ inline ticker::job& ticker::job::operator=(job&& other) noexcept
 {
     if (this != &other)
     {
-        m_ticker_wptr = std::move(other.m_ticker_wptr);
-        m_job_id = other.m_job_id;
+        new(this) job(std::move(other));
     }
     return *this;
 }
