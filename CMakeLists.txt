@@ -38,6 +38,7 @@ include(CTest)
 include(GNUInstallDirs)
 set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/zencxx-${ZENCXX_VERSION}/zencxx)
 set(CMAKE_INSTALL_PKGLIBDIR ${CMAKE_INSTALL_LIBDIR}/zencxx-${ZENCXX_VERSION})
+set(CMAKE_INSTALL_DOCDIR ${CMAKE_INSTALL_DOCDIR}-${ZENCXX_VERSION})
 
 # Custom (from package's cmake/modules/ directory)
 include(AddBoostTests)
@@ -135,11 +136,6 @@ write_basic_package_version_file(
     VERSION ${ZENCXX_VERSION}
     COMPATIBILITY AnyNewerVersion
   )
-install(
-    FILES ${CMAKE_BINARY_DIR}/LibZenCXXConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/LibZenCXXConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}-${ZENCXX_VERSION}
-    COMPONENT ${LIBZENCXX_DEV_PACKAGE}
-  )
 
 #---------------------------------------------------------
 # Section: Package options
@@ -192,12 +188,23 @@ add_package(
 add_package(
     NAME libzencxx-dev
     SUMMARY "Developer files for ZEN C++ library"
-    DESCRIPTION "C++ header and cmake configuration support files"
+    DESCRIPTION "C++ headers and cmake configuration support files"
     HOMEPAGE "https://github.com/zaufi/zencxx"
     PACKAGE_VERSION "0ubuntu1"
     SECTION "devel"
     DEPENDS "libboost${BOOST_DEV_VERSION_PKG_DEP}-all-dev"
     REPLACES "libzencxx-dev (<= ${ZENCXX_VERSION})"
+  )
+
+add_package(
+    NAME libzencxx-doc
+    SUMMARY "ZEN C++ library API documentation"
+    DESCRIPTION "Doxygened library API documentation"
+    HOMEPAGE "https://github.com/zaufi/zencxx"
+    PACKAGE_VERSION "0ubuntu1"
+    SECTION "devel"
+    REPLACES "libzencxx-doc (<= ${ZENCXX_VERSION})"
+    PRE_BUILD doxygen
   )
 
 #---------------------------------------------------------
@@ -227,3 +234,31 @@ use_pch_file(
     EXCLUDE_DIRS cmake docs tests
 #     EXCLUDE_HEADERS ext/hash_set ext/hash_map
   )
+
+
+#---------------------------------------------------------
+# Section: Top level installs
+#---------------------------------------------------------
+
+install(
+    FILES ${CMAKE_BINARY_DIR}/LibZenCXXConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/LibZenCXXConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}-${ZENCXX_VERSION}
+    COMPONENT ${LIBZENCXX_DEV_PACKAGE}
+  )
+
+install(
+    DIRECTORY ${CMAKE_BINARY_DIR}/doc/html
+    DESTINATION ${CMAKE_INSTALL_DOCDIR}
+    COMPONENT ${LIBZENCXX_DOC_PACKAGE}
+    PATTERN "*.html"
+    PATTERN "*.png"
+    PATTERN "*.map" EXCLUDE
+    PATTERN "*.md5" EXCLUDE
+  )
+
+install(
+    FILES README.md LICENSE
+    DESTINATION ${CMAKE_INSTALL_DOCDIR}
+    COMPONENT ${LIBZENCXX_PACKAGE}
+  )
+

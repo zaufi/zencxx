@@ -25,7 +25,7 @@ include(CMakeParseArguments)
 function(add_package)
     set(options SET_DEFAULT_CONFIG_CPACK)
     set(one_value_args NAME SUMMARY DESCRIPTION PACKAGE_VERSION SECTION HOMEPAGE)
-    set(multi_value_args DEPENDS REPLACES)
+    set(multi_value_args DEPENDS REPLACES PRE_BUILD)
     cmake_parse_arguments(add_package "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
     # Check mandatory parameters
@@ -83,6 +83,7 @@ function(add_package)
     add_custom_target(
         ${add_package_NAME}-package
         COMMAND cpack --config ${config_file}
+        DEPENDS ${add_package_PRE_BUILD}
         COMMENT "Makeing package ${add_package_NAME}"
       )
 endfunction()
