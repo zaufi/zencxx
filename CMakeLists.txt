@@ -14,6 +14,7 @@ cmake_policy(SET CMP0002 OLD)
 
 project(libzencxx CXX)
 
+set(PROJECT_BRIEF "ZenCXX: C++11 reusable code compilation")
 set(ZENCXX_MAJOR 0)
 set(ZENCXX_MINOR 1)
 set(ZENCXX_PATCH 0)
@@ -25,7 +26,7 @@ if (ZENCXX_BUILD_NUMBER)
 else()
     set(ZENCXX_VERSION ${ZENCXX_MAJOR}.${ZENCXX_MINOR}.${ZENCXX_PATCH})
 endif()
-message(STATUS "Configuring ESSE Project ${ESSE_VERSION}")
+message(STATUS "Configuring ${PROJECT_NAME} ${ZENCXX_VERSION}")
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
@@ -33,8 +34,8 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 # Section: Include aux cmake functions
 #---------------------------------------------------------
 
-# Standard
 include(CTest)
+# Define install destination dirs
 include(GNUInstallDirs)
 set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/zencxx-${ZENCXX_VERSION}/zencxx)
 set(CMAKE_INSTALL_PKGLIBDIR ${CMAKE_INSTALL_LIBDIR}/zencxx-${ZENCXX_VERSION})
@@ -88,7 +89,7 @@ add_definitions(-DBOOST_RESULT_OF_USE_DECLTYPE)
 set(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed ${CMAKE_EXE_LINKER_FLAGS}")
 set(CMAKE_MODULE_LINKER_FLAGS "-Wl,--as-needed ${CMAKE_MODULE_LINKER_FLAGS}")
 # Set generic compiler flags
-set(CMAKE_CXX_FLAGS "-pipe -std=c++0x -Wno-multichar ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-pipe -std=c++0x ${CMAKE_CXX_FLAGS}")
 
 # If CMAKE_BUILD_TYPE is not set, assume Debug
 if (NOT CMAKE_BUILD_TYPE)
