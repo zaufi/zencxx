@@ -25,6 +25,7 @@
 
 // Project specific includes
 # include <zencxx/exception.hh>
+# include <zencxx/os/details/export.hh>
 
 // Standard includes
 # include <boost/exception/errinfo_api_function.hpp>
@@ -81,7 +82,7 @@ namespace zencxx { namespace os {
  *
  * \todo Make it possible to work w/ \c std::error_code as well
  */
-class exception : virtual public zencxx::exception
+class ZENCXXOS_EXPORT exception : virtual public zencxx::exception
 {
     typedef boost::error_info<
         struct tag_error_code
