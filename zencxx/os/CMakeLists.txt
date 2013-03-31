@@ -3,6 +3,8 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 
     add_library(
         zencxxos
+        color.cc
+        escape_sequences.cc
         exception.cc
         signal/mask.cc
         term/utils.cc
@@ -37,7 +39,6 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/zencxx/os
         COMPONENT ${LIBZENCXX_DEV_PACKAGE}
       )
-
     install(
         DIRECTORY signal term
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/zencxx/os
