@@ -51,7 +51,7 @@ const debug::backtrace& exception::trace() const
 /**
  * \return If no exception type was attached an \e empty string will returns.
  */
-std::string exception::type_info() const
+std::string exception::origin_type_info() const
 {
     if (const char* const* result = get<original_type_info>())
         return debug::demangle_name(*result);

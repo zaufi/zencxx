@@ -68,7 +68,7 @@ void throw_invalid_command(const char* const command)
 
 void dump_exception(const zencxx::exception& e)
 {
-    std::cout << "Original exception type: " << e.type_info() << "\n"
+    std::cout << "Original exception type: " << e.origin_type_info() << "\n"
         "Reason message: " << e.reason() << "\n"
         "Location: " << e.where() << "\n"
         "Backtrace:\n" << e.trace();
@@ -84,7 +84,7 @@ void handle_exception()
     catch (const E& e)
     {
         std::cout << "** HANDLE PARTICULAR EXCEPTION **" << std::endl;
-        BOOST_CHECK_EQUAL(e.type_info(), zencxx::debug::type_name<E>());
+        BOOST_CHECK_EQUAL(e.origin_type_info(), zencxx::debug::type_name<E>());
         dump_exception(e);
     }
     catch (...)

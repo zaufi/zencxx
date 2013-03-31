@@ -77,7 +77,7 @@ public:
     typedef boost::error_info<struct tag_reason, std::string> reason_info_string;
     /// Type of \b static reason message attached to exception
     typedef boost::error_info<struct tag_reason, const char*> reason_info_literal;
-    /// Original exception type attached as pointer to \c std::type_info
+    /// Original exception type attached as pointer to \c std::type_info::name() result
     /// \note According 5.8.2.1 lifetime of all \c type_info instances is the program end,
     /// so it is safe to refer pointers to that instances anytime/anywhere.
     typedef boost::error_info<struct tag_original_type_info, const char* const> original_type_info;
@@ -166,8 +166,8 @@ public:
     /// Get attached backtrace
     const debug::backtrace& trace() const;
 
-    ///Get attached \c std::type_info reference to the real exception type
-    std::string type_info() const;
+    /// Get attached name of the real/original exception type
+    std::string origin_type_info() const;
 
     /// Get attached reason
     virtual std::string reason() const;
