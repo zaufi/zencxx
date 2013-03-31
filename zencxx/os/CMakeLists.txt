@@ -25,7 +25,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 
     install(
         TARGETS zencxxos
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/zencxx
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
         COMPONENT ${LIBZENCXX_PACKAGE}
       )
 
@@ -33,12 +33,18 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     file(GLOB HEADERS *.hh)
     install(
         FILES ${HEADERS}
-        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/zencxx
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/zencxx/os
         COMPONENT ${LIBZENCXX_DEV_PACKAGE}
       )
 
     install(
         DIRECTORY signal
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/zencxx/os
+        COMPONENT ${LIBZENCXX_DEV_PACKAGE}
+        FILES_MATCHING PATTERN "*.hh"
+      )
+    install(
+        DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/details
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/zencxx/os
         COMPONENT ${LIBZENCXX_DEV_PACKAGE}
         FILES_MATCHING PATTERN "*.hh"
