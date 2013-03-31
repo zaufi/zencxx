@@ -25,6 +25,7 @@
 
 // Project specific includes
 # include <zencxx/os/exception.hh>
+# include <zencxx/os/details/export.hh>
 
 // Standard includes
 
@@ -40,7 +41,7 @@ namespace zencxx { namespace os {
  * and work w/ it on \c daemonize().
  *
  */
-class daemon_application
+class ZENCXXOS_EXPORT daemon_application
 {
 public:
     struct exception : virtual public zencxx::exception
@@ -50,7 +51,7 @@ public:
     bool daemonize();                                       ///< Become a daemon
 };
 
-struct daemon_application::exception::daemionization_failure
+struct ZENCXXOS_EXPORT daemon_application::exception::daemionization_failure
   : public daemon_application::exception
   , public os::exception
 {

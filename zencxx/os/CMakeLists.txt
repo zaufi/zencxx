@@ -4,6 +4,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     add_library(
         zencxxos
         color.cc
+        daemon_application.cc
         escape_sequences.cc
         exception.cc
         signal/mask.cc
