@@ -5,6 +5,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
         zencxxos
         exception.cc
         signal/mask.cc
+        term/utils.cc
         utils.cc
       )
 
@@ -38,7 +39,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
       )
 
     install(
-        DIRECTORY signal
+        DIRECTORY signal term
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/zencxx/os
         COMPONENT ${LIBZENCXX_DEV_PACKAGE}
         FILES_MATCHING PATTERN "*.hh"
