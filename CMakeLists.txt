@@ -228,6 +228,14 @@ endforeach()
 include(DefineCheckHeadersTarget)
 include(DefineDoxyDocsTargetIfPossible)
 include(DefineSkeletonGenerationTargetsIfPossible)
+define_skeleton_generation_targets(
+    PROJECT_LICENSE LGPL
+    PROJECT_NAMESPACE "zencxx"
+    PROJECT_PREFIX "ZenCxx"
+    PROJECT_OWNER "Alex Turbov and contributors"
+    PROJECT_YEARS "2010-2013"
+    ENABLE_TESTS
+  )
 
 include(UsePCHFile)
 

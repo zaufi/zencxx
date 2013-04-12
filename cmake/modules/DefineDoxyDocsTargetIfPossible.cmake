@@ -1,7 +1,7 @@
 #
 # Copyright 2011-2013 by Alex Turbov <i.zaufi@gmail.com>
 #
-# Find `doxygen` (and `mscgen`), render a `Doxyfile` and define 
+# Find `doxygen` (and `mscgen`), render a `Doxyfile` and define
 # a target 'doxygen' to build a project documentation.
 #
 
@@ -21,7 +21,7 @@ else()
     endif()
 
     # prepare doxygen configuration file
-    configure_file(${CMAKE_SOURCE_DIR}/cmake/support/Doxyfile.in ${CMAKE_BINARY_DIR}/Doxyfile)
+    configure_file(${CMAKE_CURRENT_LIST_DIR}/Doxyfile.in ${CMAKE_BINARY_DIR}/Doxyfile)
 
     # add doxygen as target
     add_custom_target(
@@ -34,3 +34,9 @@ else()
     set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES docs)
     set_property(TARGET doxygen PROPERTY EchoString "Generate API documentation")
 endif()
+
+# X-Chewy-RepoBase: https://raw.github.com/mutanabbi/chewy-cmake-rep/master/
+# X-Chewy-Path: DefineDoxyDocsTargetIfPossible.cmake
+# X-Chewy-Version: 1.3
+# X-Chewy-Description: Define `make doxygen` target to build API documentation using `doxygen`
+# X-Chewy-AddonFile: Doxyfile.in
