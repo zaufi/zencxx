@@ -91,10 +91,10 @@ public:
     };
     friend class job;
     /// Ticker's exceptions group
-    ZENCXX_EXPORT struct exception : public zencxx::exception
+    struct ZENCXX_EXPORT exception : public zencxx::exception
     {
-        ZENCXX_EXPORT struct resource_error;
-        ZENCXX_EXPORT struct stale_job;
+        struct resource_error;
+        struct stale_job;
     };
 
     /// The only way to make an instance of \c ticker class
@@ -158,9 +158,9 @@ public:
     //@}
 };
 
-struct ticker::exception::resource_error : public ticker::exception {};
+struct ZENCXX_EXPORT ticker::exception::resource_error : public ticker::exception {};
 
-struct ticker::exception::stale_job : public ticker::exception
+struct ZENCXX_EXPORT ticker::exception::stale_job : public ticker::exception
 {
     stale_job() : ticker::exception()
     {
