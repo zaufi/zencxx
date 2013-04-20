@@ -38,24 +38,25 @@ namespace zencxx { namespace os {
 uid_t ZENCXXOS_EXPORT get_user_uid(const std::string& user);
 
 /**
- * \brief Function to change effective user by UID
+ * \brief Function to change an effective user by UID
  *
  * \param uid UID of the user to change to
+ *
  * \return UID
+ *
  * \throw zencxx::os::exception in case of system API failure
  *
- * \overload change_effective_user(const std::string&)
  */
 uid_t ZENCXXOS_EXPORT change_effective_user(const uid_t uid);
 
 /**
- * \brief Function to change effective user by name
+ * \brief Function to change an effective user by name
  *
  * \param user name of the user to change to
- * \return UID of effective user ID found through users DB
- * \throw zencxx::os::exception in case of system API failure
  *
- * \overload change_effective_user(const uid_t)
+ * \return UID of effective user ID found through users DB
+ *
+ * \throw zencxx::os::exception in case of system API failure
  *
  * \todo Add unit tests
  */

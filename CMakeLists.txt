@@ -14,7 +14,6 @@ cmake_policy(SET CMP0002 OLD)
 
 project(libzencxx CXX)
 
-set(PROJECT_BRIEF "ZenCXX: C++11 reusable code compilation")
 set(ZENCXX_MAJOR 0)
 set(ZENCXX_MINOR 1)
 set(ZENCXX_PATCH 0)
@@ -226,7 +225,32 @@ foreach(_define ${CHECK_HEADER_DEFINITIONS_LIST})
     set(CHECK_HEADER_DEFINITIONS "-D${_define} ${CHECK_HEADER_DEFINITIONS}")
 endforeach()
 include(DefineCheckHeadersTarget)
+# Setup doxygen
+set(DOXYGEN_PROJECT_BRIEF "\"ZenCXX: C++11 reusable code compilation\"")
+set(DOXYGEN_TAGFILES "~/.cache/doxygen/libstdc++.tag=http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/")
+set(DOXYGEN_USE_MDFILE_AS_MAINPAGE ${PROJECT_SOURCE_DIR}/README.md)
+set(DOXYGEN_PREDEFINED "DOXYGEN_RUNNING ZENCXX_EXPORT ZENCXX_NO_EXPORT ZENCXXOS_EXPORT ZENCXXOS_NO_EXPORT")
+set(DOXYGEN_FILE_PATTERNS "*.cc *.h *.hh")
+set(DOXYGEN_BUILTIN_STL_SUPPORT YES)
+set(DOXYGEN_FULL_PATH_NAMES YES)
+set(DOXYGEN_INLINE_SIMPLE_STRUCTS YES)
+set(DOXYGEN_SOURCE_BROWSER YES)
+set(DOXYGEN_STRIP_CODE_COMMENTS NO)
+set(DOXYGEN_GENERATE_LATEX NO)
+set(DOXYGEN_DOT_CLEANUP NO)
+set(DOXYGEN_PROJECT_NUMBER ${ZENCXX_VERSION})
+set(DOXYGEN_EXTRACT_ALL YES)
+set(DOXYGEN_EXTRACT_PRIVATE YES)
+set(DOXYGEN_EXTRACT_STATIC YES)
+set(DOXYGEN_EXTRACT_LOCAL_METHODS YES)
+set(DOXYGEN_INTERNAL_DOCS YES)
+set(DOXYGEN_SORT_BRIEF_DOCS YES)
+set(DOXYGEN_SORT_MEMBERS_CTORS_1ST YES)
+set(DOXYGEN_SORT_GROUP_NAMES YES)
+set(DOXYGEN_SORT_BY_SCOPE_NAME YES)
+set(DOXYGEN_STRIP_CODE_COMMENTS NO)
 include(DefineDoxyDocsTargetIfPossible)
+
 include(DefineSkeletonGenerationTargetsIfPossible)
 define_skeleton_generation_targets(
     PROJECT_LICENSE LGPL
@@ -238,11 +262,10 @@ define_skeleton_generation_targets(
   )
 
 include(UsePCHFile)
-
 use_pch_file(
     PCH_FILE ${CMAKE_BINARY_DIR}/zencxx-pch.hh
     EXCLUDE_DIRS cmake docs tests
-#     EXCLUDE_HEADERS ext/hash_set ext/hash_map
+    # EXCLUDE_HEADERS ext/hash_set ext/hash_map
   )
 
 
@@ -257,13 +280,17 @@ install(
   )
 
 install(
-    DIRECTORY ${CMAKE_BINARY_DIR}/doc/html
+    DIRECTORY ${PROJECT_API_DOC_DIR}/html
     DESTINATION ${CMAKE_INSTALL_DOCDIR}
     COMPONENT ${LIBZENCXX_DOC_PACKAGE}
     PATTERN "*.html"
+    PATTERN "*.svg"
+    PATTERN "*.ttf"
     PATTERN "*.png"
+    PATTERN "*.css"
     PATTERN "*.map" EXCLUDE
     PATTERN "*.md5" EXCLUDE
+    PATTERN "*.dot" EXCLUDE
   )
 
 install(
@@ -271,4 +298,3 @@ install(
     DESTINATION ${CMAKE_INSTALL_DOCDIR}
     COMPONENT ${LIBZENCXX_PACKAGE}
   )
-

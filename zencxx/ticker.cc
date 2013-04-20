@@ -105,7 +105,8 @@ inline void ticker::job_has_to(registered_jobs::iterator job_it, const char* con
  * whether it must be scheduled now (first case) or manually later...
  * In case of \c stopped it would remains the same, otherwise, after rescheduling,
  * it would be changed to \c scheduled.
- * \post At function exit only \scheduled or \c stopped states are expected!
+ *
+ * \post At function exit only \c scheduled or \c stopped states are expected!
  */
 ticker::job ticker::append_job(details::registered_job&& job_info)
 {
