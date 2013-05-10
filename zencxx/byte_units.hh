@@ -31,55 +31,54 @@
 namespace zencxx { namespace details {
 constexpr std::size_t pow_bytes(const std::size_t what, const unsigned d)
 {
-  return d ? 1024 * pow_bytes(what, d - 1) : what;
+    return d ? 1024 * pow_bytes(what, d - 1) : what;
 }
-}                                                           // namespace details
+}}                                                          // namespace details, zencxx
 
 /// User defined literal: bytes
 constexpr std::size_t operator"" _bytes(const unsigned long long size)
 {
-  return size;
+    return size;
 }
 /// User defined literal: kibibytes (2^10)
 constexpr std::size_t operator"" _KiB(const unsigned long long size)
 {
-  return details::pow_bytes(size, 1);
+    return zencxx::details::pow_bytes(size, 1);
 }
 /// User defined literal: mebibytes (2^20)
 constexpr std::size_t operator"" _MiB(const unsigned long long size)
 {
-  return details::pow_bytes(size, 2);
+    return zencxx::details::pow_bytes(size, 2);
 }
 /// User defined literal: gibibytes (2^30)
 constexpr std::size_t operator"" _GiB(const unsigned long long size)
 {
-  return details::pow_bytes(size, 3);
+    return zencxx::details::pow_bytes(size, 3);
 }
 /// User defined literal: tebibytes (2^40)
 constexpr std::size_t operator"" _TiB(const unsigned long long size)
 {
-  return details::pow_bytes(size, 4);
+    return zencxx::details::pow_bytes(size, 4);
 }
 /// User defined literal: pebibytes (2^50)
 constexpr std::size_t operator"" _PiB(const unsigned long long size)
 {
-  return details::pow_bytes(size, 5);
+    return zencxx::details::pow_bytes(size, 5);
 }
 /// User defined literal: exbibytes (2^60)
 constexpr std::size_t operator"" _EiB(const unsigned long long size)
 {
-  return details::pow_bytes(size, 6);
+    return zencxx::details::pow_bytes(size, 6);
 }
 /// User defined literal: zebibytes (2^70)
 constexpr std::size_t operator"" _ZiB(const unsigned long long size)
 {
-  return details::pow_bytes(size, 7);
+    return zencxx::details::pow_bytes(size, 7);
 }
 /// User defined literal: yobibytes (2^80)
 constexpr std::size_t operator"" _YiB(const unsigned long long size)
 {
-  return details::pow_bytes(size, 8);
+    return zencxx::details::pow_bytes(size, 8);
 }
 
-}                                                           // namespace zencxx
 #endif                                                      // __ZENCXX__BYTE_UNITS_HH__
