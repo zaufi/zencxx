@@ -101,7 +101,7 @@ public:
     explicit exception(const char* const api_function_name)
     {
         assert("API function name must be provided" && api_function_name);
-        *this << error_code_info(boost::system::error_code(errno, boost::system::get_system_category()))
+        *this << error_code_info(boost::system::error_code(errno, boost::system::system_category()))
               << boost::errinfo_api_function(api_function_name);
     }
 
@@ -117,7 +117,7 @@ public:
     exception(const int code, const char* const api_function_name)
     {
         assert("API function name must be provided" && api_function_name);
-        *this << error_code_info(boost::system::error_code(code, boost::system::get_system_category()))
+        *this << error_code_info(boost::system::error_code(code, boost::system::system_category()))
               << boost::errinfo_api_function(api_function_name);
     }
 
