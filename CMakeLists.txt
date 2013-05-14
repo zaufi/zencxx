@@ -90,10 +90,8 @@ set(CMAKE_MODULE_LINKER_FLAGS "-Wl,--as-needed ${CMAKE_MODULE_LINKER_FLAGS}")
 # Set generic compiler flags
 set(CMAKE_CXX_FLAGS "-pipe -std=c++0x ${CMAKE_CXX_FLAGS}")
 
-# If CMAKE_BUILD_TYPE is not set, assume Debug
-if (NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE "Debug")
-endif()
+# If CMAKE_BUILD_TYPE is not set, try to guess it
+include(GuessBuildType)
 
 # Setup compiler options depending on build type
 message(STATUS "Setting options for ${CMAKE_BUILD_TYPE} build type")
