@@ -121,6 +121,9 @@ public:
     template <typename Functor>
     void call(Functor, const std::string&);
 
+    /// Get I/O underlaid service
+    boost::asio::io_service& service();
+
   private:
     /// Use given logger and I/O service
     ZENCXX_NO_EXPORT ticker(boost::asio::io_service&/*, log4cxx::LoggerPtr*/);
@@ -292,6 +295,11 @@ inline ticker::job ticker::call(
               )
           )
       );
+}
+
+inline boost::asio::io_service& ticker::service()
+{
+    return m_srv;
 }
 
 inline void ticker::remove_job(const unsigned job_id)
