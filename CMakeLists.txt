@@ -196,15 +196,21 @@ set_common_package_options(
     DEPLOY_TO ${ZENCXX_DEB_REPOSITORY}
   )
 
+set(PKG_VERSION "${ZENCXX_VERSION}-0ubuntu2")
+
 add_package(
     NAME libzencxx
     SUMMARY "ZEN C++ library"
     DESCRIPTION "Redistributable library"
     HOMEPAGE "https://github.com/zaufi/zencxx"
-    VERSION "${ZENCXX_VERSION}-0ubuntu1"
+    VERSION "${PKG_VERSION}"
     SECTION "libs"
-    DEPENDS "libstdc++6 (>= 4.6)" "libboost-system${BOOST_VERSION_PKG_DEP}"
-    REPLACES "libzencxx (<= ${ZENCXX_VERSION})"
+    DEPENDS
+        "libstdc++6 (>= 4.6)"
+        "libboost-system${BOOST_VERSION_PKG_DEP}"
+        "libboost-thread${BOOST_VERSION_PKG_DEP}"
+        "libboost-date-time${BOOST_VERSION_PKG_DEP}"
+    REPLACES "libzencxx${CPACK_BUILD_FLAVOUR} (<= ${ZENCXX_VERSION})"
     SIGN_WITH
   )
 
@@ -213,9 +219,11 @@ add_package(
     SUMMARY "Developer files for ZEN C++ library"
     DESCRIPTION "C++ headers and cmake configuration support files"
     HOMEPAGE "https://github.com/zaufi/zencxx"
-    VERSION "${ZENCXX_VERSION}-0ubuntu1"
+    VERSION "${PKG_VERSION}"
     SECTION "devel"
-    DEPENDS "libboost${BOOST_DEV_VERSION_PKG_DEP}-all-dev"
+    DEPENDS
+        "libzencxx${CPACK_BUILD_FLAVOUR} (= ${ZENCXX_VERSION})"
+        "libboost${BOOST_DEV_VERSION_PKG_DEP}-all-dev"
     REPLACES "libzencxx-dev (<= ${ZENCXX_VERSION})"
   )
 
@@ -224,7 +232,7 @@ add_package(
     SUMMARY "ZEN C++ library API documentation"
     DESCRIPTION "Doxygened library API documentation"
     HOMEPAGE "https://github.com/zaufi/zencxx"
-    VERSION "${ZENCXX_VERSION}-0ubuntu1"
+    VERSION "${PKG_VERSION}"
     SECTION "devel"
     REPLACES "libzencxx-doc (<= ${ZENCXX_VERSION})"
     PRE_BUILD doxygen
