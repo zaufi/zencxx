@@ -95,11 +95,9 @@ include(GuessBuildType)
 
 # Setup compiler options depending on build type
 message(STATUS "Setting options for ${CMAKE_BUILD_TYPE} build type")
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DebugFull")
     # Show all warnings in debug mode
     set(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -Wall")
-    # Allow additional security measures
-    add_definitions(-D_FORTIFY_SOURCE=2)
 else()
     # More linker optimizations in release mode
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE
@@ -147,10 +145,12 @@ include(GetDistribInfo)
 
 # Specifying precise versions of some packages which are distinct
 # in different distributions.
-if(DISTRIB_CODENAME STREQUAL "quantal")
-  set(BOOST_DEV_VERSION_PKG_DEP "1.50")
-elseif(DISTRIB_CODENAME STREQUAL "precise")
+if(DISTRIB_CODENAME STREQUAL "precise")
   set(BOOST_DEV_VERSION_PKG_DEP "1.48")
+elseif(DISTRIB_CODENAME STREQUAL "quantal")
+  set(BOOST_DEV_VERSION_PKG_DEP "1.50")
+elseif(DISTRIB_CODENAME STREQUAL "raring")
+  set(BOOST_DEV_VERSION_PKG_DEP "1.53")
 else()
   message(STATUS "WARNING: Target distribution codename is unknown! Do not even try to build .deb packages!")
 endif()
@@ -173,6 +173,13 @@ set(CPACK_GENERATOR DEB)
 set(CPACK_SOURCE_GENERATOR TBZ2)
 include(AddPackage)
 
+set_common_package_options(
+    PROJECT_VERSION "${ZENCXX_VERSION}"
+    VENDOR_NAME "Alex Turbov"
+    VENDOR_CONTACT "i.zaufi@gmail.com"
+    BUILD_FLAVOUR "${CPACK_BUILD_FLAVOUR}"
+  )
+
 add_package(
     NAME libzencxx
     SUMMARY "ZEN C++ library"
@@ -182,6 +189,7 @@ add_package(
     SECTION "libs"
     DEPENDS "libstdc++6 (>= 4.6)" "libboost-system${BOOST_VERSION_PKG_DEP}"
     REPLACES "libzencxx (<= ${ZENCXX_VERSION})"
+    SIGN_WITH
   )
 
 add_package(

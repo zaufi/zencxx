@@ -43,6 +43,8 @@
 namespace zencxx {
 /**
  * \brief Manage execution of periodic jobs
+ *
+ * \todo Add \c call() overload with initial start time and period.
  */
 class ZENCXX_EXPORT ticker : public std::enable_shared_from_this<ticker>
 {
