@@ -111,11 +111,6 @@ endif()
 #---------------------------------------------------------
 # Section: Misc actions
 #---------------------------------------------------------
-if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(CPACK_BUILD_FLAVOUR "-dbg")
-else()
-    set(CPACK_BUILD_FLAVOUR "")
-endif()
 
 # Set a project-wide name for unit tests executable
 # (a target to be build in every tests/ directories)
@@ -173,11 +168,32 @@ set(CPACK_GENERATOR DEB)
 set(CPACK_SOURCE_GENERATOR TBZ2)
 include(AddPackage)
 
+# Make sign options available to set from the CLI/GUI
+set(
+    ZENCXX_SIGN_KEY_ID
+    "94CF01DC"
+    CACHE STRING "GPG key ID to be used to sign result packages"
+  )
+set(
+    ZENCXX_SIGN_USER_NAME
+    "builder"
+    CACHE STRING "User name to be used to sign packages (builder)"
+  )
+set(
+    ZENCXX_DEB_REPOSITORY
+    "$ENV{HOME}/repo"
+    CACHE FILEPATH "Path to repository to deploy .deb packages to"
+  )
+
 set_common_package_options(
     PROJECT_VERSION "${ZENCXX_VERSION}"
     VENDOR_NAME "Alex Turbov"
     VENDOR_CONTACT "i.zaufi@gmail.com"
     BUILD_FLAVOUR "${CPACK_BUILD_FLAVOUR}"
+    SIGN_BY ${ZENCXX_SIGN_USER_NAME}
+    SIGN_WITH ${ZENCXX_SIGN_KEY_ID}
+    ALLOW_DEPLOY_PACKAGES
+    DEPLOY_TO ${ZENCXX_DEB_REPOSITORY}
   )
 
 add_package(
@@ -185,7 +201,7 @@ add_package(
     SUMMARY "ZEN C++ library"
     DESCRIPTION "Redistributable library"
     HOMEPAGE "https://github.com/zaufi/zencxx"
-    PACKAGE_VERSION "0ubuntu1"
+    VERSION "${ZENCXX_VERSION}-0ubuntu1"
     SECTION "libs"
     DEPENDS "libstdc++6 (>= 4.6)" "libboost-system${BOOST_VERSION_PKG_DEP}"
     REPLACES "libzencxx (<= ${ZENCXX_VERSION})"
@@ -197,7 +213,7 @@ add_package(
     SUMMARY "Developer files for ZEN C++ library"
     DESCRIPTION "C++ headers and cmake configuration support files"
     HOMEPAGE "https://github.com/zaufi/zencxx"
-    PACKAGE_VERSION "0ubuntu1"
+    VERSION "${ZENCXX_VERSION}-0ubuntu1"
     SECTION "devel"
     DEPENDS "libboost${BOOST_DEV_VERSION_PKG_DEP}-all-dev"
     REPLACES "libzencxx-dev (<= ${ZENCXX_VERSION})"
@@ -208,7 +224,7 @@ add_package(
     SUMMARY "ZEN C++ library API documentation"
     DESCRIPTION "Doxygened library API documentation"
     HOMEPAGE "https://github.com/zaufi/zencxx"
-    PACKAGE_VERSION "0ubuntu1"
+    VERSION "${ZENCXX_VERSION}-0ubuntu1"
     SECTION "devel"
     REPLACES "libzencxx-doc (<= ${ZENCXX_VERSION})"
     PRE_BUILD doxygen
