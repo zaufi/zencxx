@@ -210,21 +210,21 @@ add_package(
         "libboost-system${BOOST_VERSION_PKG_DEP}"
         "libboost-thread${BOOST_VERSION_PKG_DEP}"
         "libboost-date-time${BOOST_VERSION_PKG_DEP}"
-    REPLACES "libzencxx${CPACK_BUILD_FLAVOUR} (<= ${ZENCXX_VERSION})"
+    REPLACES "libzencxx${CPACK_BUILD_FLAVOUR} (<= ${PKG_VERSION})"
     SIGN_WITH
   )
 
 add_package(
     NAME libzencxx-dev
     SUMMARY "Developer files for ZEN C++ library"
-    DESCRIPTION "C++ headers and cmake configuration support files"
+    DESCRIPTION "C++ headers and CMake configuration support files"
     HOMEPAGE "https://github.com/zaufi/zencxx"
     VERSION "${PKG_VERSION}"
     SECTION "devel"
     DEPENDS
-        "libzencxx${CPACK_BUILD_FLAVOUR} (= ${ZENCXX_VERSION})"
+        "libzencxx${CPACK_BUILD_FLAVOUR} (= ${PKG_VERSION})"
         "libboost${BOOST_DEV_VERSION_PKG_DEP}-all-dev"
-    REPLACES "libzencxx-dev (<= ${ZENCXX_VERSION})"
+    REPLACES "libzencxx-dev (<= ${PKG_VERSION})"
   )
 
 add_package(
@@ -234,7 +234,7 @@ add_package(
     HOMEPAGE "https://github.com/zaufi/zencxx"
     VERSION "${PKG_VERSION}"
     SECTION "devel"
-    REPLACES "libzencxx-doc (<= ${ZENCXX_VERSION})"
+    REPLACES "libzencxx-doc (<= ${PKG_VERSION})"
     PRE_BUILD doxygen
   )
 
