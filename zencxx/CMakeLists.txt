@@ -5,6 +5,7 @@ set(
     debug/dump_memory.cc
     exception.cc
     ticker.cc
+    utility/random.cc
   )
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -47,7 +48,7 @@ install(
   )
 
 install(
-    DIRECTORY debug details ${CMAKE_CURRENT_BINARY_DIR}/details
+    DIRECTORY debug details utility ${CMAKE_CURRENT_BINARY_DIR}/details
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/zencxx
     COMPONENT ${LIBZENCXX_DEV_PACKAGE}
     FILES_MATCHING PATTERN "*.hh"
