@@ -26,8 +26,7 @@
 // Project specific includes
 
 // Standard includes
-# include <boost/asio/deadline_timer.hpp>
-# include <boost/date_time/posix_time/posix_time.hpp>
+# include <boost/asio/steady_timer.hpp>
 # include <functional>
 # include <memory>
 # include <string>
@@ -39,8 +38,10 @@ namespace zencxx { namespace details {
  * really complicated. Nowadays we just have no such cases... but potentially we
  * may do...
  *
- * \todo Use \c std::chrono instead of \c boost::posix_time. After that, move ctor
- * and assign can be defaulted.
+ * \todo It seems there is a different timer must be used depending on scheduled
+ * call type:
+ * \li steady clock for relative time calls
+ * \li wall clock for absolute time calls
  *
  * \note This class contains non-copyable member, so the whole class non-copyable
  * as well! (I.e. no need to inherit from noncopyable explicitly)
@@ -65,25 +66,22 @@ struct registered_job
     /// \warning Unfortunately \c boost::asio::deadline_timer isn't movable
     /// as well as \c boost::scoped_ptr (and \c shared_ptr is too heavy to use here),
     /// so \c std::unique_ptr comes into scene :)
-    std::unique_ptr<boost::asio::deadline_timer> m_timer;   ///< Timer to wait on
-    boost::posix_time::time_duration m_interval;            ///< In case of periodic job it contains period
+    std::unique_ptr<boost::asio::steady_timer> m_timer;     ///< Timer to wait on
+    std::chrono::steady_clock::duration m_interval;         ///< In case of periodic job it contains period
     std::function<void()> m_functor;                        ///< Functor to execute
-    std::string m_description;                              ///< Job's description
     type m_type;
     state m_state;
 
     registered_job(
-        std::unique_ptr<boost::asio::deadline_timer>&& timer
-      , const boost::posix_time::time_duration interval
+        std::unique_ptr<boost::asio::steady_timer>&& timer
+      , const std::chrono::steady_clock::duration interval
       , std::function<void()>&& functor
-      , std::string&& description
       , const type t
       , const state s
       )
       : m_timer(std::move(timer))
       , m_interval(interval)
       , m_functor(std::move(functor))
-      , m_description(std::move(description))
       , m_type(t)
       , m_state(s)
     {
@@ -92,26 +90,10 @@ struct registered_job
           && bool(m_functor)
           );
     }
-    /// \name Move semantic support
-    //@{
-    /// Move ctor can't be defaulted (thanx to \c boost::posix_time::time_duration)
-    registered_job(registered_job&& other) noexcept
-      : m_timer(std::move(other.m_timer))
-      , m_interval(other.m_interval)
-      , m_functor(std::move(other.m_functor))
-      , m_description(std::move(other.m_description))
-      , m_type(other.m_type)
-      , m_state(other.m_state)
-    {
-    }
-    /// Move assign can't be defaulted (thanx to \c boost::posix_time::time_duration)
-    registered_job& operator=(registered_job&& other) noexcept
-    {
-        if (this != &other)
-            new(this) registered_job(std::move(other));
-        return *this;
-    }
-    //@}
+    /// Default move ctor
+    registered_job(registered_job&&) = default;
+    /// Default move-assign operator
+    registered_job& operator=(registered_job&&) = default;
     /// Delete copy ctor
     registered_job(const registered_job&) = delete;
     /// Delete copy-assign operator

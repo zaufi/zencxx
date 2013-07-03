@@ -27,6 +27,7 @@
 
 // Project specific includes
 #include <zencxx/utility/random.hh>
+#include <zencxx/debug/dump_memory.hh>
 
 // Standard includes
 // ALERT The following #define must be enabled only in one translation unit
@@ -46,41 +47,44 @@
 
 using namespace zencxx;
 
-/// \todo Validate generated strings
-/// (i.e. that they are not contain anything unexpected)
+namespace {
+
+constexpr std::size_t MAX_SIZE = 300;
+constexpr unsigned MAX_ITERATIONS = 100;
+
+template <typename Range>
+void test_alphabet(const Range& range)
+{
+    for (auto i = 0; i < MAX_ITERATIONS; ++i)
+    {
+        auto result = make_random_string(MAX_SIZE, range);
+        BOOST_CHECK_EQUAL(result.size(), MAX_SIZE);
+        //
+        auto pos = 0;
+        for (auto ch : result)
+        {
+            if (std::find(std::begin(range), std::end(range), ch) == std::end(range))
+            {
+                BOOST_FAIL(
+                    "Unexpected character '" << ch << "' at position " << pos <<
+                    ". Alphabet: '" << range << "'. Result:\n" << debug::dump_memory(result)
+                  );
+            }
+            pos++;
+        }
+    }
+}
+}                                                           // anonymous namespace
+
 BOOST_AUTO_TEST_CASE(random_test)
 {
-    constexpr std::size_t MAX = 30;
-    std::cout <<
-        "make_random_string(MAX, alphabet::DIGITS)="
-      << make_random_string(MAX, alphabet::DIGITS)
-      << std::endl
-      ;
-    std::cout <<
-        "make_random_string(MAX, alphabet::XDIGITS)="
-      << make_random_string(MAX, alphabet::XDIGITS)
-      << std::endl
-      ;
-    std::cout <<
-        "make_random_string(MAX, alphabet::UPPERCASE_LETTERS)="
-      << make_random_string(MAX, alphabet::UPPERCASE_LETTERS)
-      << std::endl
-      ;
-    std::cout <<
-        "make_random_string(MAX, alphabet::LOWERCASE_LETTERS)="
-      << make_random_string(MAX, alphabet::LOWERCASE_LETTERS)
-      << std::endl
-      ;
-    std::cout <<
-        "make_random_string(MAX, alphabet::ALPHANUMERIC)="
-      << make_random_string(MAX, alphabet::ALPHANUMERIC)
-      << std::endl
-      ;
-    std::cout <<
-        "make_random_string(MAX, alphabet::ALL_PRINTABLE_SYMBOLS)="
-      << make_random_string(MAX, alphabet::ALL_PRINTABLE_SYMBOLS)
-      << std::endl
-      ;
+    test_alphabet(alphabet::DIGITS);
+    test_alphabet(alphabet::XDIGITS);
+    test_alphabet(alphabet::UPPERCASE_LETTERS);
+    test_alphabet(alphabet::LOWERCASE_LETTERS);
+    test_alphabet(alphabet::ALPHANUMERIC);
+    test_alphabet(alphabet::ALL_PRINTABLE_SYMBOLS);
+    test_alphabet(std::string("qwertyuiopasdfghjklzxcvbnm"));
 }
 
 BOOST_AUTO_TEST_CASE(random_test_2)

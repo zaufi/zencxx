@@ -1,22 +1,13 @@
-set(
-    UNIT_TESTS_SOURCES
-    exception_tester.cc
-    random_tester.cc
-    ticker_tester.cc
-  )
-
-add_executable(
-    unit_tests
-    ${UNIT_TESTS_SOURCES}
+add_boost_tests(
+    TARGET ${UNIT_TESTS}
+    SOURCES
+        exception_tester.cc
+        random_tester.cc
+        ticker_tester.cc
   )
 
 target_link_libraries(
-    unit_tests
+    ${UNIT_TESTS}
     zencxx
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
-  )
-
-add_boost_tests(
-    TARGET unit_tests
-    SOURCES ${UNIT_TESTS_SOURCES}
   )

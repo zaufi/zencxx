@@ -37,19 +37,13 @@
 #include <iostream>
 
 namespace dbg = zencxx::debug;
-namespace pt = boost::posix_time;
 
 namespace {
 struct prepare_ticker
 {
     boost::asio::io_service m_srv;
-    std::shared_ptr<zencxx::ticker> m_ticker;
-    bool m_done;
-
-    prepare_ticker()
-      : m_ticker(zencxx::ticker::create(m_srv))
-      , m_done(false)
-    {}
+    std::shared_ptr<zencxx::ticker> m_ticker = zencxx::ticker::create(m_srv);
+    bool m_done = false;
 };
 }                                                           // anonymous namespace
 
@@ -57,27 +51,20 @@ BOOST_FIXTURE_TEST_SUITE(ticker_test, prepare_ticker)
 
 BOOST_FIXTURE_TEST_CASE(immediate_run_test, prepare_ticker)
 {
-    m_ticker->call(
-        [&]()
-        {
-            m_done = true;
-        }
-      , "Immediate execution task"
-      );
+    m_ticker->call([&]() { m_done = true; });
     m_srv.run_one();
     BOOST_CHECK(m_done);
 }
 
 BOOST_FIXTURE_TEST_CASE(abs_time_run_test, prepare_ticker)
 {
-    auto now = pt::second_clock::universal_time();
+    auto now = std::chrono::steady_clock::now();
     m_ticker->call(
         [&]()
         {
             m_done = true;
         }
-      , now + pt::seconds(2)
-      , "Abs time execution task (now + 2s)"
+      , now + std::chrono::seconds(2)
       );
     m_srv.run_one();
     BOOST_CHECK(m_done);
@@ -85,14 +72,13 @@ BOOST_FIXTURE_TEST_CASE(abs_time_run_test, prepare_ticker)
 
 BOOST_FIXTURE_TEST_CASE(stopping_abs_time_run_test, prepare_ticker)
 {
-    auto now = pt::second_clock::universal_time();
+    auto now = std::chrono::steady_clock::now();
     auto j = m_ticker->call(
         [&]()
         {
             m_done = true;
         }
-      , now + pt::seconds(2)
-      , "Abs time execution task to be stopped"
+      , now + std::chrono::seconds(2)
       );
     j.stop();
     m_srv.run_one();
@@ -105,14 +91,13 @@ BOOST_FIXTURE_TEST_CASE(stopping_abs_time_run_test, prepare_ticker)
 
 BOOST_FIXTURE_TEST_CASE(canceling_abs_time_run_test, prepare_ticker)
 {
-    auto now = pt::second_clock::universal_time();
+    auto now = std::chrono::steady_clock::now();
     auto j = m_ticker->call(
         [&]()
         {
             m_done = true;
         }
-      , now + pt::seconds(2)
-      , "Abs time execution task to be canceled"
+      , now + std::chrono::seconds(2)
       );
     j.cancel();
     m_srv.run_one();
@@ -122,14 +107,13 @@ BOOST_FIXTURE_TEST_CASE(canceling_abs_time_run_test, prepare_ticker)
 
 BOOST_FIXTURE_TEST_CASE(abs_time_expired_run_test, prepare_ticker)
 {
-    auto now = pt::second_clock::universal_time();
+    auto now = std::chrono::steady_clock::now();
     auto j = m_ticker->call(
         [&]()
         {
             m_done = true;
         }
-      , now - pt::seconds(2)
-      , "Abs time expired task"
+      , now - std::chrono::seconds(2)
       );
     j.cancel();
     m_srv.run_one();
@@ -147,8 +131,7 @@ BOOST_FIXTURE_TEST_CASE(rel_time_run_test, prepare_ticker)
                 j.stop();
             }
         }
-      , pt::seconds(1)
-      , "Rel time execution task (1s)"
+      , std::chrono::seconds(1)
       );
     m_srv.run();
     BOOST_CHECK_EQUAL(counter, 3);
@@ -167,8 +150,7 @@ BOOST_FIXTURE_TEST_CASE(rel_time_reschedule_self_test, prepare_ticker)
                 j.start();
             }
         }
-      , pt::seconds(1)
-      , "Rel time reschedule self test"
+      , std::chrono::seconds(1)
       );
     m_srv.run();
     j.cancel();
@@ -177,14 +159,13 @@ BOOST_FIXTURE_TEST_CASE(rel_time_reschedule_self_test, prepare_ticker)
 
 BOOST_FIXTURE_TEST_CASE(dead_task_removal_test, prepare_ticker)
 {
-    auto now = pt::second_clock::universal_time();
+    auto now = std::chrono::steady_clock::now();
     auto j = m_ticker->call(
         [&]()
         {
             m_done = true;
         }
-      , now - pt::seconds(2)
-      , "Task in the past to immediate execute and then delete"
+      , now - std::chrono::seconds(2)
       );
     m_srv.run_one();
     BOOST_CHECK_EQUAL(m_done, true);

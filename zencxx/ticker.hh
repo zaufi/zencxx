@@ -6,7 +6,7 @@
  * \date Tue Jun 29 09:29:40 MSD 2010 -- Initial design
  * \date Tue Sep 20 00:15:14 MSK 2011 -- Rewrite \c ticker from scratch to use \c boost::asio::io_service
  *
- * \todo Research the best way to pass \c time_duration instances to functions.
+ * \todo Research the best way to pass \c std::chrono::steady_clock::duration instances to functions.
  */
 /*
  * ZenCxx is free software: you can redistribute it and/or modify it
@@ -100,7 +100,7 @@ public:
     };
 
     /// The only way to make an instance of \c ticker class
-    static std::shared_ptr<ticker> create(boost::asio::io_service&/*, log4cxx::LoggerPtr*/);
+    static std::shared_ptr<ticker> create(boost::asio::io_service&);
     /// Stop ticker, cancel all jobs still waiting
     ~ticker();
 
@@ -108,33 +108,30 @@ public:
     template <typename Functor>
     job call(
         Functor
-      , const boost::posix_time::time_duration
-      , std::string&&
+      , const std::chrono::steady_clock::duration
       , job::start_type = job::start_type::auto_start
       );
     /// Register callback to execute once at given time
     template <typename Functor>
     job call(
         Functor
-      , const boost::posix_time::ptime
-      , std::string&&
+      , const std::chrono::steady_clock::time_point
       );
-    /// Register callback to execute once ASAP
+    /// Register a callback to execute once ASAP
     template <typename Functor>
-    void call(Functor, const std::string&);
+    void call(Functor);
 
     /// Get I/O underlaid service
     boost::asio::io_service& service();
 
   private:
-    /// Use given logger and I/O service
-    ZENCXX_NO_EXPORT ticker(boost::asio::io_service&/*, log4cxx::LoggerPtr*/);
+    /// Use I/O service
+    ZENCXX_NO_EXPORT ticker(boost::asio::io_service&);
     /// Delete copy ctor
     ticker(const ticker&) = delete;
     /// Delete copy-assign operator
     ticker& operator=(const ticker&) = delete;
 
-    ZENCXX_NO_EXPORT void job_has_to(registered_jobs::iterator, const char* const) const;
     /// Append a job to the list of registered jobs
     job append_job(details::registered_job&&);
     /// Put a given job into a schedule (w/ lock acquired)
@@ -151,9 +148,6 @@ public:
     /// \name MT-safe members
     //@{
     boost::asio::io_service& m_srv;                         ///< I/O service to use
-#if 0
-    log4cxx::LoggerPtr logger_;                             ///< Channel to SPAM
-#endif
     //@}
 
     /// MT-unsafe members w/ their guards
@@ -223,49 +217,36 @@ inline void ticker::job::cancel()
     }
 }
 
-inline std::shared_ptr<ticker> ticker::create(
-    boost::asio::io_service& srv
-#if 0
-  , log4cxx::LoggerPtr parent_logger
-#endif
-  )
+inline std::shared_ptr<ticker> ticker::create(boost::asio::io_service& srv)
 {
-    return std::shared_ptr<ticker>(new ticker(srv/*, parent_logger*/));
+    return std::shared_ptr<ticker>(new ticker(srv));
 }
 
-inline ticker::ticker(boost::asio::io_service& srv/*, log4cxx::LoggerPtr parent_logger*/)
+inline ticker::ticker(boost::asio::io_service& srv)
   : m_srv(srv)
-#if 0
-  , logger_(log4cxx::Logger::getLogger(parent_logger->getName() + ".ticker"))
-#endif
 {
 }
 
 template <typename Functor>
-inline void ticker::call(Functor nulary_functor, const std::string& description)
+inline void ticker::call(Functor nulary_functor)
 {
-#if 0
-    LOG4CXX_DEBUG(logger_, "Job '" << description << "' scheduled for immediate execution");
-#endif
     m_srv.post(std::move(nulary_functor));
 }
 
 template <typename Functor>
 inline ticker::job ticker::call(
     Functor nulary_functor
-  , const boost::posix_time::ptime at_time
-  , std::string&& description
+  , const std::chrono::steady_clock::time_point at_time
   )
 {
     return append_job(
         details::registered_job(
-            std::unique_ptr<boost::asio::deadline_timer>(
+            std::unique_ptr<boost::asio::steady_timer>(
                 // set absolute expiration time
-                new boost::asio::deadline_timer(m_srv, at_time)
+                new boost::asio::steady_timer(m_srv, at_time)
               )
-          , boost::posix_time::time_duration()              // Ignored parameter
+          , std::chrono::steady_clock::duration::zero()     // Ignored parameter
           , std::move(nulary_functor)                       // Function to execute
-          , std::move(description)                          // Task description
           , details::registered_job::type::once             // No periodic runs required
           , details::registered_job::state::running         // Immediate schedule required
           )
@@ -275,20 +256,18 @@ inline ticker::job ticker::call(
 template <typename Functor>
 inline ticker::job ticker::call(
     Functor nulary_functor
-  , const boost::posix_time::time_duration interval
-  , std::string&& description
+  , const std::chrono::steady_clock::duration interval
   , job::start_type how2start
   )
 {
     return append_job(
         details::registered_job(
-            std::unique_ptr<boost::asio::deadline_timer>(
+            std::unique_ptr<boost::asio::steady_timer>(
                 // set expiration time relative to now
-                new boost::asio::deadline_timer(m_srv, interval)
+                new boost::asio::steady_timer(m_srv, interval)
               )
           , interval
           , std::move(nulary_functor)                       // Function to execute
-          , std::move(description)                          // Task description
           , details::registered_job::type::periodic         // Periodic runs required
           , (
                 job::start_type::auto_start == how2start    // Decide how to start

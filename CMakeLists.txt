@@ -73,6 +73,11 @@ include_directories(${Boost_INCLUDE_DIRS})
 # Tell to boost::result_of to use decltype to decay return type of callable.
 # NOTE This would enabel to use C++11 labmda expressions w/ boost::rage adaptors
 add_definitions(-DBOOST_RESULT_OF_USE_DECLTYPE)
+# Force the boost::asio to use std::chrono
+add_definitions(-DBOOST_ASIO_DISABLE_BOOST_CHRONO)
+# Don't want to use any deprecated API
+add_definitions(-DBOOST_SYSTEM_NO_DEPRECATED)
+add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
 
 # TODO Add STL debug mode (-D_GLIBCXX_DEBUG) in debug builds, but
 # unfortunately this compiler option must be synchronized with boost
@@ -88,8 +93,16 @@ add_definitions(-DBOOST_RESULT_OF_USE_DECLTYPE)
 # project, but listed as unused by `ldd -u binary`)
 set(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed ${CMAKE_EXE_LINKER_FLAGS}")
 set(CMAKE_MODULE_LINKER_FLAGS "-Wl,--as-needed ${CMAKE_MODULE_LINKER_FLAGS}")
-# Set generic compiler flags
-set(CMAKE_CXX_FLAGS "-pipe -std=c++0x ${CMAKE_CXX_FLAGS}")
+
+# Include declaration of use_compiler_option()
+include(MacroUseCompilerOption)
+# Set some compiler options
+use_compiler_option(OPTION -pipe LANGUAGE CXX OUTPUT COMPILER_HAS_PIPE_OPTION)
+use_compiler_option(OPTION -Wall LANGUAGE CXX OUTPUT COMPILER_HAS_WALL_OPTION)
+use_compiler_option(OPTION -std=c++11 LANGUAGE CXX OUTPUT CXX_COMPILER_HAS_CPP11_OPTION)
+if(NOT CXX_COMPILER_HAS_CPP11_OPTION)
+    message(FATAL_ERROR "C++11 compatible compiler required to build this project (gcc >= 4.8)")
+endif()
 
 # If CMAKE_BUILD_TYPE is not set, try to guess it
 include(GuessBuildType)
@@ -97,8 +110,12 @@ include(GuessBuildType)
 # Setup compiler options depending on build type
 message(STATUS "Setting options for ${CMAKE_BUILD_TYPE} build type")
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DebugFull")
-    # Show all warnings in debug mode
-    set(CMAKE_CXX_FLAGS_DEBUG "-ggdb3 -Wall")
+    # Show even more warnings in debug mode
+    use_compiler_option(OPTION -Wextra LANGUAGE CXX OUTPUT COMPILER_HAS_WALL_OPTION)
+    use_compiler_option(OPTION -ggdb3 LANGUAGE CXX OUTPUT COMPILER_HAS_GGDB3_OPTION)
+    if(NOT COMPILER_HAS_GGDB3_OPTION)
+        use_compiler_option(OPTION -g3 LANGUAGE CXX OUTPUT COMPILER_HAS_G3_OPTION)
+    endif()
 else()
     # More linker optimizations in release mode
     set(CMAKE_EXE_LINKER_FLAGS_RELEASE
@@ -210,7 +227,6 @@ add_package(
         "libstdc++6 (>= 4.6)"
         "libboost-system${BOOST_VERSION_PKG_DEP}"
         "libboost-thread${BOOST_VERSION_PKG_DEP}"
-        "libboost-date-time${BOOST_VERSION_PKG_DEP}"
     REPLACES "libzencxx${CPACK_BUILD_FLAVOUR} (<= ${PKG_VERSION})"
     SIGN_WITH
   )

@@ -27,18 +27,7 @@
 #include <atomic>
 
 namespace zencxx { namespace {
-const std::string NO_DESCRIPTION = "<no job description available>";
 std::atomic<unsigned> s_next_job_id = {0};
-
-inline const std::string& job_description(const std::string& description)
-{
-    return !description.empty() ? description : NO_DESCRIPTION;
-}
-
-inline const char* job_type_str(details::registered_job::type t)
-{
-    return details::registered_job::type::once == t ? "one time" : "periodic";
-}
 }                                                           // anonymous namespace
 
 /**
@@ -82,9 +71,6 @@ ticker::~ticker()
     }
     // Wait 'till all unfinished jobs are gone...
     /// \todo Is it reliable?
-#if 0
-    LOG4CXX_DEBUG(logger_, "Waiting for unfinished jobs...");
-#endif
     while (true)
     {
         boost::mutex::scoped_lock l(m_jobs_mut);
@@ -92,13 +78,6 @@ ticker::~ticker()
     }
 }
 
-inline void ticker::job_has_to(registered_jobs::iterator job_it, const char* const action) const
-{
-#if 0
-  LOG4CXX_DEBUG(logger_, "The " << job_type_str(job_it->second.m_type) << " job '"
-    << job_it->second.description_ << "' [ID" << job_it->first << "] " << action);
-#endif
-}
 
 /**
  * \pre The initial state of job could be \c running or \c stopped to indicate
@@ -139,11 +118,6 @@ ticker::job ticker::append_job(details::registered_job&& job_info)
         while (id && m_jobs.find(id) != end(m_jobs));
         // Move a new job into the container of registered jobs
         new_job = m_jobs.insert(end(m_jobs), std::make_pair(id, std::move(job_info)));
-        // spam a little... ;)
-        job_has_to(new_job, "has added to the ticker");
-#if 0
-        LOG4CXX_TRACE(logger_, "Ticker now has " << m_jobs.size() << " registered job(s)");
-#endif
 
         // Is it required to schedule the task right now?
         if (details::registered_job::state::stopped != new_job->second.m_state)
@@ -194,10 +168,6 @@ void ticker::reschedule_job(registered_jobs::iterator job_it, const boost::mutex
             }
           );
     }
-#if 0
-    LOG4CXX_DEBUG(logger_, "The " << job_type_str(job_it->second.m_type) << " job '"
-        << job_it->second.description_ << "' has scheduled to " << job_it->second.m_timer->expires_at());
-#endif
     // set new state to 'scheduled' meaning that I/O service starts to work
     job_it->second.m_state = details::registered_job::state::scheduled;
 }
@@ -233,9 +203,6 @@ void ticker::one_time_job_handler(registered_jobs::iterator job_it, const boost:
             nulary_function = job_it->second.m_functor;     // Make a copy of user functor
             // Change state to 'running' cuz we r intended to execute it finally!
             job_it->second.m_state = details::registered_job::state::running;
-#if 0
-            LOG4CXX_DEBUG(logger_, "Going to execute job '" << job_it->second.description_ << '\'');
-#endif
         }
         nulary_function();                                  // Ok! Ready to do the job...
         boost::mutex::scoped_lock l(m_jobs_mut);            // Guard iterator access under the lock
@@ -244,9 +211,6 @@ void ticker::one_time_job_handler(registered_jobs::iterator job_it, const boost:
     }
     else
     {
-#if 0
-        LOG4CXX_TRACE(logger_, "Job cancelled '" << job_it->second.description_ << '\'');
-#endif
         // Check if job needs to be removed
         remove_if_needed(job_it);
     }
@@ -278,9 +242,6 @@ void ticker::periodic_job_handler(registered_jobs::iterator job_it, const boost:
             nulary_function = job_it->second.m_functor;     // Make a copy of user functor
             // Change state to 'running' cuz we r intended to execute it finally!
             job_it->second.m_state = details::registered_job::state::running;
-#if 0
-            LOG4CXX_DEBUG(logger_, "Going to execute job '" << job_it->second.description_ << '\'');
-#endif
         }
 
         nulary_function();                                  // Ok! Ready to do the job...
@@ -319,11 +280,7 @@ void ticker::remove_if_needed(registered_jobs::iterator job_it, boost::mutex::sc
     // Check if someone called Cancel() for a given job
     if (details::registered_job::state::scheduled_for_removal == job_it->second.m_state)
     {
-        job_has_to(job_it, "has been removed from ticker");
         m_jobs.erase(job_it);                                // Ok, remove the job finally
-#if 0
-        LOG4CXX_DEBUG(logger_, "Ticker now has " << m_jobs.size() << " registered job(s)");
-#endif
     }                                                       // Otherwise, someone just stopped the job...
 }
 
@@ -346,7 +303,6 @@ void ticker::remove_job(registered_jobs::iterator job_it, boost::mutex::scoped_l
     // Send cancel to timer if needed...
     if (need_to_cancel)
     {
-        job_has_to(job_it, "has marked for removal");
         job_it->second.m_timer->cancel();
         // This would lead to call to hander w/ error code, and then
         // the actual remove would happened...
@@ -374,7 +330,6 @@ void ticker::pause_job(const unsigned job_id)
         // Anyway we must mark it as stopped before handler would be executed (yeah, w/ error code)
         // or user provided functor finished.
         job_it->second.m_state = details::registered_job::state::stopped;
-        job_has_to(job_it, "has marked as stopped");
         if (need_to_cancel)
         {
             job_it->second.m_timer->cancel();
