@@ -50,7 +50,7 @@ ticker::~ticker()
             switch (job_it->second.m_state)
             {
                 case details::registered_job::state::stopped:
-                    m_jobs.erase(job_it++);                  // Erase current job and move to next one...
+                    m_jobs.erase(job_it++);                 // Erase current job and move to next one...
                     break;
                 case details::registered_job::state::scheduled:
                     job_it->second.m_state = details::registered_job::state::scheduled_for_removal;
@@ -280,7 +280,7 @@ void ticker::remove_if_needed(registered_jobs::iterator job_it, boost::mutex::sc
     // Check if someone called Cancel() for a given job
     if (details::registered_job::state::scheduled_for_removal == job_it->second.m_state)
     {
-        m_jobs.erase(job_it);                                // Ok, remove the job finally
+        m_jobs.erase(job_it);                               // Ok, remove the job finally
     }                                                       // Otherwise, someone just stopped the job...
 }
 
