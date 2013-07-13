@@ -23,10 +23,7 @@
 // Project specific includes
 #include <zencxx/mpl/has_apply.hh>
 #include <zencxx/mpl/has_type.hh>
-#include <zencxx/mpl/eval_if.hh>
 #include <zencxx/mpl/pair.hh>
-#include <zencxx/mpl/is_lambda_expression.hh>
-#include <zencxx/mpl/placeholders.hh>
 #include <zencxx/mpl/seq.hh>
 // Debugging helpers from zencxx::debug namespace
 #include <zencxx/debug/type_name.hh>
@@ -102,40 +99,3 @@ BOOST_AUTO_TEST_CASE(has_apply_test)
     using pb = boost::mpl::quote2<boost::mpl::push_back>;
     static_assert(mpl::has_apply<pb, mpl::seq<>, int>::value == true, "apply expected");
 }
-
-
-BOOST_AUTO_TEST_CASE(is_lambda_expression_test)
-{
-    // Is not lambda!
-    static_assert(
-        mpl::is_lambda_expression<int>::value == false
-      , "no lambda expression expected"
-      );
-    static_assert(
-        mpl::is_lambda_expression<mpl::pair(int, char)>::value == false
-      , "no lambda expression expected"
-      );
-
-    // Lambda!
-    static_assert(
-        mpl::is_lambda_expression<mpl::_1>::value == true
-      , "lambda expression expected"
-      );
-    static_assert(
-        mpl::is_lambda_expression<mpl::pair(mpl::_1, mpl::_2)>::value == true
-      , "lambda expression expected"
-      );
-
-    static_assert(
-        mpl::is_lambda_expression<mpl::pair(mpl::pair(mpl::_1, mpl::_2), int)>::value == true
-      , "lambda expression expected"
-      );
-}
-#if 0
-BOOST_AUTO_TEST_CASE(is_function_test)
-{
-    std::cout << std::is_function<void()>::value << std::endl;
-    std::cout << std::is_function<std::remove_pointer<int(*)()>::type>::value << std::endl;
-    std::cout << std::is_function<std::remove_reference<int(&)()>::type>::value << std::endl;
-}
-#endif

@@ -4,7 +4,6 @@ add_boost_tests(
         copy_range_tester.cc
         mpl_logic_tester.cc
         mpl_traits_tester.cc
-        eval_tester.cc
         seq_tester.cc
         v_at_tester.cc
     NO_CATCH_SYSTEM_ERRORS
