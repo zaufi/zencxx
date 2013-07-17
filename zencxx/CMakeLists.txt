@@ -4,6 +4,7 @@ set(
     ZENCXX_SOURCES
     debug/dump_memory.cc
     exception.cc
+    thread/unilock.cc
     ticker.cc
     utility/random.cc
   )
@@ -61,4 +62,5 @@ add_subdirectory(type_traits)
 # Compile tests only if needed
 if(BUILD_TESTING)
     add_subdirectory(tests)
+    add_subdirectory(thread/tests)
 endif()
