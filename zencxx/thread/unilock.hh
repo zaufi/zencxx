@@ -127,7 +127,7 @@ private:
     }
 
     template <typename... Args>
-    bool lock_decorator(bool(unilock::*lf)(int, boost::mutex::scoped_lock&, Args&&...), Args&&... args)
+    bool lock_decorator(lock_func_t<Args...> lf, Args&&... args)
     {
         bool result = false;
         {
