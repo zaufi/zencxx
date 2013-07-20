@@ -3,6 +3,7 @@ add_compiler_export_flags()
 set(
     ZENCXX_SOURCES
     debug/dump_memory.cc
+    debug/print/std_chrono.cc
     exception.cc
     ticker.cc
     utility/random.cc
@@ -60,5 +61,6 @@ add_subdirectory(type_traits)
 
 # Compile tests only if needed
 if(BUILD_TESTING)
+    add_subdirectory(debug/tests)
     add_subdirectory(tests)
 endif()
