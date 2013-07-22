@@ -26,7 +26,9 @@
  */
 
 // Project specific includes
+#if 0
 #define ZENCXX_DEBUG_PRINT_NO_GENERIC
+#endif
 #include <zencxx/debug/print/any.hh>
 
 // Standard includes
@@ -75,6 +77,10 @@ BOOST_AUTO_TEST_CASE(std_chrono_system_time_point_debug_printing_test)
 
 BOOST_AUTO_TEST_CASE(std_chrono_system_duration_debug_printing_test)
 {
+    {
+        std::chrono::system_clock::duration d = std::chrono::seconds(0);
+        std::cout << print::show_type_info << print::any(d) << print::no_show_type_info << std::endl;
+    }
     {
         auto d = std::chrono::seconds(1);
         std::cout << print::any(d) << std::endl;

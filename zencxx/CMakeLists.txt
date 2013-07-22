@@ -3,6 +3,7 @@ add_compiler_export_flags()
 set(
     ZENCXX_SOURCES
     debug/dump_memory.cc
+    debug/print/any_manip.cc
     debug/print/std_chrono.cc
     exception.cc
     ticker.cc

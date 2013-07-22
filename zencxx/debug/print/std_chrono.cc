@@ -27,6 +27,7 @@
 
 // Project specific includes
 #include <zencxx/debug/print/std_chrono.hh>
+#include <zencxx/debug/print/any_manip.hh>
 
 // Standard includes
 #include <boost/io/ios_state.hpp>
@@ -56,7 +57,7 @@ typedef std::chrono::duration<int, std::ratio<86400>> days;
  *
  * \todo Need refactoring when gcc gets support for \c std::put_time
  */
-std::ostream& operator<<(std::ostream& os, const std_chrono_system_time_point& tp)
+std::ostream& operator<<(std::ostream& os, std_chrono_system_time_point&& tp)
 {
     std::ostream::sentry cerberos(os);
     if (cerberos)
@@ -100,10 +101,12 @@ std::ostream& operator<<(std::ostream& os, const std_chrono_system_time_point& t
         }
         os.setstate(err);
     }
+    // Show type info if needed
+    details::show_type_info_impl<std_chrono_system_time_point::wrapped_type>(os);
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const std_chrono_system_duration& dw)
+std::ostream& operator<<(std::ostream& os, std_chrono_system_duration&& dw)
 {
     std::ostream::sentry cerberos(os);
     if (cerberos)
@@ -143,6 +146,8 @@ std::ostream& operator<<(std::ostream& os, const std_chrono_system_duration& dw)
            << std::setw(3) << milliseconds.count()
            ;
     }
+    // Show type info if needed
+    details::show_type_info_impl<std_chrono_system_time_point::wrapped_type>(os);
     return os;
 }
 

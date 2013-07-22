@@ -98,6 +98,7 @@
     {                                                                 \
         const Type& m_ref;                                            \
     public:                                                           \
+        typedef Type wrapped_type;                                    \
         explicit WrapperType(const Type& r) : m_ref(r) {}             \
         const Type& ref() const                                       \
         {                                                             \
@@ -121,6 +122,7 @@
     {                                                                          \
         const Type<Params...>& m_ref;                                          \
     public:                                                                    \
+        typedef Type<Params...> wrapped_type;                                  \
         explicit WrapperType(const Type<Params...>& r) : m_ref(r) {}           \
         const Type<Params...>& ref() const                                     \
         {                                                                      \
@@ -128,9 +130,9 @@
         }                                                                      \
     };                                                                         \
     template <typename... Params>                                              \
-    inline WrapperType MkWrapperName(const Type<Params...>& r)                 \
+    inline WrapperType<Params...> MkWrapperName(const Type<Params...>& r)      \
     {                                                                          \
-        return WrapperType(r);                                                 \
+        return WrapperType<Params...>(r);                                      \
     }
 
 #endif                                                      // __ZENCXX__IO_MANIPULATOR_WRAPPER_HH__

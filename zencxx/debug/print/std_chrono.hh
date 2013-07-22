@@ -118,7 +118,7 @@ ZENCXX_MAKE_IOMAIP_WRAPPER(any, std_chrono_system_time_point, std::chrono::syste
  * \brief Make \c std::chrono::system_clock::time_point printable w/
  * \c zencxx::debug::print::any I/O manupulator.
  */
-ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, const std_chrono_system_time_point&);
+ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, std_chrono_system_time_point&&);
 
 ZENCXX_MAKE_IOMAIP_WRAPPER(any, std_chrono_system_duration, std::chrono::system_clock::duration)
 
@@ -126,7 +126,18 @@ ZENCXX_MAKE_IOMAIP_WRAPPER(any, std_chrono_system_duration, std::chrono::system_
  * \brief Make \c std::chrono::system_clock::duration printable w/
  * \c zencxx::debug::print::any I/O manupulator.
  */
-ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, const std_chrono_system_duration&);
+ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, std_chrono_system_duration&&);
+
+ZENCXX_MAKE_IOMAIP_WRAPPER_TEMPLATE(any, std_chrono_duration, std::chrono::duration)
+
+/**
+ * \brief Generic template to print any duration values
+ */
+template <typename Rep, typename Period>
+inline std::ostream& operator<<(std::ostream& os, std_chrono_duration<Rep, Period>&& dw)
+{
+    return os << any(std::chrono::duration_cast<std::chrono::system_clock::duration>(dw.ref()));
+}
 
 }}}                                                         // namespace print, debug, zencxx
 #endif                                                      // __ZENCXX__DEBUG__PRINT__STD_CHRONO_HH__

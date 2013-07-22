@@ -1,12 +1,9 @@
 /**
  * \file
  *
- * \brief Generic function for debug-printing of any type
+ * \brief Debug printing manipulators (implementation)
  *
- * \date Thu Jul 18 08:36:40 MSK 2013 -- Initial design
- *
- * \todo Generalize to use all kind of streams (i.e. including wide)...
- * But need to wait for full C++11 support (in the standard library).
+ * \date Mon Jul 22 18:39:16 MSK 2013 -- Initial design
  */
 /*
  * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
@@ -28,45 +25,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__ANY_HH__
-# define __ZENCXX__DEBUG__PRINT__ANY_HH__
-
 // Project specific includes
-# include <zencxx/debug/print/any_manip.hh>
-# include <zencxx/debug/print/std_chrono.hh>
+#include <zencxx/debug/print/any_manip.hh>
 
 // Standard includes
-# include <ostream>
 
-# ifndef ZENCXX_DEBUG_PRINT_NO_GENERIC
 namespace zencxx { namespace debug { namespace print { namespace details {
-
-template <typename T>
-class generic_any_wrapper
-{
-    const T& m_ref;
-
-public:
-    explicit generic_any_wrapper(const T& r) : m_ref(r) {}
-    const T& ref() const
-    {
-        return m_ref;
-    }
-};
-
-template <typename T>
-inline std::ostream& operator<<(std::ostream& os, generic_any_wrapper<T>&&)
-{
-    os << "<" << type_name<T>() << " is not printable>";
-    return os;
-}
+const int s_show_type_idx = std::ios_base::xalloc();
 }                                                           // namespace details
-
-template <typename T>
-inline details::generic_any_wrapper<T> any(const T& value)
-{
-    return details::generic_any_wrapper<T>(value);
-}
 }}}                                                         // namespace print, debug, zencxx
-# endif                                                     // ZENCXX_DEBUG_PRINT_NO_GENERIC
-#endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_HH__
