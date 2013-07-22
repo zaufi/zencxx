@@ -26,6 +26,7 @@
  */
 
 // Project specific includes
+#define ZENCXX_DEBUG_PRINT_NO_GENERIC
 #include <zencxx/debug/print/any.hh>
 
 // Standard includes
@@ -50,7 +51,7 @@ namespace {
 struct nonstreamable {};
 }                                                           // anonymous namespace
 
-BOOST_AUTO_TEST_CASE(debug_printing_test)
+BOOST_AUTO_TEST_CASE(std_chrono_system_time_point_debug_printing_test)
 {
     {
         auto now = std::chrono::system_clock::now();
@@ -66,7 +67,36 @@ BOOST_AUTO_TEST_CASE(debug_printing_test)
     }
     // Test for type w/o operator<< defined
     {
+#ifndef ZENCXX_DEBUG_PRINT_NO_GENERIC
         std::cout << print::any(nonstreamable()) << std::endl;
+#endif
     }
 }
 
+BOOST_AUTO_TEST_CASE(std_chrono_system_duration_debug_printing_test)
+{
+    {
+        auto d = std::chrono::seconds(1);
+        std::cout << print::any(d) << std::endl;
+    }
+    {
+        auto d = std::chrono::minutes(1);
+        std::cout << print::any(d) << std::endl;
+    }
+    {
+        auto d = std::chrono::hours(1);
+        std::cout << print::any(d) << std::endl;
+    }
+    {
+        auto d = std::chrono::hours(1) + std::chrono::minutes(2) + std::chrono::seconds(3);
+        std::cout << print::any(d) << std::endl;
+    }
+    {
+        auto d = std::chrono::hours(25) + std::chrono::minutes(2) + std::chrono::seconds(3);
+        std::cout << print::any(d) << std::endl;
+    }
+    {
+        auto d = std::chrono::hours(59) + std::chrono::minutes(35) + std::chrono::seconds(46);
+        std::cout << print::any(d) << std::endl;
+    }
+}

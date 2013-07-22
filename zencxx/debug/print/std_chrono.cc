@@ -29,15 +29,23 @@
 #include <zencxx/debug/print/std_chrono.hh>
 
 // Standard includes
-#include <locale>
+#include <boost/io/ios_state.hpp>
+#include <cassert>
 #include <cstring>
 #include <ctime>
+#include <iomanip>
+#include <locale>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
 const int s_print_localtime_idx = std::ios_base::xalloc();
 const int s_time_format_idx = std::ios_base::xalloc();
 const char* const DEFAULT_TIME_FORMAT = "%d/%m/%y %H:%M:%S";
 }                                                           // namespace details
+namespace { namespace chrono {
+typedef std::chrono::duration<int, std::ratio<86400>> days;
+}                                                           // namespace chrono
+}                                                           // anonymous namespace
+
 
 /**
  * This function may set a given stream into an error state (or throw) in case
@@ -91,6 +99,49 @@ std::ostream& operator<<(std::ostream& os, const std_chrono_system_time_point& t
             err |= std::ios_base::badbit;
         }
         os.setstate(err);
+    }
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const std_chrono_system_duration& dw)
+{
+    std::ostream::sentry cerberos(os);
+    if (cerberos)
+    {
+        // Save I/O stream state, will be restored at scope exit
+        boost::io::ios_all_saver ifs(os);
+        // Get a copy of duration value (to be able to modify it)
+        auto duration = dw.ref();
+        // Print days (if any)
+        const auto days = std::chrono::duration_cast<chrono::days>(duration);
+        if (days.count())
+        {
+            os << days.count() << std::setw(6) << ((days.count() == 1) ? "day," : "days,") << ' ';
+            duration %= days;
+        }
+        // Print hours:minutes:seconds.msec
+        const auto hours = std::chrono::duration_cast<std::chrono::hours>(duration);
+        if (hours.count())
+            duration %= hours;
+        assert("Sanity check" && 0 <= hours.count() && hours.count() < 24);
+        const auto minutes = std::chrono::duration_cast<std::chrono::minutes>(duration);
+        if (minutes.count())
+            duration %= minutes;
+        assert("Sanity check" && 0 <= minutes.count() && minutes.count() < 60);
+        const auto seconds = std::chrono::duration_cast<std::chrono::seconds>(duration);
+        if (seconds.count())
+            duration %= seconds;
+        const auto milliseconds = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
+        if (seconds.count())
+            duration %= seconds;
+        assert("Sanity check" && 0 <= seconds.count() && seconds.count() < 60);
+
+        os << std::setfill('0')
+           << std::setw(2) << hours.count() << ':'
+           << std::setw(2) << minutes.count() << ':'
+           << std::setw(2) << seconds.count() << '.'
+           << std::setw(3) << milliseconds.count()
+           ;
     }
     return os;
 }

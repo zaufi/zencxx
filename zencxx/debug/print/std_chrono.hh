@@ -61,8 +61,6 @@ inline std::ostream& operator<<(std::ostream& os, const time_format_holder& fmt)
 }
 }                                                           // namespace details
 
-ZENCXX_MAKE_IOMAIP_WRAPPER(any, std_chrono_system_time_point, std::chrono::system_clock::time_point)
-
 /**
  * \brief Manipulator to force printing all following time points as localtime
  *
@@ -114,11 +112,21 @@ inline details::time_format_holder set_date_time_format(const char* const fmt)
     return details::time_format_holder(fmt);
 }
 
+ZENCXX_MAKE_IOMAIP_WRAPPER(any, std_chrono_system_time_point, std::chrono::system_clock::time_point)
+
 /**
  * \brief Make \c std::chrono::system_clock::time_point printable w/
  * \c zencxx::debug::print::any I/O manupulator.
  */
 ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, const std_chrono_system_time_point&);
+
+ZENCXX_MAKE_IOMAIP_WRAPPER(any, std_chrono_system_duration, std::chrono::system_clock::duration)
+
+/**
+ * \brief Make \c std::chrono::system_clock::duration printable w/
+ * \c zencxx::debug::print::any I/O manupulator.
+ */
+ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, const std_chrono_system_duration&);
 
 }}}                                                         // namespace print, debug, zencxx
 #endif                                                      // __ZENCXX__DEBUG__PRINT__STD_CHRONO_HH__

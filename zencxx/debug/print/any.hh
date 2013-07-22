@@ -38,6 +38,7 @@
 // Standard includes
 # include <ostream>
 
+# ifndef ZENCXX_DEBUG_PRINT_NO_GENERIC
 namespace zencxx { namespace debug { namespace print { namespace details {
 
 template <typename T>
@@ -66,6 +67,6 @@ inline details::generic_any_wrapper<T> any(const T& value)
 {
     return details::generic_any_wrapper<T>(value);
 }
-
 }}}                                                         // namespace print, debug, zencxx
+# endif                                                     // ZENCXX_DEBUG_PRINT_NO_GENERIC
 #endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_HH__
