@@ -34,39 +34,56 @@
 // Project specific includes
 # include <zencxx/debug/print/any_manip.hh>
 # include <zencxx/debug/print/std_chrono.hh>
+# include <zencxx/type_traits/has_left_shift.hh>
 
 // Standard includes
 # include <ostream>
 
-# ifndef ZENCXX_DEBUG_PRINT_NO_GENERIC
 namespace zencxx { namespace debug { namespace print { namespace details {
 
-template <typename T>
+template <typename T, bool IsPrintable>
 class generic_any_wrapper
 {
     const T& m_ref;
 
 public:
-    explicit generic_any_wrapper(const T& r) : m_ref(r) {}
+    /// \todo Is it really safe to have the non-explicit constructor here?
+    generic_any_wrapper(const T& r) : m_ref(r) {}
     const T& ref() const
     {
         return m_ref;
     }
+    void print_to(std::ostream& os) const
+    {
+        os << "<" << type_name<T>() << " is not printable>";
+    }
 };
 
 template <typename T>
-inline std::ostream& operator<<(std::ostream& os, generic_any_wrapper<T>&&)
+class generic_any_wrapper<T, true> : public generic_any_wrapper<T, false>
 {
-    os << "<" << type_name<T>() << " is not printable>";
+public:
+    /// \todo Is it really safe to have the non-explicit constructor here?
+    generic_any_wrapper(const T& r) : generic_any_wrapper<T, false>(r) {}
+    void print_to(std::ostream& os) const
+    {
+        os << this->ref();                                  // Print a value
+        details::show_type_info_impl<T>(os);                // Show type info, if needed
+    }
+};
+
+template <typename T, bool IsPrintable>
+inline std::ostream& operator<<(std::ostream& os, generic_any_wrapper<T, IsPrintable>&& wrp)
+{
+    wrp.print_to(os);
     return os;
 }
 }                                                           // namespace details
 
 template <typename T>
-inline details::generic_any_wrapper<T> any(const T& value)
+inline details::generic_any_wrapper<T, has_left_shift<std::ostream&, const T&>::value> any(const T& value)
 {
-    return details::generic_any_wrapper<T>(value);
+    return {value};
 }
 }}}                                                         // namespace print, debug, zencxx
-# endif                                                     // ZENCXX_DEBUG_PRINT_NO_GENERIC
 #endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_HH__

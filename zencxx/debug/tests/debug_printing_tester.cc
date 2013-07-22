@@ -32,6 +32,7 @@
 #include <zencxx/debug/print/any.hh>
 
 // Standard includes
+#include <boost/io/ios_state.hpp>
 // ALERT The following #define must be enabled only in one translation unit
 // per unit test binary (which may consists of several such modules)
 #define BOOST_AUTO_TEST_MAIN
@@ -53,6 +54,23 @@ namespace {
 struct nonstreamable {};
 }                                                           // anonymous namespace
 
+BOOST_AUTO_TEST_CASE(builtin_types_debug_printing_test)
+{
+    {
+        int a = 123;
+        std::cout << print::any(a) << std::endl;
+    }
+    {
+        auto a = 3.1415;
+        std::cout << print::show_type_info << print::any(a) << std::endl;
+    }
+    {
+        auto a = 2.73f;
+        std::cout << print::any(a) << std::endl;
+        print::no_show_type_info(std::cout);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(std_chrono_system_time_point_debug_printing_test)
 {
     {
@@ -69,9 +87,7 @@ BOOST_AUTO_TEST_CASE(std_chrono_system_time_point_debug_printing_test)
     }
     // Test for type w/o operator<< defined
     {
-#ifndef ZENCXX_DEBUG_PRINT_NO_GENERIC
         std::cout << print::any(nonstreamable()) << std::endl;
-#endif
     }
 }
 
