@@ -24,6 +24,7 @@
 # define __ZENCXX__MPL__HAS_APPLY_HH__
 
 // Project specific includes
+# include <zencxx/type_traits/details/yes_no_type.hh>
 
 // Standard includes
 # include <boost/mpl/has_xxx.hpp>
@@ -52,16 +53,13 @@ BOOST_MPL_HAS_XXX_TRAIT_NAMED_DEF(has_apply, apply, false)
 template <typename T, typename... Args>
 class has_apply
 {
-    typedef char yes_type;
-    typedef char (&no_type)[2];
-
     struct checker
     {
         template <typename U, typename... Params>
-        static no_type test(...);
+        static zencxx::details::no_type test(...);
 
         template <typename U, typename... Params>
-        static yes_type test(
+        static zencxx::details::yes_type test(
             typename std::add_pointer<
                 typename U::template apply<Params...>::type
               >::type
@@ -71,7 +69,7 @@ class has_apply
 public:
     constexpr static bool value = std::is_same<
         decltype(checker::template test<T, Args...>(0))
-      , yes_type
+      , zencxx::details::yes_type
       >::value;
     typedef std::integral_constant<bool, value> type;
 };

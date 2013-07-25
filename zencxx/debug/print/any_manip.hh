@@ -33,10 +33,21 @@
 # include <zencxx/debug/type_name.hh>
 
 // Standard includes
+# include <boost/io/ios_state.hpp>
 # include <ostream>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
 ZENCXX_NO_EXPORT extern const int s_show_type_idx;
+
+class show_type_info_saver : public boost::io::ios_iword_saver
+{
+    using boost::io::ios_iword_saver::state_type;
+
+public:
+    show_type_info_saver(state_type& s)
+      : boost::io::ios_iword_saver(s, s_show_type_idx)
+    {}
+};
 
 /// \internal Show type info depending on manipulator's state
 template <typename T, typename CharT, typename Traits>
@@ -45,6 +56,7 @@ inline void show_type_info_impl(std::basic_ostream<CharT, Traits>& os)
     if (os.iword(s_show_type_idx))
         os << " [" << type_name<T>() << ']';
 }
+
 }                                                           // namespace details
 
 /**

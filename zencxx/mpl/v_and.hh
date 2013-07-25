@@ -48,7 +48,7 @@ struct v_and<T1, T2, Tail...>
   : boost::mpl::eval_if<
       T1
     , v_and<T2, Tail...>
-    , boost::mpl::false_
+    , std::false_type
     >::type
 {
 };
@@ -59,7 +59,7 @@ struct v_and<T1, T2, Tail...>
  * Single parameter specialization
  */
 template <typename T>
-struct v_and<T> : boost::mpl::bool_<T::type::value>
+struct v_and<T> : std::integral_constant<bool, T::type::value>
 {
 };
 

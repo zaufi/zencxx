@@ -4,6 +4,8 @@
  * \brief Helper macros to produce wrapper types for I/O stream manipulators
  *
  * \date Sun Mar 31 15:26:28 MSK 2013 -- Initial design
+ *
+ * \todo Add ability to hide a wrapped type into a namespace (like \c details or \c aux)
  */
 /*
  * ZenCxx is free software: you can redistribute it and/or modify it
@@ -113,6 +115,13 @@
 /**
  * Same as \c ZENCXX_MAKE_IOMAIP_WRAPPER, but produce a templated wrapper
  * and manipulator-like function w/ variadic parameters count.
+ *
+ * \param MkWrapperName name of the (template) function to make a wrapper.
+ * It will be a "manupilator"'s name actually;
+ * \param WrapperType name of the wrapper type. This is a template class
+ * which just forward all parameters to a \c Type and holds a reference
+ * given to a constructor as a data member;
+ * \param Type a template name to wrap.
  *
  * \sa \c ZENCXX_MAKE_IOMAIP_WRAPPER
  */

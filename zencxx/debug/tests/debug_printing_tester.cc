@@ -69,6 +69,26 @@ BOOST_AUTO_TEST_CASE(builtin_types_debug_printing_test)
         std::cout << print::any(a) << std::endl;
         print::no_show_type_info(std::cout);
     }
+    {
+        std::cout << print::any('H') << std::endl;
+        std::cout << print::any('\n') << std::endl;
+        std::cout << print::any('\xab') << std::endl;
+    }
+}
+
+BOOST_AUTO_TEST_CASE(std_pair_debug_printing_test)
+{
+    {
+        auto a = std::make_pair(123, 'H');
+        std::cout << print::any(a) << std::endl;
+    }
+    {
+        auto a = std::make_pair(3.1415f, 2.73);
+        std::cout << print::show_type_info
+          << print::any(a)
+          << print::no_show_type_info
+          << std::endl;
+    }
 }
 
 BOOST_AUTO_TEST_CASE(std_chrono_system_time_point_debug_printing_test)

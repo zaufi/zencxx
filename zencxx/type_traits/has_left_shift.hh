@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Class \c zencxx::has_left_shift (interface)
+ * \brief Metafunction to check if expression <tt>l << r</tt> is valid
  *
  * \date Wed Jun 27 02:11:39 MSK 2012 -- Initial design
  */
@@ -30,7 +30,7 @@
 
 namespace zencxx {
 /// Generate \c has_left_shift metafunction
-ZEN_TT_EXPR_CHECKER(has_left_shift, (typename L, typename R), (L, R), (std::declval<L>() << std::declval<R>()));
+ZENCXX_TT_EXPR_CHECKER(has_left_shift, (typename L, typename R), (L, R), (std::declval<L>() << std::declval<R>()));
 
 /**
  * \struct has_left_shift

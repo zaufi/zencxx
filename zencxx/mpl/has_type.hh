@@ -27,7 +27,7 @@
 # include <zencxx/type_traits/details/expression_validity_checker.hh>
 
 // Standard includes
-# include <boost/mpl/has_xxx.hpp>
+# include <utility>
 
 namespace zencxx { namespace mpl {
 /**
@@ -36,6 +36,6 @@ namespace zencxx { namespace mpl {
  * implementation details), so we have to define our own... and better one
  * because of new features of C++11 :))
  */
-ZEN_TT_EXPR_CHECKER(has_type, (typename T), (T), std::declval<typename T::type>());
+ZENCXX_TT_EXPR_CHECKER(has_type, (typename T), (T), std::declval<typename T::type>());
 }}                                                          // namespace mpl, zencxx
 #endif                                                      // __ZENCXX__MPL__HAS_TYPE_HH__

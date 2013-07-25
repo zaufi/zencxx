@@ -1,12 +1,9 @@
 /**
  * \file
  *
- * \brief Generic function for debug-printing of any type
+ * \brief Macros to generate result_of_xxx metafunctions based on C++11 features
  *
- * \date Thu Jul 18 08:36:40 MSK 2013 -- Initial design
- *
- * \todo Generalize to use all kind of streams (i.e. including wide)...
- * But need to wait for full C++11 support (in the standard library).
+ * \date Thu Jul 25 02:36:10 MSK 2013 -- Initial design
  */
 /*
  * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
@@ -28,15 +25,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__ANY_HH__
-# define __ZENCXX__DEBUG__PRINT__ANY_HH__
+#ifndef __ZENCXX__TYPE_TRAITS__DETAILS__RESULT_OF_EXPRESSION_HH__
+# define __ZENCXX__TYPE_TRAITS__DETAILS__RESULT_OF_EXPRESSION_HH__
 
 // Project specific includes
-# include <zencxx/debug/print/any_generic.hh>
-# include <zencxx/debug/print/builtins.hh>
-# include <zencxx/debug/print/std_chrono.hh>
-# include <zencxx/debug/print/std_pair.hh>
 
 // Standard includes
+# include <boost/preprocessor/tuple/enum.hpp>
 
-#endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_HH__
+# define ZENCXX_TT_RESULT_OF_EXPR(Name, TplParamsT, ...) \
+    template <BOOST_PP_TUPLE_ENUM(TplParamsT)>           \
+    struct Name                                          \
+    {                                                    \
+        typedef decltype(__VA_ARGS__) type;              \
+    }
+
+#endif                                                      // __ZENCXX__TYPE_TRAITS__DETAILS__RESULT_OF_EXPRESSION_HH__

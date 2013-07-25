@@ -1,15 +1,12 @@
 /**
  * \file
  *
- * \brief Generic function for debug-printing of any type
+ * \brief Metafunction to check if expression <tt>*var</tt> is valid
  *
- * \date Thu Jul 18 08:36:40 MSK 2013 -- Initial design
- *
- * \todo Generalize to use all kind of streams (i.e. including wide)...
- * But need to wait for full C++11 support (in the standard library).
+ * \date Tue Jul 23 08:58:06 MSK 2013 -- Initial design
  */
 /*
- * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
+ * Copyright (C) 2013 Alex Turbov and contributors, all rights reserved.
  * This is free software. It is licensed for use, modification and
  * redistribution under the terms of the GNU Lesser General Public License,
  * version 3 or later <http://gnu.org/licenses/lgpl.html>
@@ -28,15 +25,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__ANY_HH__
-# define __ZENCXX__DEBUG__PRINT__ANY_HH__
+#ifndef __ZENCXX__TYPE_TRAITS__IS_DEREFERENCEABLE_HH__
+# define __ZENCXX__TYPE_TRAITS__IS_DEREFERENCEABLE_HH__
 
 // Project specific includes
-# include <zencxx/debug/print/any_generic.hh>
-# include <zencxx/debug/print/builtins.hh>
-# include <zencxx/debug/print/std_chrono.hh>
-# include <zencxx/debug/print/std_pair.hh>
+# include <zencxx/type_traits/details/expression_validity_checker.hh>
 
 // Standard includes
 
-#endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_HH__
+namespace zencxx {
+/// Generate \c is_dereferenceable metafunction
+ZENCXX_TT_EXPR_CHECKER(is_dereferenceable, (typename T), (T), (*std::declval<T>()));
+
+/**
+ * \struct is_dereferenceable
+ * \brief Check if variables of type \c T can be dereferenced
+ */
+
+}                                                           // namespace zencxx
+#endif                                                      // __ZENCXX__TYPE_TRAITS__IS_DEREFERENCEABLE_HH__

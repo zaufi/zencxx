@@ -1,12 +1,9 @@
 /**
  * \file
  *
- * \brief Generic function for debug-printing of any type
+ * \brief Debug printing for \c std::pair types
  *
- * \date Thu Jul 18 08:36:40 MSK 2013 -- Initial design
- *
- * \todo Generalize to use all kind of streams (i.e. including wide)...
- * But need to wait for full C++11 support (in the standard library).
+ * \date Tue Jul 23 02:00:06 MSK 2013 -- Initial design
  */
 /*
  * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
@@ -28,15 +25,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__ANY_HH__
-# define __ZENCXX__DEBUG__PRINT__ANY_HH__
+#ifndef __ZENCXX__DEBUG__PRINT__STD_PAIR_HH__
+# define __ZENCXX__DEBUG__PRINT__STD_PAIR_HH__
 
 // Project specific includes
+# include <zencxx/io_manipulator_wrapper.hh>
 # include <zencxx/debug/print/any_generic.hh>
-# include <zencxx/debug/print/builtins.hh>
-# include <zencxx/debug/print/std_chrono.hh>
-# include <zencxx/debug/print/std_pair.hh>
 
 // Standard includes
+# include <ostream>
+# include <utility>
 
-#endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_HH__
+namespace zencxx { namespace debug { namespace print {
+ZENCXX_MAKE_IOMAIP_WRAPPER_TEMPLATE(any, std_pair_wrapper, std::pair)
+
+template <typename T1, typename T2>
+inline std::ostream& operator<<(std::ostream& os, std_pair_wrapper<T1, T2>&& pw)
+{
+    {
+        details::show_type_info_saver s(os);
+        no_show_type_info(os);
+        os << '(' << any(pw.ref().first) << ',' << ' ' << any(pw.ref().second) << ')';
+    }
+    // Show type info if needed
+    details::show_type_info_impl<typename std_pair_wrapper<T1, T2>::wrapped_type>(os);
+    return os;
+}
+
+}}}                                                         // namespace print, debug, zencxx
+#endif                                                      // __ZENCXX__DEBUG__PRINT__STD_PAIR_HH__
