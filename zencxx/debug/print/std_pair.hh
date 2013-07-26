@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Debug printing for \c std::pair types
+ * \brief Debug printing for \c std::pair
  *
  * \date Tue Jul 23 02:00:06 MSK 2013 -- Initial design
  */

@@ -32,9 +32,11 @@
 # include <zencxx/debug/print/any_manip.hh>
 # include <zencxx/debug/type_name.hh>
 # include <zencxx/type_traits/has_left_shift.hh>
+# include <zencxx/type_traits/is_range_iterable.hh>
 
 // Standard includes
 # include <ostream>
+# include <utility>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
 
@@ -78,7 +80,13 @@ inline std::ostream& operator<<(std::ostream& os, generic_any_wrapper<T, IsPrint
 }                                                           // namespace details
 
 template <typename T>
-inline details::generic_any_wrapper<T, has_left_shift<std::ostream&, const T&>::value> any(const T& value)
+inline typename std::enable_if<
+    !is_range_iterable<T>::value
+  , details::generic_any_wrapper<
+        T
+      , has_left_shift<std::ostream&, const T&>::value
+      >
+  >::type any(const T& value)
 {
     return {value};
 }

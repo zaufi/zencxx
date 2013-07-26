@@ -29,6 +29,8 @@
 # define __ZENCXX__DEBUG__PRINT__BUILTINS_HH__
 
 // Project specific includes
+# include <zencxx/debug/print/any_manip.hh>
+# include <zencxx/debug/print/any_generic.hh>
 
 // Standard includes
 # include <iosfwd>
@@ -47,9 +49,6 @@ public:
         return m_value;
     }
 };
-
-/// Print (wrapped) chars in a fancy way
-std::ostream& operator<<(std::ostream& os, const value_store_wrapper<char> vw);
 }                                                           // namespace details
 
 inline details::value_store_wrapper<char> any(const char c)
@@ -57,5 +56,48 @@ inline details::value_store_wrapper<char> any(const char c)
     return details::value_store_wrapper<char>(c);
 }
 
-}}}                                                         // namespace print, debug, zencxx
+inline details::value_store_wrapper<const char*> any(const char* p)
+{
+    return details::value_store_wrapper<const char*>(p);
+}
+inline details::value_store_wrapper<char*> any(char* p)
+{
+    return details::value_store_wrapper<char*>(p);
+}
+
+template <typename T>
+inline details::value_store_wrapper<T*> any(T* p)
+{
+    return details::value_store_wrapper<T*>(p);
+}
+
+namespace details {
+/// Print (wrapped) chars in a fancy way
+std::ostream& operator<<(std::ostream&, const value_store_wrapper<char>);
+
+/// Pretty print for plain C strings
+std::ostream& operator<<(std::ostream&, const value_store_wrapper<const char*>);
+std::ostream& operator<<(std::ostream&, const value_store_wrapper<char*>);
+
+/// Pretty print for plain C strings
+std::ostream& operator<<(std::ostream&, const value_store_wrapper<const void*>);
+std::ostream& operator<<(std::ostream&, const value_store_wrapper<void*>);
+
+/// Pretty print for raw pointers
+template <typename T>
+inline std::ostream& operator<<(std::ostream& os, const value_store_wrapper<T*> pw)
+{
+    {
+        details::show_type_info_saver s(os);
+        no_show_type_info(os);
+        if (pw.ref())
+            os << '@' << pw.ref() << " -> " << any(*pw.ref());
+        else
+            os << "nullptr";
+    }
+    // Show type info if needed
+    details::show_type_info_impl<T*>(os);
+    return os;
+}
+}}}}                                                        // namespace details, print, debug, zencxx
 #endif                                                      // __ZENCXX__DEBUG__PRINT__BUILTINS_HH__

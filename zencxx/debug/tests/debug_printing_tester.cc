@@ -41,7 +41,10 @@
 // Include the following file if u need to validate some text results
 // #include <boost/test/output_test_stream.hpp>
 #include <chrono>
+#include <cstring>
 #include <iostream>
+#include <map>
+#include <vector>
 
 // Uncomment if u want to use boost test output streams.
 // Then just output smth to it and validate an output by
@@ -74,6 +77,32 @@ BOOST_AUTO_TEST_CASE(builtin_types_debug_printing_test)
         std::cout << print::any('\n') << std::endl;
         std::cout << print::any('\xab') << std::endl;
     }
+    {
+        std::cout << print::any("Hello Africa!") << std::endl;
+    }
+    {
+        char* tmp = strdup("Hello Australia!");
+        std::cout << print::show_type_info << print::any(tmp) << std::endl;
+        std::free(tmp);
+        print::no_show_type_info(std::cout);
+    }
+    {
+        int a = 123;
+        std::cout << print::any(&a) << std::endl;
+    }
+    {
+        const unsigned b = 456;
+        print::show_type_info(std::cout);
+        std::cout << print::any(&b) << std::endl;
+        print::no_show_type_info(std::cout);
+    }
+    {
+        void* p = nullptr;
+        std::cout << print::any(p) << std::endl;
+        const void* cp = nullptr;
+        std::cout << print::show_type_info << print::any(cp) << std::endl;
+        print::no_show_type_info(std::cout);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(std_pair_debug_printing_test)
@@ -84,6 +113,13 @@ BOOST_AUTO_TEST_CASE(std_pair_debug_printing_test)
     }
     {
         auto a = std::make_pair(3.1415f, 2.73);
+        std::cout << print::show_type_info
+          << print::any(a)
+          << print::no_show_type_info
+          << std::endl;
+    }
+    {
+        std::pair<unsigned int const, char const*> a = {123, "Hello"};
         std::cout << print::show_type_info
           << print::any(a)
           << print::no_show_type_info
@@ -140,5 +176,39 @@ BOOST_AUTO_TEST_CASE(std_chrono_system_duration_debug_printing_test)
     {
         auto d = std::chrono::hours(59) + std::chrono::minutes(35) + std::chrono::seconds(46);
         std::cout << print::any(d) << std::endl;
+    }
+}
+
+BOOST_AUTO_TEST_CASE(containers_debug_printing_test)
+{
+    {
+        int a[4] = {10, 20, 30, 40};
+        /// \todo This call pointer overload instead of arrays :-(
+        std::cout << print::any(a) << std::endl;
+    }
+    {
+        std::vector<int> a = {100, 200, 300, 400};
+        std::cout << print::any(a) << std::endl;
+    }
+    {
+        std::map<unsigned, const char*> a = {
+            {1, "Jan"}
+          , {2, "Feb"}
+          , {3, "Mar"}
+        };
+        std::cout << print::any(a) << std::endl;
+    }
+}
+
+BOOST_AUTO_TEST_CASE(std_tuple_debug_printing_test)
+{
+    {
+        auto a = std::make_tuple('A', short(123), 456, 3.1415, 2.73f, "Hello Antarctida!");
+        std::cout << print::any(a) << std::endl;
+    }
+    {
+        int i = 123;
+        auto a = std::make_tuple('A', std::ref(i));
+        std::cout << print::show_type_info << print::any(a) << print::no_show_type_info << std::endl;
     }
 }

@@ -27,7 +27,6 @@
 
 // Project specific includes
 #include <zencxx/debug/print/builtins.hh>
-#include <zencxx/debug/print/any_manip.hh>
 #include <zencxx/hex2char_char2hex.hh>
 
 // Standard includes
@@ -74,6 +73,59 @@ std::ostream& operator<<(std::ostream& os, const value_store_wrapper<char> vw)
     return os;
 }
 
-}                                                           // namespace details
+/**
+ * \todo Do some fancy string printing w/ escape characters and hex/oct numbers for
+ * non-printable chars? What about UTF-8 strings?
+ */
+std::ostream& operator<<(std::ostream& os, const value_store_wrapper<const char*> pw)
+{
+    if (pw.ref())
+    {
+        os << '"' << pw.ref() << '"';
+    }
+    else
+    {
+        os << "nullptr";
+    }
+    // Show type info if needed
+    details::show_type_info_impl<const char*>(os);
+    return os;
+}
 
-}}}                                                         // namespace print, debug, zencxx
+std::ostream& operator<<(std::ostream& os, const value_store_wrapper<char*> pw)
+{
+    {
+        details::show_type_info_saver s(os);
+        no_show_type_info(os);
+        if (pw.ref())
+            os << '@' << static_cast<void*>(pw.ref()) << " -> " << any(const_cast<const char*>(pw.ref()));
+        else
+            os << "nullptr";
+    }
+    // Show type info if needed
+    details::show_type_info_impl<char*>(os);
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const value_store_wrapper<const void*> pw)
+{
+    if (pw.ref())
+        os << '@' << pw.ref();
+    else
+        os << "nullptr";
+    // Show type info if needed
+    details::show_type_info_impl<const void*>(os);
+    return os;
+}
+std::ostream& operator<<(std::ostream& os, const value_store_wrapper<void*> pw)
+{
+    if (pw.ref())
+        os << '@' << pw.ref();
+    else
+        os << "nullptr";
+    // Show type info if needed
+    details::show_type_info_impl<void*>(os);
+    return os;
+}
+
+}}}}                                                        // namespace details, print, debug, zencxx

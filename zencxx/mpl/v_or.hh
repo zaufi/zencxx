@@ -27,6 +27,7 @@
 
 // Standard includes
 # include <boost/mpl/eval_if.hpp>
+# include <type_traits>
 
 namespace zencxx { namespace mpl {
 
@@ -47,7 +48,7 @@ template <typename T1, typename T2, typename... Tail>
 struct v_or<T1, T2, Tail...>
   : boost::mpl::eval_if<
       T1
-    , boost::mpl::true_
+    , std::true_type
     , v_or<T2, Tail...>
     >::type
 {
@@ -59,7 +60,7 @@ struct v_or<T1, T2, Tail...>
  * Single parameter specialization
  */
 template <typename T>
-struct v_or<T> : boost::mpl::bool_<T::type::value>
+struct v_or<T> : std::integral_constant<bool, T::type::value>
 {
 };
 

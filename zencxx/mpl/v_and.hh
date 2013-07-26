@@ -27,6 +27,7 @@
 
 // Standard includes
 # include <boost/mpl/eval_if.hpp>
+# include <type_traits>
 
 namespace zencxx { namespace mpl {
 

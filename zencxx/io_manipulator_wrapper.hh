@@ -12,12 +12,12 @@
  * under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * ZenCxx is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
@@ -28,6 +28,23 @@
 // Project specific includes
 
 // Standard includes
+
+/**
+ * Function-like macro to declare a wrapper class which
+ * holds a reference to \c Type.
+ */
+# define ZENCXX_MAKE_WRAPPER_CLASS(WrapperType, Type)     \
+    class WrapperType                                     \
+    {                                                     \
+        const Type& m_ref;                                \
+    public:                                               \
+        typedef Type wrapped_type;                        \
+        explicit WrapperType(const Type& r) : m_ref(r) {} \
+        const Type& ref() const                           \
+        {                                                 \
+            return m_ref;                                 \
+        }                                                 \
+    }
 
 /**
  * Function-like macro to declare a wrapper class for \c Type and a helper
@@ -96,20 +113,29 @@
  *
  */
 # define ZENCXX_MAKE_IOMAIP_WRAPPER(MkWrapperName, WrapperType, Type) \
-    class WrapperType                                                 \
-    {                                                                 \
-        const Type& m_ref;                                            \
-    public:                                                           \
-        typedef Type wrapped_type;                                    \
-        explicit WrapperType(const Type& r) : m_ref(r) {}             \
-        const Type& ref() const                                       \
-        {                                                             \
-            return m_ref;                                             \
-        }                                                             \
-    };                                                                \
+    ZENCXX_MAKE_WRAPPER_CLASS(WrapperType, Type);                     \
     inline WrapperType MkWrapperName(const Type& r)                   \
     {                                                                 \
         return WrapperType(r);                                        \
+    }
+
+/**
+ * Function-like macro to declare a template wrapper class which
+ * holds a reference to \c Type<...> instantiated with parameters.
+ * So, \c Type is a template tempalte parameter.
+ */
+# define ZENCXX_MAKE_TEMPLATE_TEMPLATE_WRAPPER_CLASS(WrapperType, Type) \
+    template <typename... Params>                                       \
+    class WrapperType                                                   \
+    {                                                                   \
+        const Type<Params...>& m_ref;                                   \
+    public:                                                             \
+        typedef Type<Params...> wrapped_type;                           \
+        explicit WrapperType(const Type<Params...>& r) : m_ref(r) {}    \
+        const Type<Params...>& ref() const                              \
+        {                                                               \
+            return m_ref;                                               \
+        }                                                               \
     }
 
 /**
@@ -126,22 +152,29 @@
  * \sa \c ZENCXX_MAKE_IOMAIP_WRAPPER
  */
 # define ZENCXX_MAKE_IOMAIP_WRAPPER_TEMPLATE(MkWrapperName, WrapperType, Type) \
-    template <typename... Params>                                              \
-    class WrapperType                                                          \
-    {                                                                          \
-        const Type<Params...>& m_ref;                                          \
-    public:                                                                    \
-        typedef Type<Params...> wrapped_type;                                  \
-        explicit WrapperType(const Type<Params...>& r) : m_ref(r) {}           \
-        const Type<Params...>& ref() const                                     \
-        {                                                                      \
-            return m_ref;                                                      \
-        }                                                                      \
-    };                                                                         \
+    ZENCXX_MAKE_TEMPLATE_TEMPLATE_WRAPPER_CLASS(WrapperType, Type);            \
     template <typename... Params>                                              \
     inline WrapperType<Params...> MkWrapperName(const Type<Params...>& r)      \
     {                                                                          \
         return WrapperType<Params...>(r);                                      \
+    }
+
+/**
+ * Function-like macro to declare a template wrapper class for any
+ * arbitrary type \c Type, which holds a reference to it.
+ */
+# define ZENCXX_MAKE_TEMPLATE_WRAPPER_CLASS(WrapperType, Type) \
+    template <typename Type>                                   \
+    class WrapperType                                          \
+    {                                                          \
+        const Type& m_ref;                                     \
+    public:                                                    \
+        typedef Type wrapped_type;                             \
+        explicit WrapperType(const Type& r) : m_ref(r) {}      \
+        const Type& ref() const                                \
+        {                                                      \
+            return m_ref;                                      \
+        }                                                      \
     }
 
 #endif                                                      // __ZENCXX__IO_MANIPULATOR_WRAPPER_HH__
