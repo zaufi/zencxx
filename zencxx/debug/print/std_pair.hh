@@ -36,8 +36,8 @@
 # include <ostream>
 # include <utility>
 
-namespace zencxx { namespace debug { namespace print {
-ZENCXX_MAKE_IOMAIP_WRAPPER_TEMPLATE(any, std_pair_wrapper, std::pair)
+namespace zencxx { namespace debug { namespace print { namespace details {
+ZENCXX_MAKE_TEMPLATE_TEMPLATE_WRAPPER_CLASS(std_pair_wrapper, std::pair);
 
 template <typename T1, typename T2>
 inline std::ostream& operator<<(std::ostream& os, std_pair_wrapper<T1, T2>&& pw)
@@ -50,6 +50,13 @@ inline std::ostream& operator<<(std::ostream& os, std_pair_wrapper<T1, T2>&& pw)
     // Show type info if needed
     details::show_type_info_impl<typename std_pair_wrapper<T1, T2>::wrapped_type>(os);
     return os;
+}
+}                                                           // namespace details
+
+template <typename T1, typename T2>
+inline details::std_pair_wrapper<T1, T2> any(const std::pair<T1, T2>& p)
+{
+    return details::std_pair_wrapper<T1, T2>(p);
 }
 
 }}}                                                         // namespace print, debug, zencxx

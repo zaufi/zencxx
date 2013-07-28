@@ -1,12 +1,9 @@
 /**
  * \file
  *
- * \brief Generic function for debug-printing of any type
+ * \brief Debug printer for container types
  *
- * \date Thu Jul 18 08:36:40 MSK 2013 -- Initial design
- *
- * \todo Generalize to use all kind of streams (i.e. including wide)...
- * But need to wait for full C++11 support (in the standard library).
+ * \date Fri Jul 26 08:49:44 MSK 2013 -- Initial design
  */
 /*
  * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
@@ -28,18 +25,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__ANY_HH__
-# define __ZENCXX__DEBUG__PRINT__ANY_HH__
-
 // Project specific includes
-// ATTENTION #include order is IMPORTANT!
-# include <zencxx/debug/print/any_generic.hh>
-# include <zencxx/debug/print/builtins.hh>
-# include <zencxx/debug/print/std_chrono.hh>
-# include <zencxx/debug/print/std_tuple.hh>
-# include <zencxx/debug/print/containers.hh>
-# include <zencxx/debug/print/std_pair.hh>
+#include <zencxx/debug/print/containers.hh>
 
 // Standard includes
 
-#endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_HH__
+namespace zencxx { namespace debug { namespace print { namespace details {
+
+std::ostream& operator<<(std::ostream& os, std_string_wrapper&& sw)
+{
+    os << '"' << sw.ref() << '"';
+    // Show type info if needed
+    details::show_type_info_impl<std_string_wrapper::wrapped_type>(os);
+    return os;
+}
+}}}}                                                        // namespace details, print, debug, zencxx

@@ -36,11 +36,20 @@
 
 // Standard includes
 # include <ostream>
+# include <string>
 # include <type_traits>
 # include <utility>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
+/// Generate wrapper for \c std::string
+ZENCXX_MAKE_WRAPPER_CLASS(std_string_wrapper, std::string);
+
+/// Pretty printer for strings
+std::ostream& operator<<(std::ostream&, std_string_wrapper&&);
+
+/// Generate wrapper for container (iterable) types
 ZENCXX_MAKE_TEMPLATE_WRAPPER_CLASS(container_wrapper, T);
+
 template <typename T>
 inline std::ostream& operator<<(std::ostream& os, container_wrapper<T>&& wc)
 {
@@ -62,16 +71,23 @@ inline std::ostream& operator<<(std::ostream& os, container_wrapper<T>&& wc)
     details::show_type_info_impl<T*>(os);
     return os;
 }
+
 }                                                           // namespace details
+
+inline details::std_string_wrapper any(const std::string& s)
+{
+    return details::std_string_wrapper(s);
+}
 
 template <typename T>
 inline typename std::enable_if<
-    is_range_iterable<T>::value && !std::is_array<T>::value
+    is_range_iterable<T>::value
   , details::container_wrapper<T>
   >::type any(T& c)
 {
     return details::container_wrapper<T>(c);
 }
+
 
 #if 0
 template <typename T, std::size_t N>

@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(std_pair_debug_printing_test)
           << std::endl;
     }
     {
-        std::pair<unsigned int const, char const*> a = {123, "Hello"};
+        std::pair<unsigned int const, std::string> a = {123, std::string("Hello")};
         std::cout << print::show_type_info
           << print::any(a)
           << print::no_show_type_info
@@ -196,6 +196,10 @@ BOOST_AUTO_TEST_CASE(containers_debug_printing_test)
           , {2, "Feb"}
           , {3, "Mar"}
         };
+        std::cout << print::any(a) << std::endl;
+    }
+    {
+        std::string a = "Hello Americas!";
         std::cout << print::any(a) << std::endl;
     }
 }

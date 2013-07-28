@@ -6,6 +6,7 @@ set(
     debug/print/any_manip.cc
     debug/print/builtins.cc
     debug/print/std_chrono.cc
+    debug/print/containers.cc
     exception.cc
     ticker.cc
     utility/random.cc
