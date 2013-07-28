@@ -37,6 +37,11 @@ namespace zencxx { namespace debug {
 
 /**
  * \brief Try to demangle given name
+ *
+ * \todo Add type heuristics-based beautifier: i.e. remove spaces between
+ * close angle brackets, replace some \c std types instantiated w/ default
+ * parameters to shorter well known aliases (like \c std::basic_string<char>
+ * to \c std::string), & etc.
  */
 inline std::string demangle_name(const char* const name)
 {
@@ -58,7 +63,7 @@ inline std::string demangle_name(const char* const name)
 /**
  * \brief Get type name as string
  *
- * This function convinient to use when there is a variable of given type
+ * This function convenient to use when there is a variable of given type
  * \c T exists or can be easily declared (default constructed). Otherwise
  * one may use overload and specify the desired type as a template
  * parameter.

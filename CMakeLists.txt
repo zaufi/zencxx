@@ -206,7 +206,7 @@ set(
 set_common_package_options(
     PROJECT_VERSION "${ZENCXX_VERSION}"
     VENDOR_NAME "Alex Turbov"
-    VENDOR_CONTACT "i.zaufi@gmail.com"
+    VENDOR_CONTACT "Alex Turbov <i.zaufi@gmail.com>"
     BUILD_FLAVOUR "${CPACK_BUILD_FLAVOUR}"
     SIGN_BY ${ZENCXX_SIGN_USER_NAME}
     SIGN_WITH ${ZENCXX_SIGN_KEY_ID}

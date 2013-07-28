@@ -1,21 +1,23 @@
 /**
  * \file
  *
- * \brief Class \c zencxx::io_manipulator_wrapper (interface)
+ * \brief Helper macros to produce wrapper types for I/O stream manipulators
  *
  * \date Sun Mar 31 15:26:28 MSK 2013 -- Initial design
+ *
+ * \todo Add ability to hide a wrapped type into a namespace (like \c details or \c aux)
  */
 /*
  * ZenCxx is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * ZenCxx is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
@@ -28,86 +30,151 @@
 // Standard includes
 
 /**
- * Function-like macro to declare a \c typedef for \c io_manipulator_wrapper<>
- * wrapped type and a helper function (manipulator) to produce it.
- *
- * \param Type a type to be wrapped
- * \param WrapperType a type of the \c io_manipulator_wrapper<> instantiation
- * \param MkWrapperName an I/O manipulator-like function name
+ * Function-like macro to declare a wrapper class which
+ * holds a reference to \c Type.
  */
-# define ZENCXX_MAKE_IOMAIP_WRAPPER_FOR(Type, WrapperType, MkWrapperName) \
-    typedef zencxx::io_manipulator_wrapper<__LINE__, Type> WrapperType;   \
-    inline WrapperType MkWrapperName(const Type& r)                       \
-    {                                                                     \
-        return WrapperType(r);                                            \
+# define ZENCXX_MAKE_WRAPPER_CLASS(WrapperType, Type)     \
+    class WrapperType                                     \
+    {                                                     \
+        const Type& m_ref;                                \
+    public:                                               \
+        typedef Type wrapped_type;                        \
+        explicit WrapperType(const Type& r) : m_ref(r) {} \
+        const Type& ref() const                           \
+        {                                                 \
+            return m_ref;                                 \
+        }                                                 \
     }
-
-namespace zencxx {
 
 /**
- * \brief Helper class to produce wrappers used to create manipulators like
- * functions for various types.
+ * Function-like macro to declare a wrapper class for \c Type and a helper
+ * function ("manipulator") to produce it from a "raw" type.
  *
- * The idea is to provide an \b unique type, with binded reference inside, to some type \c T
- * (a wrapper type). Then one may provide an \c operator<< for such a wrapper(s) in
- * different ways (to add manipulator-like behaviour).
+ * Wrapper just holds a \c const reference to a wrapped type and has the
+ * only member \c ref() to access it. Also manipulator-like function
+ * will be defined to produce that wrappers from a "raw" type.
  *
- * For example, if there is some struct w/ lot of fields, and we want to have a short
- * output when streamming it, but sometimes long, we can define I/O manipulator to print
- * a \e short form like this (assuming default \c operator<< for that structure will
- * print everything -- i.e. long form):
- *
+ * It's supposed to be used like this:
  * \code
- *  struct some
+ *  struct some_user_type {...};
+ *  ZENCXX_MAKE_IOMAIP_WRAPPER(manip_name, wrapped_type, some_user_type)
+ *  std::ostream& operator<<(std::ostream& os, const wrapped_type& w)
  *  {
- *    // a lot of members here
- *  };
- *
- *  // define unique type to overload operator<< [1]
- *  typedef zencxx::io_manipulator_wrapper<__LINE__, some> short_some_io_manip;
- *
- *  // define a helper function to produce such wrappers using ADL [2]
- *  short_some_io_manip output_short(const some& s) {
- *    return short_some_io_manip(s);
+ *      // access/print members of original type (some_user_type) via w.ref()
+ *      os << w.ref().m_member;
+ *      return os;
  *  }
- *
- *  // and finally overload to print a short version of some struct
- *  std::ostream& operator<<(std::ostream& os, const short_some_io_manip& sw) {
- *    os << sw.ref().m_some_member << ... ;
- *    return os;
- *  }
- *
- *  // Now it can be used like this:
- *  some s = ...;
- *  std::cout << output_short(s) << ...;
  * \endcode
  *
- * Using similar approach for other types will result in a series of overloaded
- * functions (I/O manipulators) probably in a different namespaces (so ADL can be used)
- * which give you a unified way to print your structures in a short/long (or any other kind) from.
- * So if you have a vast of structures to print any of them in a \e short form you can use
- * the "same" manipulator, named \c output_short.
+ * The basic idea behind all this stuff is like the following:
+ * suppose you have a bunch of classes w/ UUID (for example) -- smth like a
+ * \c document, \c session, \c user, ... The idea is to have a single, I/O
+ * manipulator-like function to print an UUID for all of that types, possible
+ * defined in different namespaces.
  *
- * Wrapped type <em>[1]</em> and a helper function <em>[2]</em>, to produce it, can
- * be generated by a macro \c ZENCXX_MAKE_IOMAIP_WRAPPER_FOR.
+ * To achieve that, one have to do the following:
+ * \code
+ *  namespace some {
+ *  class document {};
+ *  ZENCXX_MAKE_IOMAIP_WRAPPER(uuid, print_document_uuid, document)
+ *  std::ostream& operator<<(std::ostream&, print_document_uuid&& w)
+ *  {
+ *     os << w.ref().uuid();
+ *     return os;
+ *  }
+ *  }
+ *  namespace other {
+ *  class session {};
+ *  ZENCXX_MAKE_IOMAIP_WRAPPER(uuid, print_session_uuid, session)
+ *  std::ostream& operator<<(std::ostream&, print_session_uuid&& w)
+ *  {
+ *     os << w.ref().uuid();
+ *     return os;
+ *  }
+ *  }
+ *  // When somewhere else...
+ *  some::document doc = ...;
+ *  other::session s = ...;
+ *  // Now you can print them in a similar way:
+ *  std::cout << "session " << uuid(s) << ": got document " << uuid(doc) << std::endl;
+ * \endcode
  *
- * \sa \c ZENCXX_MAKE_IOMAIP_WRAPPER_FOR
+ * Note what you don't need to specify a full namespace for manipulator function -- it
+ * will be found by ADL. More complex example may print something else (except UUID) --
+ * just suppose each of mentioned structures have a lot of fields and for logging purposes
+ * from time to time you want to print some brief info about document/session/user
+ * in form of <code>description[UUID]</code>, for example. To do so, you can have a
+ * "manipulator" named \c brief() for all of that classes.
+ *
+ *
+ * \param MkWrapperName an I/O manipulator-like function name
+ * \param WrapperType a name of the wrapper type
+ * \param Type a type to be wrapped
+ *
  */
-template <int Dummy, typename T>
-class io_manipulator_wrapper
-{
-    /// A reference to the wrapped instance of \c T
-    const T& m_ref;
-
-public:
-    /// Make an instance using a reference to \c T
-    explicit io_manipulator_wrapper(const T& r) : m_ref(r) {}
-    /// Give a stored reference to outer world
-    const T& ref() const
-    {
-        return m_ref;
+# define ZENCXX_MAKE_IOMAIP_WRAPPER(MkWrapperName, WrapperType, Type) \
+    ZENCXX_MAKE_WRAPPER_CLASS(WrapperType, Type);                     \
+    inline WrapperType MkWrapperName(const Type& r)                   \
+    {                                                                 \
+        return WrapperType(r);                                        \
     }
-};
 
-}                                                           // namespace zencxx
+/**
+ * Function-like macro to declare a template wrapper class which
+ * holds a reference to \c Type<...> instantiated with parameters.
+ * So, \c Type is a template tempalte parameter.
+ */
+# define ZENCXX_MAKE_TEMPLATE_TEMPLATE_WRAPPER_CLASS(WrapperType, Type) \
+    template <typename... Params>                                       \
+    class WrapperType                                                   \
+    {                                                                   \
+        const Type<Params...>& m_ref;                                   \
+    public:                                                             \
+        typedef Type<Params...> wrapped_type;                           \
+        explicit WrapperType(const Type<Params...>& r) : m_ref(r) {}    \
+        const Type<Params...>& ref() const                              \
+        {                                                               \
+            return m_ref;                                               \
+        }                                                               \
+    }
+
+/**
+ * Same as \c ZENCXX_MAKE_IOMAIP_WRAPPER, but produce a templated wrapper
+ * and manipulator-like function w/ variadic parameters count.
+ *
+ * \param MkWrapperName name of the (template) function to make a wrapper.
+ * It will be a "manupilator"'s name actually;
+ * \param WrapperType name of the wrapper type. This is a template class
+ * which just forward all parameters to a \c Type and holds a reference
+ * given to a constructor as a data member;
+ * \param Type a template name to wrap.
+ *
+ * \sa \c ZENCXX_MAKE_IOMAIP_WRAPPER
+ */
+# define ZENCXX_MAKE_IOMAIP_WRAPPER_TEMPLATE(MkWrapperName, WrapperType, Type) \
+    ZENCXX_MAKE_TEMPLATE_TEMPLATE_WRAPPER_CLASS(WrapperType, Type);            \
+    template <typename... Params>                                              \
+    inline WrapperType<Params...> MkWrapperName(const Type<Params...>& r)      \
+    {                                                                          \
+        return WrapperType<Params...>(r);                                      \
+    }
+
+/**
+ * Function-like macro to declare a template wrapper class for any
+ * arbitrary type \c Type, which holds a reference to it.
+ */
+# define ZENCXX_MAKE_TEMPLATE_WRAPPER_CLASS(WrapperType, Type) \
+    template <typename Type>                                   \
+    class WrapperType                                          \
+    {                                                          \
+        const Type& m_ref;                                     \
+    public:                                                    \
+        typedef Type wrapped_type;                             \
+        explicit WrapperType(const Type& r) : m_ref(r) {}      \
+        const Type& ref() const                                \
+        {                                                      \
+            return m_ref;                                      \
+        }                                                      \
+    }
+
 #endif                                                      // __ZENCXX__IO_MANIPULATOR_WRAPPER_HH__

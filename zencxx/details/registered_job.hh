@@ -26,7 +26,7 @@
 // Project specific includes
 
 // Standard includes
-# include <boost/asio/steady_timer.hpp>
+# include <boost/asio/system_timer.hpp>
 # include <functional>
 # include <memory>
 # include <string>
@@ -63,17 +63,17 @@ struct registered_job
       , periodic                                            ///< Periodically running job
     };
 
-    /// \warning Unfortunately \c boost::asio::deadline_timer isn't movable
+    /// \warning Unfortunately \c boost::asio timers aren't movable
     /// as well as \c boost::scoped_ptr (and \c shared_ptr is too heavy to use here),
     /// so \c std::unique_ptr comes into scene :)
-    std::unique_ptr<boost::asio::steady_timer> m_timer;     ///< Timer to wait on
+    std::unique_ptr<boost::asio::system_timer> m_timer;     ///< Timer to wait on
     std::chrono::steady_clock::duration m_interval;         ///< In case of periodic job it contains period
     std::function<void()> m_functor;                        ///< Functor to execute
     type m_type;
     state m_state;
 
     registered_job(
-        std::unique_ptr<boost::asio::steady_timer>&& timer
+        std::unique_ptr<boost::asio::system_timer>&& timer
       , const std::chrono::steady_clock::duration interval
       , std::function<void()>&& functor
       , const type t

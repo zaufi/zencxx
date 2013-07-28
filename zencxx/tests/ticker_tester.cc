@@ -58,7 +58,7 @@ BOOST_FIXTURE_TEST_CASE(immediate_run_test, prepare_ticker)
 
 BOOST_FIXTURE_TEST_CASE(abs_time_run_test, prepare_ticker)
 {
-    auto now = std::chrono::steady_clock::now();
+    auto now = std::chrono::system_clock::now();
     m_ticker->call(
         [&]()
         {
@@ -72,7 +72,7 @@ BOOST_FIXTURE_TEST_CASE(abs_time_run_test, prepare_ticker)
 
 BOOST_FIXTURE_TEST_CASE(stopping_abs_time_run_test, prepare_ticker)
 {
-    auto now = std::chrono::steady_clock::now();
+    auto now = std::chrono::system_clock::now();
     auto j = m_ticker->call(
         [&]()
         {
@@ -91,7 +91,7 @@ BOOST_FIXTURE_TEST_CASE(stopping_abs_time_run_test, prepare_ticker)
 
 BOOST_FIXTURE_TEST_CASE(canceling_abs_time_run_test, prepare_ticker)
 {
-    auto now = std::chrono::steady_clock::now();
+    auto now = std::chrono::system_clock::now();
     auto j = m_ticker->call(
         [&]()
         {
@@ -107,7 +107,7 @@ BOOST_FIXTURE_TEST_CASE(canceling_abs_time_run_test, prepare_ticker)
 
 BOOST_FIXTURE_TEST_CASE(abs_time_expired_run_test, prepare_ticker)
 {
-    auto now = std::chrono::steady_clock::now();
+    auto now = std::chrono::system_clock::now();
     auto j = m_ticker->call(
         [&]()
         {
@@ -159,7 +159,7 @@ BOOST_FIXTURE_TEST_CASE(rel_time_reschedule_self_test, prepare_ticker)
 
 BOOST_FIXTURE_TEST_CASE(dead_task_removal_test, prepare_ticker)
 {
-    auto now = std::chrono::steady_clock::now();
+    auto now = std::chrono::system_clock::now();
     auto j = m_ticker->call(
         [&]()
         {

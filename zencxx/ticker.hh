@@ -6,7 +6,7 @@
  * \date Tue Jun 29 09:29:40 MSD 2010 -- Initial design
  * \date Tue Sep 20 00:15:14 MSK 2011 -- Rewrite \c ticker from scratch to use \c boost::asio::io_service
  *
- * \todo Research the best way to pass \c std::chrono::steady_clock::duration instances to functions.
+ * \todo Research the best way to pass \c std::chrono::system_clock::duration instances to functions.
  */
 /*
  * ZenCxx is free software: you can redistribute it and/or modify it
@@ -42,9 +42,22 @@
 
 namespace zencxx {
 /**
- * \brief Manage execution of periodic jobs
+ * \brief Manage execution of one-time and/or periodic jobs
+ *
+ * To schedule a job one can use an overloaded method \c call() which can
+ * be used to
+ * - call a single run job immediately (w/o particular time)
+ * - call a single run job at specified time. If scheduled time already in
+ *   the past at moment of a \c call(), the job will be executed immediately.
+ * - call a periodic job. In this case the next run occurs at \f$ now + period \f$,
+ *   the next one at \f$ now+2*period \f$, & etc.
+ * - call a periodic job starting at specified time -- i.e. the first call
+ *   occurs at \f$ time \f$, the next one at \f$ time+period \f$, & etc. If specified
+ *   time already in the past, the next call take place at \f$ now + (now-time) \bmod{period} \f$
  *
  * \todo Add \c call() overload with initial start time and period.
+ * \todo Need to rethink and redesign this class to support system and steady clock depending on
+ * requirements.
  */
 class ZENCXX_EXPORT ticker : public std::enable_shared_from_this<ticker>
 {
@@ -108,14 +121,14 @@ public:
     template <typename Functor>
     job call(
         Functor
-      , const std::chrono::steady_clock::duration
+      , const std::chrono::system_clock::duration
       , job::start_type = job::start_type::auto_start
       );
     /// Register callback to execute once at given time
     template <typename Functor>
     job call(
         Functor
-      , const std::chrono::steady_clock::time_point
+      , const std::chrono::system_clock::time_point
       );
     /// Register a callback to execute once ASAP
     template <typename Functor>
@@ -230,23 +243,23 @@ inline ticker::ticker(boost::asio::io_service& srv)
 template <typename Functor>
 inline void ticker::call(Functor nulary_functor)
 {
-    m_srv.post(std::move(nulary_functor));
+    m_srv.post(std::forward<Functor>(nulary_functor));
 }
 
 template <typename Functor>
 inline ticker::job ticker::call(
     Functor nulary_functor
-  , const std::chrono::steady_clock::time_point at_time
+  , const std::chrono::system_clock::time_point at_time
   )
 {
     return append_job(
         details::registered_job(
-            std::unique_ptr<boost::asio::steady_timer>(
+            std::unique_ptr<boost::asio::system_timer>(
                 // set absolute expiration time
-                new boost::asio::steady_timer(m_srv, at_time)
+                new boost::asio::system_timer(m_srv, at_time)
               )
-          , std::chrono::steady_clock::duration::zero()     // Ignored parameter
-          , std::move(nulary_functor)                       // Function to execute
+          , std::chrono::system_clock::duration::zero()     // Ignored parameter
+          , std::forward<Functor>(nulary_functor)           // Function to execute
           , details::registered_job::type::once             // No periodic runs required
           , details::registered_job::state::running         // Immediate schedule required
           )
@@ -256,15 +269,15 @@ inline ticker::job ticker::call(
 template <typename Functor>
 inline ticker::job ticker::call(
     Functor nulary_functor
-  , const std::chrono::steady_clock::duration interval
+  , const std::chrono::system_clock::duration interval
   , job::start_type how2start
   )
 {
     return append_job(
         details::registered_job(
-            std::unique_ptr<boost::asio::steady_timer>(
+            std::unique_ptr<boost::asio::system_timer>(
                 // set expiration time relative to now
-                new boost::asio::steady_timer(m_srv, interval)
+                new boost::asio::system_timer(m_srv, interval)
               )
           , interval
           , std::move(nulary_functor)                       // Function to execute
