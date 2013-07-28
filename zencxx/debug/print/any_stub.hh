@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Debug printing for \c std::pair
+ * \brief Class \c zencxx::debug::print::details::any_stub (interface)
  *
- * \date Tue Jul 23 02:00:06 MSK 2013 -- Initial design
+ * \date Sun Jul 28 13:53:30 MSK 2013 -- Initial design
  */
 /*
  * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
@@ -25,42 +25,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__STD_PAIR_HH__
-# define __ZENCXX__DEBUG__PRINT__STD_PAIR_HH__
+#ifndef __ZENCXX__DEBUG__PRINT__ANY_STUB_HH__
+# define __ZENCXX__DEBUG__PRINT__ANY_STUB_HH__
 
 // Project specific includes
-# include <zencxx/debug/print/any_manip.hh>
-# include <zencxx/debug/print/any_fwd.hh>
-# include <zencxx/type_traits/is_std_pair.hh>
+# include <zencxx/debug/print/any_wrapper.hh>
+# include <zencxx/debug/type_name.hh>
 
 // Standard includes
 # include <ostream>
-# include <utility>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
 
 template <typename T>
-struct any_pair : public any_wrapper<T>
+struct any_stub : public any_wrapper<T>
 {
-    static_assert(
-        is_std_pair<typename std::decay<T>::type>::value
-      , "Type T must be an instance of std::pair"
-      );
     using any_wrapper<T>::any_wrapper;
 };
 
+/// Make \c any streamable
 template <typename T>
-inline std::ostream& operator<<(std::ostream& os, const any_pair<T>& pw)
+std::ostream& operator<<(std::ostream& os, const any_stub<T>&)
 {
-    {
-        details::show_type_info_saver s(os);
-        no_show_type_info(os);
-        os << '(' << any(pw.data().first) << ',' << ' ' << any(pw.data().second) << ')';
-    }
-    // Show type info if needed
-    details::show_type_info_impl<typename any_pair<T>::wrapped_type>(os);
+    os << '<' << type_name<T>() << " is not printable>";
     return os;
 }
-
 }}}}                                                        // namespace details, print, debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__PRINT__STD_PAIR_HH__
+#endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_STUB_HH__

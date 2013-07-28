@@ -30,6 +30,7 @@
 #include <zencxx/hex2char_char2hex.hh>
 
 // Standard includes
+#include <boost/io/ios_state.hpp>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
 
@@ -50,22 +51,22 @@ const char* try_get_special_char_repr(const char c)
     return nullptr;
 }
 
-std::ostream& operator<<(std::ostream& os, const value_store_wrapper<char> vw)
+std::ostream& operator<<(std::ostream& os, const any_char<char> cw)
 {
     const std::locale& loc = os.getloc();
     // Get ctype facet for current locale
     const std::ctype<char>& ct = std::use_facet<std::ctype<char>>(loc);
     // Print it
     os << '\'';                                             // Open single quote
-    if (ct.is(std::ctype_base::print, vw.ref()))
-        os << vw.ref();
+    if (ct.is(std::ctype_base::print, cw.data()))
+        os << cw.data();
     else
     {
         // Show special or hex values for non printable chars
-        if (auto repr = try_get_special_char_repr(vw.ref()))
+        if (auto repr = try_get_special_char_repr(cw.data()))
             os << repr;
         else
-            os << '\\' << 'x' << char2hex_h(vw.ref()) << char2hex_l(vw.ref());
+            os << '\\' << 'x' << char2hex_h(cw.data()) << char2hex_l(cw.data());
     }
     os << '\'';                                             // Close single quote
     // Show type info if needed
@@ -77,11 +78,11 @@ std::ostream& operator<<(std::ostream& os, const value_store_wrapper<char> vw)
  * \todo Do some fancy string printing w/ escape characters and hex/oct numbers for
  * non-printable chars? What about UTF-8 strings?
  */
-std::ostream& operator<<(std::ostream& os, const value_store_wrapper<const char*> pw)
+std::ostream& operator<<(std::ostream& os, const any_pointer<const char*> pw)
 {
-    if (pw.ref())
+    if (pw.data())
     {
-        os << '"' << pw.ref() << '"';
+        os << '"' << pw.data() << '"';
     }
     else
     {
@@ -92,13 +93,17 @@ std::ostream& operator<<(std::ostream& os, const value_store_wrapper<const char*
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const value_store_wrapper<char*> pw)
+std::ostream& operator<<(std::ostream& os, const any_pointer<char*> pw)
 {
     {
         details::show_type_info_saver s(os);
         no_show_type_info(os);
-        if (pw.ref())
-            os << '@' << static_cast<void*>(pw.ref()) << " -> " << any(const_cast<const char*>(pw.ref()));
+        if (pw.data())
+        {
+            os << '@' << static_cast<void*>(pw.data())
+               << " -> " << any_pointer<const char*>(const_cast<const char*>(pw.data()))
+               ;
+        }
         else
             os << "nullptr";
     }
@@ -107,24 +112,33 @@ std::ostream& operator<<(std::ostream& os, const value_store_wrapper<char*> pw)
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const value_store_wrapper<const void*> pw)
+std::ostream& operator<<(std::ostream& os, const any_pointer<const void*> pw)
 {
-    if (pw.ref())
-        os << '@' << pw.ref();
+    if (pw.data())
+        os << '@' << pw.data();
     else
         os << "nullptr";
     // Show type info if needed
     details::show_type_info_impl<const void*>(os);
     return os;
 }
-std::ostream& operator<<(std::ostream& os, const value_store_wrapper<void*> pw)
+std::ostream& operator<<(std::ostream& os, const any_pointer<void*> pw)
 {
-    if (pw.ref())
-        os << '@' << pw.ref();
+    if (pw.data())
+        os << '@' << pw.data();
     else
         os << "nullptr";
     // Show type info if needed
     details::show_type_info_impl<void*>(os);
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const any_bool<bool> bw)
+{
+    boost::io::ios_flags_saver ifs(os);
+    os << std::boolalpha << bw.data();
+    // Show type info if needed
+    details::show_type_info_impl<bool>(os);
     return os;
 }
 

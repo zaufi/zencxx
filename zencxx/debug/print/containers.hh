@@ -30,9 +30,11 @@
 
 // Project specific includes
 # include <zencxx/debug/print/any_manip.hh>
-# include <zencxx/debug/print/any_generic.hh>
-# include <zencxx/io_manipulator_wrapper.hh>
+# include <zencxx/debug/print/any_fwd.hh>
+# include <zencxx/debug/print/any_wrapper.hh>
+# include <zencxx/details/export.hh>
 # include <zencxx/type_traits/is_range_iterable.hh>
+# include <zencxx/type_traits/is_std_basic_string.hh>
 
 // Standard includes
 # include <ostream>
@@ -41,24 +43,26 @@
 # include <utility>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
-/// Generate wrapper for \c std::string
-ZENCXX_MAKE_WRAPPER_CLASS(std_string_wrapper, std::string);
-
-/// Pretty printer for strings
-std::ostream& operator<<(std::ostream&, std_string_wrapper&&);
-
-/// Generate wrapper for container (iterable) types
-ZENCXX_MAKE_TEMPLATE_WRAPPER_CLASS(container_wrapper, T);
 
 template <typename T>
-inline std::ostream& operator<<(std::ostream& os, container_wrapper<T>&& wc)
+struct any_container : public any_wrapper<T>
+{
+    static_assert(
+        is_range_iterable<T>::value
+      , "Type T must be iterable"
+      );
+    using any_wrapper<T>::any_wrapper;
+};
+
+template <typename T>
+inline std::ostream& operator<<(std::ostream& os, const any_container<T>& wc)
 {
     {
         details::show_type_info_saver s(os);
         no_show_type_info(os);
         os << '{';
         bool first_iteration = true;
-        for (const auto& item : wc.ref())
+        for (const auto& item : wc.data())
         {
             if (!first_iteration)
                 os << ", ";
@@ -68,37 +72,21 @@ inline std::ostream& operator<<(std::ostream& os, container_wrapper<T>&& wc)
         os << '}';
     }
     // Show type info if needed
-    details::show_type_info_impl<T*>(os);
+    details::show_type_info_impl<T>(os);
     return os;
 }
 
-}                                                           // namespace details
-
-inline details::std_string_wrapper any(const std::string& s)
-{
-    return details::std_string_wrapper(s);
-}
-
 template <typename T>
-inline typename std::enable_if<
-    is_range_iterable<T>::value
-  , details::container_wrapper<T>
-  >::type any(T& c)
+struct any_string : public any_wrapper<T>
 {
-    return details::container_wrapper<T>(c);
-}
+    static_assert(
+        is_std_basic_string<typename std::decay<T>::type>::value
+      , "Type T must be std::basic_string instance"
+      );
+    using any_wrapper<T>::any_wrapper;
+};
 
+ZENCXX_EXPORT std::ostream& operator<<(std::ostream& os, const any_string<const std::string&>&);
 
-#if 0
-template <typename T, std::size_t N>
-inline typename std::enable_if<
-    is_range_iterable<T>::value && std::is_array<T>::value
-  , details::container_wrapper<T[N]>
-  >::type any(T (&c)[N])
-{
-    return details::container_wrapper<T[N]>(c);
-}
-#endif
-
-}}}                                                         // namespace print, debug, zencxx
+}}}}                                                        // namespace details, print, debug, zencxx
 #endif                                                      // __ZENCXX__DEBUG__PRINT__CONTAINERS_HH__

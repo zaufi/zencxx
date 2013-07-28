@@ -41,11 +41,9 @@ namespace zencxx { namespace debug { namespace print { namespace details {
 const int s_print_localtime_idx = std::ios_base::xalloc();
 const int s_time_format_idx = std::ios_base::xalloc();
 const char* const DEFAULT_TIME_FORMAT = "%d/%m/%y %H:%M:%S";
-}                                                           // namespace details
-namespace { namespace chrono {
+namespace chrono {
 typedef std::chrono::duration<int, std::ratio<86400>> days;
 }                                                           // namespace chrono
-}                                                           // anonymous namespace
 
 
 /**
@@ -57,7 +55,10 @@ typedef std::chrono::duration<int, std::ratio<86400>> days;
  *
  * \todo Need refactoring when gcc gets support for \c std::put_time
  */
-std::ostream& operator<<(std::ostream& os, std_chrono_system_time_point&& tp)
+std::ostream& operator<<(
+    std::ostream& os
+  , const any_time_point<const std::chrono::system_clock::time_point&>& tp
+  )
 {
     std::ostream::sentry cerberos(os);
     if (cerberos)
@@ -67,7 +68,7 @@ std::ostream& operator<<(std::ostream& os, std_chrono_system_time_point&& tp)
         const auto& locale = os.getloc();
         if (std::has_facet<time_facet>(locale))
         {
-            const auto seconds_since_epoch = std::chrono::system_clock::to_time_t(tp.ref());
+            const auto seconds_since_epoch = std::chrono::system_clock::to_time_t(tp.data());
             std::tm tm;
             std::tm* r;
             if (os.iword(details::s_print_localtime_idx))
@@ -102,11 +103,11 @@ std::ostream& operator<<(std::ostream& os, std_chrono_system_time_point&& tp)
         os.setstate(err);
     }
     // Show type info if needed
-    details::show_type_info_impl<std_chrono_system_time_point::wrapped_type>(os);
+    details::show_type_info_impl<std::chrono::system_clock::time_point>(os);
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, std_chrono_system_duration&& dw)
+std::ostream& operator<<(std::ostream& os, const any_duration<const std::chrono::system_clock::duration&>& dw)
 {
     std::ostream::sentry cerberos(os);
     if (cerberos)
@@ -114,7 +115,7 @@ std::ostream& operator<<(std::ostream& os, std_chrono_system_duration&& dw)
         // Save I/O stream state, will be restored at scope exit
         boost::io::ios_all_saver ifs(os);
         // Get a copy of duration value (to be able to modify it)
-        auto duration = dw.ref();
+        auto duration = dw.data();
         // Print days (if any)
         const auto days = std::chrono::duration_cast<chrono::days>(duration);
         if (days.count())
@@ -147,8 +148,8 @@ std::ostream& operator<<(std::ostream& os, std_chrono_system_duration&& dw)
            ;
     }
     // Show type info if needed
-    details::show_type_info_impl<std_chrono_system_time_point::wrapped_type>(os);
+    details::show_type_info_impl<std::chrono::system_clock::duration>(os);
     return os;
 }
 
-}}}                                                         // namespace print, debug, zencxx
+}}}}                                                        // namespace details, print, debug, zencxx

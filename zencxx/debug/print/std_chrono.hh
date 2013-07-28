@@ -29,8 +29,12 @@
 # define __ZENCXX__DEBUG__PRINT__STD_CHRONO_HH__
 
 // Project specific includes
-# include <zencxx/io_manipulator_wrapper.hh>
+# include <zencxx/debug/print/any_fwd.hh>
+# include <zencxx/debug/print/any_manip.hh>
+# include <zencxx/debug/print/any_wrapper.hh>
 # include <zencxx/details/export.hh>
+# include <zencxx/type_traits/is_std_chrono_duration.hh>
+# include <zencxx/type_traits/is_std_chrono_time_point.hh>
 
 // Standard includes
 # include <ostream>
@@ -59,6 +63,61 @@ inline std::ostream& operator<<(std::ostream& os, const time_format_holder& fmt)
     os.pword(s_time_format_idx) = const_cast<char*>(fmt.ptr());
     return os;
 }
+
+template <typename T>
+struct any_duration : public any_wrapper<T>
+{
+    static_assert(
+        is_std_chrono_duration<typename std::decay<T>::type>::value
+      , "Type T must be an instance of std::chrono::duration"
+      );
+    using any_wrapper<T>::any_wrapper;
+};
+
+/**
+ * \brief Make \c std::chrono::system_clock::duration printable w/
+ * \c zencxx::debug::print::any I/O manupulator.
+ */
+ZENCXX_EXPORT std::ostream& operator<<(
+    std::ostream&
+  , const any_duration<const std::chrono::system_clock::duration&>&
+  );
+
+template <typename T>
+struct any_time_point : public any_wrapper<T>
+{
+    static_assert(
+        is_std_chrono_time_point<typename std::decay<T>::type>::value
+      , "Type T must be an instance of std::chrono::time_point"
+      );
+    using any_wrapper<T>::any_wrapper;
+};
+
+/**
+ * \brief Make \c std::chrono::system_clock::time_point printable w/
+ * \c zencxx::debug::print::any I/O manupulator.
+ */
+ZENCXX_EXPORT std::ostream& operator<<(
+    std::ostream&
+  , const any_time_point<const std::chrono::system_clock::time_point&>&
+  );
+
+
+/**
+ * \brief Generic template to print any duration values
+ */
+template <typename Rep, typename Period>
+inline std::ostream& operator<<(
+    std::ostream& os
+  , const any_duration<const std::chrono::duration<Rep, Period>&>& dw
+  )
+{
+    os << any(std::chrono::duration_cast<std::chrono::system_clock::duration>(dw.data()));
+    // Show type info if needed
+    details::show_type_info_impl<std::chrono::duration<Rep, Period>>(os);
+    return os;
+}
+
 }                                                           // namespace details
 
 /**
@@ -110,33 +169,6 @@ inline std::basic_ostream<CharT, Traits>& gmtime(std::basic_ostream<CharT, Trait
 inline details::time_format_holder set_date_time_format(const char* const fmt)
 {
     return details::time_format_holder(fmt);
-}
-
-ZENCXX_MAKE_IOMAIP_WRAPPER(any, std_chrono_system_time_point, std::chrono::system_clock::time_point)
-
-/**
- * \brief Make \c std::chrono::system_clock::time_point printable w/
- * \c zencxx::debug::print::any I/O manupulator.
- */
-ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, std_chrono_system_time_point&&);
-
-ZENCXX_MAKE_IOMAIP_WRAPPER(any, std_chrono_system_duration, std::chrono::system_clock::duration)
-
-/**
- * \brief Make \c std::chrono::system_clock::duration printable w/
- * \c zencxx::debug::print::any I/O manupulator.
- */
-ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, std_chrono_system_duration&&);
-
-ZENCXX_MAKE_IOMAIP_WRAPPER_TEMPLATE(any, std_chrono_duration, std::chrono::duration)
-
-/**
- * \brief Generic template to print any duration values
- */
-template <typename Rep, typename Period>
-inline std::ostream& operator<<(std::ostream& os, std_chrono_duration<Rep, Period>&& dw)
-{
-    return os << any(std::chrono::duration_cast<std::chrono::system_clock::duration>(dw.ref()));
 }
 
 }}}                                                         // namespace print, debug, zencxx

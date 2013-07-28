@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Debug printer for container types
+ * \brief Class \c zencxx::is_std_basic_string (interface)
  *
- * \date Fri Jul 26 08:49:44 MSK 2013 -- Initial design
+ * \date Sun Jul 28 19:52:54 MSK 2013 -- Initial design
  */
 /*
  * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
@@ -25,18 +25,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
+#ifndef __ZENCXX__TYPE_TRAITS__IS_STD_BASIC_STRING_HH__
+# define __ZENCXX__TYPE_TRAITS__IS_STD_BASIC_STRING_HH__
+
 // Project specific includes
-#include <zencxx/debug/print/containers.hh>
 
 // Standard includes
+# include <string>
+# include <type_traits>
 
-namespace zencxx { namespace debug { namespace print { namespace details {
+namespace zencxx {
 
-std::ostream& operator<<(std::ostream& os, const any_string<const std::string&>& sw)
-{
-    os << '"' << sw.data() << '"';
-    // Show type info if needed
-    details::show_type_info_impl<any_string<std::string>::wrapped_type>(os);
-    return os;
-}
-}}}}                                                        // namespace details, print, debug, zencxx
+/// Metafunction to check is given type is a \c std::basic_string (generic)
+template <typename T>
+struct is_std_basic_string : public std::false_type
+{};
+
+/// Metafunction to check is given type is a \c std::basic_string (specialized)
+template <typename CharType, typename CharTraits, typename Alloc>
+struct is_std_basic_string<
+    std::basic_string<CharType, CharTraits, Alloc>
+  > : public std::true_type
+{};
+
+}                                                           // namespace zencxx
+#endif                                                      // __ZENCXX__TYPE_TRAITS__IS_STD_BASIC_STRING_HH__

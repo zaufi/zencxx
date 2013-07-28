@@ -32,14 +32,29 @@
 # define __ZENCXX__DEBUG__PRINT__ANY_HH__
 
 // Project specific includes
-// ATTENTION #include order is IMPORTANT!
-# include <zencxx/debug/print/any_generic.hh>
-# include <zencxx/debug/print/builtins.hh>
-# include <zencxx/debug/print/std_chrono.hh>
-# include <zencxx/debug/print/std_tuple.hh>
-# include <zencxx/debug/print/containers.hh>
-# include <zencxx/debug/print/std_pair.hh>
+# include <zencxx/debug/print/any_chooser.hh>
 
 // Standard includes
 
+namespace zencxx { namespace debug { namespace print {
+
+template <typename T>
+typename std::enable_if<
+    std::is_arithmetic<T>::value || std::is_pointer<T>::value
+  , typename details::any_chooser<T>::type
+  >::type any(T v)
+{
+    return typename details::any_chooser<T>::type(v);
+}
+
+template <typename T>
+typename std::enable_if<
+    !(std::is_arithmetic<T>::value || std::is_pointer<T>::value)
+  , typename details::any_chooser<const T&>::type
+  >::type any(const T& v)
+{
+    return typename details::any_chooser<const T&>::type(v);
+}
+
+}}}                                                         // namespace print, debug, zencxx
 #endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_HH__

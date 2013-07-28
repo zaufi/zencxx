@@ -5,8 +5,8 @@ set(
     debug/dump_memory.cc
     debug/print/any_manip.cc
     debug/print/builtins.cc
-    debug/print/std_chrono.cc
     debug/print/containers.cc
+    debug/print/std_chrono.cc
     exception.cc
     ticker.cc
     utility/random.cc

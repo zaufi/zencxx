@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Debug printer for container types
+ * \brief Metafunction to check is given type is an instance of \c std::tuple<>
  *
- * \date Fri Jul 26 08:49:44 MSK 2013 -- Initial design
+ * \date Sun Jul 28 21:27:45 MSK 2013 -- Initial design
  */
 /*
  * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
@@ -25,18 +25,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
+#ifndef __ZENCXX__TYPE_TRAITS__IS_STD_TUPLE_HH__
+# define __ZENCXX__TYPE_TRAITS__IS_STD_TUPLE_HH__
+
 // Project specific includes
-#include <zencxx/debug/print/containers.hh>
 
 // Standard includes
+# include <tuple>
+# include <type_traits>
 
-namespace zencxx { namespace debug { namespace print { namespace details {
+namespace zencxx {
 
-std::ostream& operator<<(std::ostream& os, const any_string<const std::string&>& sw)
-{
-    os << '"' << sw.data() << '"';
-    // Show type info if needed
-    details::show_type_info_impl<any_string<std::string>::wrapped_type>(os);
-    return os;
-}
-}}}}                                                        // namespace details, print, debug, zencxx
+template <typename T>
+struct is_std_tuple : public std::false_type
+{};
+
+template <typename... T>
+struct is_std_tuple<std::tuple<T...> > : public std::true_type
+{};
+
+}                                                           // namespace zencxx
+#endif                                                      // __ZENCXX__TYPE_TRAITS__IS_STD_TUPLE_HH__

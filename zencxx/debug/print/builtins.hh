@@ -29,75 +29,66 @@
 # define __ZENCXX__DEBUG__PRINT__BUILTINS_HH__
 
 // Project specific includes
+# include <zencxx/details/export.hh>
+# include <zencxx/debug/print/any_fwd.hh>
 # include <zencxx/debug/print/any_manip.hh>
-# include <zencxx/debug/print/any_generic.hh>
+# include <zencxx/debug/print/any_wrapper.hh>
+# include <zencxx/hex2char_char2hex.hh>
 
 // Standard includes
-# include <iosfwd>
+# include <locale>
+# include <ostream>
+# include <type_traits>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
 
+ZENCXX_EXPORT const char* try_get_special_char_repr(const char);
+
 template <typename T>
-class value_store_wrapper
+struct any_char : public any_wrapper<T>
 {
-    const T m_value;
-public:
-    typedef T wrapped_type;
-    explicit value_store_wrapper(const T& r) : m_value(r) {}
-    T ref() const
-    {
-        return m_value;
-    }
+    using any_wrapper<T>::any_wrapper;
 };
-}                                                           // namespace details
 
-inline details::value_store_wrapper<char> any(const char c)
-{
-    return details::value_store_wrapper<char>(c);
-}
-
-inline details::value_store_wrapper<const char*> any(const char* p)
-{
-    return details::value_store_wrapper<const char*>(p);
-}
-inline details::value_store_wrapper<char*> any(char* p)
-{
-    return details::value_store_wrapper<char*>(p);
-}
+/// \todo Generic implementation needed
+ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, const any_char<char>);
 
 template <typename T>
-inline details::value_store_wrapper<T*> any(T* p)
+struct any_pointer : public any_wrapper<T>
 {
-    return details::value_store_wrapper<T*>(p);
-}
+    static_assert(std::is_pointer<T>::value, "T must be a pointer type");
+    using any_wrapper<T>::any_wrapper;
+};
 
-namespace details {
-/// Print (wrapped) chars in a fancy way
-std::ostream& operator<<(std::ostream&, const value_store_wrapper<char>);
-
-/// Pretty print for plain C strings
-std::ostream& operator<<(std::ostream&, const value_store_wrapper<const char*>);
-std::ostream& operator<<(std::ostream&, const value_store_wrapper<char*>);
-
-/// Pretty print for plain C strings
-std::ostream& operator<<(std::ostream&, const value_store_wrapper<const void*>);
-std::ostream& operator<<(std::ostream&, const value_store_wrapper<void*>);
+ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, const any_pointer<const char*>);
+ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, const any_pointer<char*>);
+ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, const any_pointer<const void*>);
+ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, const any_pointer<void*>);
 
 /// Pretty print for raw pointers
 template <typename T>
-inline std::ostream& operator<<(std::ostream& os, const value_store_wrapper<T*> pw)
+inline std::ostream& operator<<(std::ostream& os, const any_pointer<T>& pw)
 {
     {
         details::show_type_info_saver s(os);
         no_show_type_info(os);
-        if (pw.ref())
-            os << '@' << pw.ref() << " -> " << any(*pw.ref());
+        if (pw.data())
+            os << '@' << pw.data() << " -> " << any(*pw.data());
         else
             os << "nullptr";
     }
     // Show type info if needed
-    details::show_type_info_impl<T*>(os);
+    details::show_type_info_impl<T>(os);
     return os;
 }
+
+template <typename T>
+struct any_bool : public any_wrapper<T>
+{
+    using any_wrapper<T>::any_wrapper;
+};
+
+ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, const any_bool<bool>);
+
 }}}}                                                        // namespace details, print, debug, zencxx
 #endif                                                      // __ZENCXX__DEBUG__PRINT__BUILTINS_HH__

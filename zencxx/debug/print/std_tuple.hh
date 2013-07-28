@@ -30,8 +30,8 @@
 
 // Project specific includes
 # include <zencxx/debug/print/any_manip.hh>
-# include <zencxx/debug/print/any_generic.hh>
-# include <zencxx/io_manipulator_wrapper.hh>
+# include <zencxx/debug/print/any_fwd.hh>
+# include <zencxx/type_traits/is_std_tuple.hh>
 
 // Standard includes
 # include <boost/mpl/plus.hpp>
@@ -41,7 +41,16 @@
 # include <utility>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
-ZENCXX_MAKE_TEMPLATE_TEMPLATE_WRAPPER_CLASS(std_tuple_wrapper, std::tuple);
+
+template <typename T>
+struct any_tuple : public any_wrapper<T>
+{
+    static_assert(
+        is_std_tuple<typename std::decay<T>::type>::value
+      , "Type T must be an instance of std::tuple"
+      );
+    using any_wrapper<T>::any_wrapper;
+};
 
 template <typename First, typename Last>
 struct tuple_printer
@@ -76,31 +85,24 @@ struct tuple_printer<Last, Last>
     }
 };
 
-template <typename... T>
-inline std::ostream& operator<<(std::ostream& os, const std_tuple_wrapper<T...>& wt)
+template <typename T>
+inline std::ostream& operator<<(std::ostream& os, const any_tuple<const T&>& wt)
 {
+    using wrapped_tuple_t = typename any_tuple<const T&>::wrapped_type;
+    using tuple_t = typename std::decay<wrapped_tuple_t>::type;
     {
-        using tuple_t = typename std_tuple_wrapper<T...>::wrapped_type;
         details::show_type_info_saver s(os);
         no_show_type_info(os);
         os << '(';
         tuple_printer<
             boost::mpl::integral_c<std::size_t, 0>
           , boost::mpl::integral_c<std::size_t, std::tuple_size<tuple_t>::value>
-          >::template print_to(os, wt.ref());
+          >::template print_to(os, wt.data());
         os << ')';
     }
     // Show type info if needed
-    details::show_type_info_impl<std::tuple<T...>>(os);
+    details::show_type_info_impl<tuple_t>(os);
     return os;
 }
-}                                                           // namespace details
-
-template <typename... T>
-details::std_tuple_wrapper<T...> any(const std::tuple<T...>& t)
-{
-    return details::std_tuple_wrapper<T...>(t);
-}
-
-}}}                                                         // namespace print, debug, zencxx
+}}}}                                                        // namespace details, print, debug, zencxx
 #endif                                                      // __ZENCXX__DEBUG__PRINT__STD_TUPLE_HH__
