@@ -244,16 +244,18 @@ add_package(
     REPLACES "libzencxx-dev (<= ${PKG_VERSION})"
   )
 
-add_package(
-    NAME libzencxx-doc
-    SUMMARY "ZEN C++ library API documentation"
-    DESCRIPTION "Doxygened library API documentation"
-    HOMEPAGE "https://github.com/zaufi/zencxx"
-    VERSION "${PKG_VERSION}"
-    SECTION "devel"
-    REPLACES "libzencxx-doc (<= ${PKG_VERSION})"
-    PRE_BUILD doxygen
-  )
+if(NOT NO_DOXY_DOCS OR NOT NO_DOXY_DOCS STREQUAL "ON")
+    add_package(
+        NAME libzencxx-doc
+        SUMMARY "ZEN C++ library API documentation"
+        DESCRIPTION "Doxygened library API documentation"
+        HOMEPAGE "https://github.com/zaufi/zencxx"
+        VERSION "${PKG_VERSION}"
+        SECTION "devel"
+        REPLACES "libzencxx-doc (<= ${PKG_VERSION})"
+        PRE_BUILD doxygen
+      )
+endif()
 
 #---------------------------------------------------------
 # Section: Dive into subdirs after main configuration
@@ -307,19 +309,21 @@ install(
     COMPONENT ${LIBZENCXX_DEV_PACKAGE}
   )
 
-install(
-    DIRECTORY ${DOXYGEN_OUTPUT_DIRECTORY}/html
-    DESTINATION ${CMAKE_INSTALL_DOCDIR}
-    COMPONENT ${LIBZENCXX_DOC_PACKAGE}
-    PATTERN "*.html"
-    PATTERN "*.svg"
-    PATTERN "*.ttf"
-    PATTERN "*.png"
-    PATTERN "*.css"
-    PATTERN "*.map" EXCLUDE
-    PATTERN "*.md5" EXCLUDE
-    PATTERN "*.dot" EXCLUDE
-  )
+if(NOT NO_DOXY_DOCS OR NOT NO_DOXY_DOCS STREQUAL "ON")
+    install(
+        DIRECTORY ${DOXYGEN_OUTPUT_DIRECTORY}/html
+        DESTINATION ${CMAKE_INSTALL_DOCDIR}
+        COMPONENT ${LIBZENCXX_DOC_PACKAGE}
+        PATTERN "*.html"
+        PATTERN "*.svg"
+        PATTERN "*.ttf"
+        PATTERN "*.png"
+        PATTERN "*.css"
+        PATTERN "*.map" EXCLUDE
+        PATTERN "*.md5" EXCLUDE
+        PATTERN "*.dot" EXCLUDE
+      )
+endif()
 
 install(
     FILES README.md LICENSE

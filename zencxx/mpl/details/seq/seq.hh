@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief \c #include variadic sequence specializations
+ * \brief Variadic sequence specializations
  *
  * \date Mon Jul  2 14:00:30 MSK 2012 -- Initial design
  */
