@@ -3,6 +3,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 
     add_library(
         zencxxos
+        charset/convert.cc
         color.cc
         daemon_application.cc
         escape_sequences.cc
@@ -19,6 +20,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 
     target_link_libraries(
         zencxxos
+        zencxx
         ${Boost_SYSTEM_LIBRARY}
       )
 
@@ -41,7 +43,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
         COMPONENT ${LIBZENCXX_DEV_PACKAGE}
       )
     install(
-        DIRECTORY signal term
+        DIRECTORY charset signal term
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/zencxx/os
         COMPONENT ${LIBZENCXX_DEV_PACKAGE}
         FILES_MATCHING PATTERN "*.hh"
@@ -53,8 +55,9 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
         FILES_MATCHING PATTERN "*.hh"
       )
 
-# Compile tests only if needed
-# if(BUILD_TESTING)
-#     add_subdirectory(tests)
-# endif()
+    # Compile tests only if needed
+    if(BUILD_TESTING)
+        add_subdirectory(tests)
+    endif()
+
 endif()
