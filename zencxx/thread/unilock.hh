@@ -37,7 +37,7 @@
 # include <boost/thread/mutex.hpp>
 # include <utility>
 
-namespace zencxx {
+namespace zencxx { inline namespace thread {
 /**
  * \brief A matrix specification for exclusive lock
  */
@@ -48,6 +48,7 @@ ZENCXX_EXPORT struct exclusive_lock
         lock
     };
     static constexpr bool matrix[1][1] = {{false}};
+    static constexpr type default_lock = lock;
 };
 
 /**
@@ -111,7 +112,6 @@ public:
     }
 
 private:
-
     template <typename... Args>
     bool lock_impl(const int request_id, boost::mutex::scoped_lock& l, Args&&... args)
     {
@@ -175,5 +175,5 @@ private:
     scheduler_type m_sched;
 };
 
-}                                                           // namespace zencxx
+}}                                                          // namespace thread, zencxx
 #endif                                                      // __ZENCXX__THREAD__UNILOCK_HH__

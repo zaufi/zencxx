@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Class \c zencxx::unilock (implementation)
+ * \brief Metafunction to check if given type \c T has \c default_lock member
  *
- * \date Wed Jul 17 12:06:25 MSK 2013 -- Initial design
+ * \date Wed Aug 21 00:37:34 MSK 2013 -- Initial design
  */
 /*
  * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
@@ -25,12 +25,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
+#ifndef __ZENCXX__THREAD__DETAILS__HAS_DEFAULT_LOCK_PARAM_HH__
+# define __ZENCXX__THREAD__DETAILS__HAS_DEFAULT_LOCK_PARAM_HH__
+
 // Project specific includes
-#include <zencxx/thread/unilock.hh>
+# include <zencxx/type_traits/details/expression_validity_checker.hh>
 
 // Standard includes
 
-namespace zencxx { inline namespace thread {
-constexpr bool exclusive_lock::matrix[1][1];
-constexpr bool rw_lock::matrix[2][2];
-}}                                                          // namespace thread, zencxx
+namespace zencxx { namespace thread { namespace details {
+
+/**
+ * Generate \c has_default_lock_param metafunction
+ */
+ZENCXX_TT_EXPR_CHECKER(
+    has_default_lock_param
+  , (typename T)
+  , (T)
+  , (T::default_lock)
+  );
+
+/**
+ * \struct has_default_lock_param
+ * \brief Metafunction to check if given type \c T has \c default_lock member
+ *
+ * \tparam T type to check
+ */
+
+}}}                                                         // namespace details, thread, zencxx
+#endif                                                      // __ZENCXX__THREAD__DETAILS__HAS_DEFAULT_LOCK_PARAM_HH__

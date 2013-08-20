@@ -29,20 +29,21 @@
 # define __ZENCXX__THREAD__DEFAULT_SCHEDULER_HH__
 
 // Project specific includes
+# include <zencxx/thread/details/has_default_lock_param.hh>
 # include <zencxx/thread/details/lock_matrix.hh>
 
 // Standard includes
 
-namespace zencxx {
-
+namespace zencxx { inline namespace thread { namespace details {
 /**
- * \brief [Type brief class description here]
+ * \brief Default scheduler implementation
  *
- * [More detailed description here]
+ * This is generic template which assume that given matrix type \c MatrixSpec
+ * has no default lock type.
  *
  */
-template <typename MatrixSpec>
-class default_scheduler
+template <typename MatrixSpec, bool HasDefaultLockParam>
+class default_scheduler_impl
 {
 public:
     typedef MatrixSpec matrix_type;
@@ -78,5 +79,71 @@ private:
     thread::details::lock_matrix<matrix_type> m_matrix;
 };
 
-}                                                           // namespace zencxx
+/**
+ * \brief Specialization of \c default_scheduler_impl for
+ * \c MatrixSpec types w/ default lock type specified.
+ *
+ * One (and I think the only) such \c MatrixSpec is an \c zencxx::thread::exclusive_lock.
+ * Having the only lock type makes some redundancy when it (type) used by a scheduler.
+ * The purpose of this specialization is to remove necessity to specify a lock type
+ * in case when it is the only that matrix have.
+ */
+template <typename MatrixSpec>
+class default_scheduler_impl<MatrixSpec, true>
+  : public default_scheduler_impl<MatrixSpec, false>
+{
+    typedef default_scheduler_impl<MatrixSpec, false> base_class;
+public:
+    typedef typename base_class::matrix_type matrix_type;
+
+    // Bring inherited members into the scope
+    using base_class::try_lock;
+    using base_class::unlock;
+    using base_class::is_used;
+    using base_class::assign_request_id;
+    using base_class::unassign_request_id;
+
+    /// \name Overloads w/ default lock type
+    //@{
+    bool try_lock(const int dummy)
+    {
+        return this->try_lock(dummy, matrix_type::default_lock);
+    }
+    void unlock()
+    {
+        this->unlock(matrix_type::default_lock);
+    }
+    // unused by this policy
+    int assign_request_id()
+    {
+        return this->assign_request_id(matrix_type::default_lock);
+    }
+    // unused by this policy
+    void unassign_request_id(const int dummy)
+    {
+        this->unassign_request_id(dummy, matrix_type::default_lock);
+    }
+    //@}
+};
+
+}                                                           // namespace details
+
+/**
+ * \brief Default locking policy (scheduler)
+ *
+ * This class implements <em>no special behavior</em> locking policy.
+ * This mean lock/unlock requests are handled as it they were addressed
+ * to ordinal mutex.
+ *
+ */
+template <typename MatrixSpec>
+class default_scheduler
+  : public details::default_scheduler_impl<
+      MatrixSpec
+    , details::has_default_lock_param<MatrixSpec>::value
+    >
+{
+};
+
+}}                                                          // namespace thread, zencxx
 #endif                                                      // __ZENCXX__THREAD__DEFAULT_SCHEDULER_HH__

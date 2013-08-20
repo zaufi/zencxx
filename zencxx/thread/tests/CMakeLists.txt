@@ -1,6 +1,9 @@
 add_boost_tests(
     TARGET ${UNIT_TESTS}
-    SOURCES lock_matrix_tester.cc unilock_tester.cc
+    SOURCES
+        has_default_lock_param_tester.cc
+        lock_matrix_tester.cc
+        unilock_tester.cc
     NO_CATCH_SYSTEM_ERRORS
   )
 
