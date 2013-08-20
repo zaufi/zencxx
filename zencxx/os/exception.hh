@@ -159,6 +159,9 @@ public:
         return *code;
     }
 
+    // Inject some helpful members from the base class
+    using zencxx::exception::reason;
+
     /// Provide more human readable info about system error
     virtual std::string reason() const override;
 };

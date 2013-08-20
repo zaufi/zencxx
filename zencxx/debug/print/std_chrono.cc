@@ -45,7 +45,6 @@ namespace chrono {
 typedef std::chrono::duration<int, std::ratio<86400>> days;
 }                                                           // namespace chrono
 
-
 /**
  * This function may set a given stream into an error state (or throw) in case
  * of time conversion failure.
