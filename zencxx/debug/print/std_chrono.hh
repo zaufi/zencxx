@@ -102,7 +102,6 @@ ZENCXX_EXPORT std::ostream& operator<<(
   , const any_time_point<const std::chrono::system_clock::time_point&>&
   );
 
-
 /**
  * \brief Generic template to print any duration values
  */
