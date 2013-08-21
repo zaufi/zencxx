@@ -47,17 +47,16 @@ class default_scheduler_impl
 {
 public:
     typedef MatrixSpec matrix_type;
-    typedef typename matrix_type::type lock_param_type;
-    typedef typename matrix_type::type unlock_param_type;
+    typedef typename matrix_type::type lock_type;
 
-    bool try_lock(const int, const lock_param_type p)
+    bool try_lock(const int, const lock_type p)
     {
         const auto result = m_matrix.can_lock(p);
         if (result)
             m_matrix.lock(p);
         return result;
     }
-    void unlock(const unlock_param_type p)
+    void unlock(const lock_type p)
     {
         m_matrix.unlock(p);
     }
@@ -67,16 +66,16 @@ public:
         return m_matrix.is_locked();
     }
     // unused by this policy
-    int assign_request_id(const lock_param_type)
+    int assign_request_id(const lock_type)
     {
         return 0;
     }
     // unused by this policy
-    void unassign_request_id(const int, const lock_param_type)
+    void unassign_request_id(const int, const lock_type)
     {}
 
 private:
-    thread::details::lock_matrix<matrix_type> m_matrix;
+    lock_matrix<matrix_type> m_matrix;
 };
 
 /**

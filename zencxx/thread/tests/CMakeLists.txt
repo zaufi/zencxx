@@ -3,7 +3,8 @@ add_boost_tests(
     SOURCES
         has_default_lock_param_tester.cc
         lock_matrix_tester.cc
-        unilock_tester.cc
+        default_scheduler_tester.cc
+        priority_scheduler_tester.cc
     NO_CATCH_SYSTEM_ERRORS
   )
 

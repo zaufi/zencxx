@@ -85,3 +85,5 @@ BOOST_AUTO_TEST_CASE(rw_lock_matrix_test)
     BOOST_CHECK_EQUAL(l.can_lock(zencxx::rw_lock::read), true);
     BOOST_CHECK_EQUAL(l.can_lock(zencxx::rw_lock::write), true);
 }
+
+/// \todo One more test w/ custom matrix

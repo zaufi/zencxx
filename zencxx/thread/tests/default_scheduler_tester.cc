@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Class tester for \c unilock
+ * \brief Class tester for \c default_scheduler
  *
  * \date Wed Jul 17 13:44:42 MSK 2013 -- Initial design
  */
@@ -101,6 +101,18 @@ BOOST_FIXTURE_TEST_CASE(mt_ds_unilock_test, fixture_1)
 
     BOOST_CHECK(m_promise.get_future().get());
     BOOST_CHECK_EQUAL(m_count, MAX_THREADS);
+}
+
+// Single thread, default rw_lock scheduler test
+BOOST_AUTO_TEST_CASE(st_ds_rw_unilock_test)
+{
+    unilock<default_scheduler<rw_lock>> l;
+    l.lock(rw_lock::read);
+    BOOST_CHECK(!l.try_lock(rw_lock::write));
+    l.unlock(rw_lock::read);
+    BOOST_CHECK(l.try_lock(rw_lock::write));
+    BOOST_CHECK(!l.try_lock(rw_lock::read));
+    l.unlock(rw_lock::write);
 }
 
 namespace {
@@ -214,18 +226,6 @@ struct fixture_2
 };
 }                                                           // anonymous namespace
 
-// Single thread, default rw_lock scheduler test
-BOOST_AUTO_TEST_CASE(st_ds_rw_unilock_test)
-{
-    unilock<default_scheduler<rw_lock>> l;
-    l.lock(rw_lock::read);
-    BOOST_CHECK(!l.try_lock(rw_lock::write));
-    l.unlock(rw_lock::read);
-    BOOST_CHECK(l.try_lock(rw_lock::write));
-    BOOST_CHECK(!l.try_lock(rw_lock::read));
-    l.unlock(rw_lock::write);
-}
-
 // Multiple thread, default rw_lock scheduler test
 BOOST_FIXTURE_TEST_CASE(mt_ds_rw_unilock_test, fixture_2)
 {
@@ -233,4 +233,10 @@ BOOST_FIXTURE_TEST_CASE(mt_ds_rw_unilock_test, fixture_2)
     boost::thread reader_2(std::bind(&fixture_2::read_lock_holder_2, this));
     boost::thread writer(std::bind(&fixture_2::write_locker, this));
     BOOST_CHECK(m_promise.get_future().get());
+    reader_1.interrupt();
+    reader_2.interrupt();
+    writer.interrupt();
+    reader_1.join();
+    reader_2.join();
+    writer.join();
 }

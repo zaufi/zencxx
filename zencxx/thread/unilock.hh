@@ -30,6 +30,7 @@
 
 // Project specific includes
 # include <zencxx/thread/default_scheduler.hh>
+# include <zencxx/thread/priority_scheduler.hh>
 # include <zencxx/details/export.hh>
 
 // Standard includes
@@ -81,7 +82,7 @@ class unilock
     typedef Scheduler scheduler_type;
 
     template <typename... Args>
-    using lock_func_t = bool (unilock::*)(int, boost::mutex::scoped_lock&, Args&&...);
+    using lock_func_t = bool (unilock::*)(boost::mutex::scoped_lock&, int, Args&&...);
 
 public:
     template <typename... Args>
@@ -96,6 +97,7 @@ public:
         return lock_decorator(&unilock::try_lock_impl, std::forward<Args>(args)...);
     }
 
+    /// \todo Is thread interrupt handler needed? Really?
     template <typename... Args>
     void unlock(Args&&... args)
     {
@@ -113,7 +115,7 @@ public:
 
 private:
     template <typename... Args>
-    bool lock_impl(const int request_id, boost::mutex::scoped_lock& l, Args&&... args)
+    bool lock_impl(boost::mutex::scoped_lock& l, const int request_id, Args&&... args)
     {
         while (!m_sched.try_lock(request_id, std::forward<Args>(args)...))
             m_cond.wait(l);
@@ -121,30 +123,37 @@ private:
     }
 
     template <typename... Args>
-    bool try_lock_impl(const int request_id, boost::mutex::scoped_lock&, Args&&... args)
+    bool try_lock_impl(boost::mutex::scoped_lock&, const int request_id, Args&&... args)
     {
         return m_sched.try_lock(request_id, std::forward<Args>(args)...);
     }
 
+    /// \todo Throw \c boost::thread_resource_error w/ some meaningful error condition
     template <typename... Args>
     bool lock_decorator(lock_func_t<Args...> lf, Args&&... args)
     {
         bool result = false;
         {
             boost::mutex::scoped_lock l(m_mut);             // may throw boost::thread_resource_error
+            /// - Ask for unique request ID from the underlaid schduler
             int request_id;
             try
             {
                 request_id = m_sched.assign_request_id(std::forward<Args>(args)...);
             }
+            catch (const boost::thread_interrupted&)
+            {
+                throw;
+            }
             catch (...)
             {
                 throw boost::thread_resource_error();
             }
+            /// - Call decorated member-function to acquire a lock, passing
+            ///   all given params, including obtained request ID (as the first one)
             try
             {
-                // call decorated member function
-                result = (this->*lf)(request_id, l, std::forward<Args>(args)...);
+                result = (this->*lf)(l, request_id, std::forward<Args>(args)...);
             }
             catch (const boost::thread_interrupted& e)
             {
@@ -154,18 +163,25 @@ private:
                 }
                 catch (...)
                 {
-                    throw e;                                // rethrow thread_interrupted anyway
+                    // ignore possible errors! original exception is more important!
                 }
+                throw e;                                    // rethrow original thread_interrupted anyway
             }
+            /// - Unassign request ID
             try
             {
                 m_sched.unassign_request_id(request_id, std::forward<Args>(args)...);
+            }
+            catch (const boost::thread_interrupted&)
+            {
+                throw;
             }
             catch (...)
             {
                 throw boost::thread_resource_error();
             }
         }
+        /// - Notify other waiters
         m_cond.notify_all();
         return result;
     }
