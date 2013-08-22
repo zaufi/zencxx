@@ -33,6 +33,8 @@
 # include <zencxx/thread/details/lock_matrix.hh>
 # include <zencxx/thread/details/thread_lock_tracker.hh>
 # include <zencxx/thread/details/use_deadlock_check.hh>
+# include <zencxx/thread/predefined_lock_types.hh>
+# include <zencxx/details/export.hh>
 
 // Standard includes
 
@@ -50,6 +52,21 @@ class default_scheduler_impl
 public:
     typedef MatrixSpec matrix_type;
     typedef typename matrix_type::type lock_type;
+
+    default_scheduler_impl()
+      : m_next_request_id{0}
+    {
+    }
+    ~default_scheduler_impl() {}
+
+    /// Delete copy ctor
+    default_scheduler_impl(const default_scheduler_impl&) = delete;
+    /// Delete copy-assign operator
+    default_scheduler_impl& operator=(const default_scheduler_impl&) = delete;
+    /// Delete move ctor
+    default_scheduler_impl(default_scheduler_impl&&) = delete;
+    /// Delete move-assign operator
+    default_scheduler_impl& operator=(default_scheduler_impl&&) = delete;
 
     bool try_lock(const use_deadlock_check check, const int, const lock_type p)
     {
@@ -87,7 +104,7 @@ public:
 private:
     lock_matrix<matrix_type> m_matrix;
     thread_lock_tracker<matrix_type> m_lt;
-    int m_next_request_id = {0};
+    int m_next_request_id;
 };
 
 /**
@@ -107,6 +124,18 @@ class default_scheduler_impl<MatrixSpec, true>
 
 public:
     typedef typename base_class::matrix_type matrix_type;
+
+    default_scheduler_impl() {}
+    ~default_scheduler_impl() {}
+
+    /// Delete copy ctor
+    default_scheduler_impl(const default_scheduler_impl&) = delete;
+    /// Delete copy-assign operator
+    default_scheduler_impl& operator=(const default_scheduler_impl&) = delete;
+    /// Delete move ctor
+    default_scheduler_impl(default_scheduler_impl&&) = delete;
+    /// Delete move-assign operator
+    default_scheduler_impl& operator=(default_scheduler_impl&&) = delete;
 
     // Bring inherited members into the scope
     using base_class::try_lock;
@@ -137,6 +166,10 @@ public:
     //@}
 };
 
+extern ZENCXX_EXPORT template class default_scheduler_impl<exclusive_lock, true>;
+extern ZENCXX_EXPORT template class default_scheduler_impl<exclusive_lock, false>;
+extern ZENCXX_EXPORT template class default_scheduler_impl<rw_lock, false>;
+
 }                                                           // namespace details
 
 /**
@@ -153,7 +186,23 @@ class default_scheduler
       MatrixSpec
     , details::has_default_lock_param<MatrixSpec>::value
     >
-{};
+{
+public:
+    default_scheduler() {}
+    ~default_scheduler() {}
+
+    /// Delete copy ctor
+    default_scheduler(const default_scheduler&) = delete;
+    /// Delete copy-assign operator
+    default_scheduler& operator=(const default_scheduler&) = delete;
+    /// Delete move ctor
+    default_scheduler(default_scheduler&&) = delete;
+    /// Delete move-assign operator
+    default_scheduler& operator=(default_scheduler&&) = delete;
+};
+
+extern ZENCXX_EXPORT template class default_scheduler<exclusive_lock>;
+extern ZENCXX_EXPORT template class default_scheduler<rw_lock>;
 
 }}                                                          // namespace thread, zencxx
 #endif                                                      // __ZENCXX__THREAD__DEFAULT_SCHEDULER_HH__

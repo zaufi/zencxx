@@ -61,15 +61,11 @@ BOOST_AUTO_TEST_CASE(st_ps_unilock_test)
 }
 
 namespace {
+constexpr int HIGH_PRIORITY = 10;
+constexpr int LOW_PRIORITY = 5;
 
 struct fixture_1
 {
-    enum priority
-    {
-        HIGH_PRIORITY = 10
-      , LOW_PRIORITY = 5
-    };
-
     // try to acquire a lock w/ priority 10 (winner)
     void lock_requester_1()
     {

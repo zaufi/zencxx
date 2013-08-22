@@ -29,17 +29,19 @@
 # define __ZENCXX__THREAD__DETAILS__LOCK_MATRIX_HH__
 
 // Project specific includes
+# include <zencxx/thread/predefined_lock_types.hh>
+# include <zencxx/details/export.hh>
 
 // Standard includes
 # include <cassert>
 # include <type_traits>
 
-namespace zencxx { namespace thread { namespace details {
+namespace zencxx { inline namespace thread { namespace details {
 
 /**
- * \brief [Type brief class description here]
+ * \brief Lock compatibility matrix
  *
- * [More detailed description here]
+ * Generic template.
  *
  */
 template <typename MatrixSpec>
@@ -62,13 +64,6 @@ class lock_matrix
     typedef typename matrix_type::type lock_type;
 
 public:
-#ifndef NDEBUG
-    lock_matrix()
-    {
-        for (auto i : m_state)
-            assert("Sanity check" && i == 0);
-    }
-#endif
     void lock(const lock_type t)
     {
         ++m_state[t];
@@ -97,6 +92,79 @@ public:
 private:
     int m_state[STATE_SIZE] = {};
 };
+
+template <>
+ZENCXX_EXPORT class lock_matrix<exclusive_lock>
+{
+    typedef exclusive_lock matrix_type;
+    typedef typename matrix_type::type lock_type;
+
+public:
+    void lock(const lock_type)
+    {
+        ++m_state;
+    }
+    void unlock(const lock_type)
+    {
+        --m_state;
+        /// \todo Need to throw smth here! (resourse/lock error?)
+        assert("More unlock()s than lock()s??" && 0 <= m_state);
+    }
+    constexpr bool can_lock(const lock_type) const
+    {
+        return !is_locked();
+    }
+    constexpr bool is_locked() const
+    {
+        return (0 < m_state);
+    }
+    constexpr bool is_locked(const lock_type) const
+    {
+        return 0 < m_state;
+    }
+
+private:
+    int m_state = {};
+};
+
+template <>
+ZENCXX_EXPORT class lock_matrix<rw_lock>
+{
+    typedef rw_lock matrix_type;
+    typedef typename matrix_type::type lock_type;
+
+public:
+    void lock(const lock_type t)
+    {
+        ++m_state[t];
+    }
+    void unlock(const lock_type t)
+    {
+        --m_state[t];
+        /// \todo Need to throw smth here! (resourse/lock error?)
+        assert("More unlock()s than lock()s??" && 0 <= m_state[t]);
+    }
+    constexpr bool can_lock(const lock_type t) const
+    {
+        return ((t == matrix_type::read) && !bool(m_state[1]))
+            || ((t != matrix_type::read) && !bool(m_state[0]) && !bool(m_state[1]))
+          ;
+    }
+    constexpr bool is_locked() const
+    {
+        return (0 < m_state[0]) || (0 < m_state[1]);
+    }
+    constexpr bool is_locked(const lock_type t) const
+    {
+        return 0 < m_state[t];
+    }
+
+private:
+    int m_state[2] = {};
+};
+
+extern ZENCXX_EXPORT template class lock_matrix<exclusive_lock>;
+extern ZENCXX_EXPORT template class lock_matrix<rw_lock>;
 
 }}}                                                         // namespace details, thread, zencxx
 #endif                                                      // __ZENCXX__THREAD__DETAILS__LOCK_MATRIX_HH__

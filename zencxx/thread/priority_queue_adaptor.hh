@@ -30,6 +30,9 @@
 
 // Project specific includes
 # include <zencxx/thread/details/use_deadlock_check.hh>
+# include <zencxx/thread/default_scheduler.hh>
+# include <zencxx/thread/predefined_lock_types.hh>
+# include <zencxx/details/export.hh>
 
 // Standard includes
 # include <algorithm>
@@ -119,5 +122,28 @@ private:
     scheduler_type m_sched;                                 ///< Underlaid scheduler instance
 };
 
+//BEGIN Explicit instantiation of adaptor w/ default_scheduler and exclusive_lock policy
+extern ZENCXX_EXPORT template class priority_queue_adaptor<default_scheduler<exclusive_lock>>;
+
+extern ZENCXX_EXPORT template void priority_queue_adaptor<
+    default_scheduler<exclusive_lock>
+  >::unassign_request_id(int, int);
+
+extern ZENCXX_EXPORT template void priority_queue_adaptor<
+    default_scheduler<exclusive_lock>
+  >::unassign_request_id<exclusive_lock::type>(int, int, exclusive_lock::type&&);
+//END Explicit instantiation of adaptor w/ default_scheduler and exclusive_lock policy
+
+//BEGIN Explicit instantiation of adaptor w/ default_scheduler and rw_lock policy
+extern ZENCXX_EXPORT template class priority_queue_adaptor<default_scheduler<rw_lock>>;
+
+extern ZENCXX_EXPORT template void priority_queue_adaptor<
+    default_scheduler<rw_lock>
+  >::unassign_request_id<rw_lock::type>(int, int, rw_lock::type&&);
+//END Explicit instantiation of adaptor w/ default_scheduler and rw_lock policy
 }}                                                          // namespace thread, zencxx
+
+// Instantiate one more used type
+extern ZENCXX_EXPORT template class std::multimap<int, int, std::greater<int>>;
+
 #endif                                                      // __ZENCXX__THREAD__PRIORITY_QUEUE_ADAPTOR_HH__

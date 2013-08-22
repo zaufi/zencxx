@@ -29,15 +29,17 @@
 # define __ZENCXX__THREAD__DETAILS__THREAD_LOCK_TRACKER_HH__
 
 // Project specific includes
-# include <zencxx/thread/exception.hh>
+# include <zencxx/details/export.hh>
 # include <zencxx/thread/details/use_deadlock_check.hh>
+# include <zencxx/thread/exception.hh>
+# include <zencxx/thread/predefined_lock_types.hh>
 
 // Standard includes
 # include <boost/thread/thread.hpp>
 # include <array>
 # include <vector>
 
-namespace zencxx { namespace thread { namespace details {
+namespace zencxx { inline namespace thread { namespace details {
 
 /**
  * \brief Class to track thread IDs and corresponding lock state
@@ -55,12 +57,20 @@ class thread_lock_tracker
     typedef typename matrix_type::type lock_type;
 
 public:
-    thread_lock_tracker() = default;
-#if 0
-    {
-        std::fill(begin(m_lock_holders), end(m_lock_holders), std::vector<boost::thread::id>());
-    }
-#endif
+    thread_lock_tracker()
+      : m_lock_holders{{}}
+    {}
+    ~thread_lock_tracker() {}
+
+    /// Delete copy ctor
+    thread_lock_tracker(const thread_lock_tracker&) = delete;
+    /// Delete copy-assign operator
+    thread_lock_tracker& operator=(const thread_lock_tracker&) = delete;
+    /// Delete move ctor
+    thread_lock_tracker(thread_lock_tracker&&) = delete;
+    /// Delete move-assign operator
+    thread_lock_tracker& operator=(thread_lock_tracker&&) = delete;
+
     /// Check if given lock type already acquired by this thread
     bool is_locked_by_this_thread(const lock_type t) const
     {
@@ -90,12 +100,26 @@ private:
 };
 
 template <typename MatrixSpec>
-class thread_lock_tracker<MatrixSpec, 1>
+class thread_lock_tracker<MatrixSpec, 1ul>
 {
     typedef MatrixSpec matrix_type;
     typedef typename matrix_type::type lock_type;
 
 public:
+    thread_lock_tracker()
+      : m_lock_holder{}
+    {}
+    ~thread_lock_tracker() {}
+
+    /// Delete copy ctor
+    thread_lock_tracker(const thread_lock_tracker&) = delete;
+    /// Delete copy-assign operator
+    thread_lock_tracker& operator=(const thread_lock_tracker&) = delete;
+    /// Delete move ctor
+    thread_lock_tracker(thread_lock_tracker&&) = delete;
+    /// Delete move-assign operator
+    thread_lock_tracker& operator=(thread_lock_tracker&&) = delete;
+
     /// Check if given (and the only) lock type already acquired by this thread
     bool is_locked_by_this_thread(const lock_type) const
     {
@@ -121,5 +145,12 @@ private:
     boost::thread::id m_lock_holder = {};
 };
 
+extern ZENCXX_EXPORT template class thread_lock_tracker<exclusive_lock, 1ul>;
+extern ZENCXX_EXPORT template class thread_lock_tracker<rw_lock, 2ul>;
+
 }}}                                                         // namespace details, thread, zencxx
+
+extern ZENCXX_EXPORT template class std::vector<boost::thread::id>;
+extern ZENCXX_EXPORT template class std::array<std::vector<boost::thread::id>, 2ul>;
+
 #endif                                                      // __ZENCXX__THREAD__DETAILS__THREAD_LOCK_TRACKER_HH__

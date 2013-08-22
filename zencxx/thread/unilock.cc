@@ -31,6 +31,37 @@
 // Standard includes
 
 namespace zencxx { inline namespace thread {
-constexpr bool exclusive_lock::matrix[1][1];
-constexpr bool rw_lock::matrix[2][2];
+
+template class unilock<priority_queue_adaptor<default_scheduler<exclusive_lock>>>;
+
+template bool unilock<
+    priority_queue_adaptor<
+        default_scheduler<exclusive_lock>
+      >
+  >::lock_decorator<int>(
+        bool(unilock<priority_queue_adaptor<default_scheduler<exclusive_lock>>>::*)(
+            boost::unique_lock<boost::mutex>&
+          , int
+          , int&&
+          )
+      , int&&
+      );
+
+
+template class unilock<priority_queue_adaptor<default_scheduler<rw_lock>>>;
+
+template bool unilock<
+    priority_queue_adaptor<
+        default_scheduler<rw_lock>
+      >
+  >::lock_decorator<int, rw_lock::type>(
+        bool(unilock<priority_queue_adaptor<default_scheduler<rw_lock>>>::*)(
+            boost::unique_lock<boost::mutex>&
+          , int
+          , int&&
+          , rw_lock::type&&
+          )
+      , int&&
+      , rw_lock::type&&
+      );
 }}                                                          // namespace thread, zencxx

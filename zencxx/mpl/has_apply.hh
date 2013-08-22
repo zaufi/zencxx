@@ -56,10 +56,10 @@ class has_apply
     struct checker
     {
         template <typename U, typename... Params>
-        static zencxx::details::no_type test(...);
+        static zencxx::type_traits::details::no_type test(...);
 
         template <typename U, typename... Params>
-        static zencxx::details::yes_type test(
+        static zencxx::type_traits::details::yes_type test(
             typename std::add_pointer<
                 typename U::template apply<Params...>::type
               >::type
@@ -69,7 +69,7 @@ class has_apply
 public:
     constexpr static bool value = std::is_same<
         decltype(checker::template test<T, Args...>(0))
-      , zencxx::details::yes_type
+      , zencxx::type_traits::details::yes_type
       >::value;
     typedef std::integral_constant<bool, value> type;
 };

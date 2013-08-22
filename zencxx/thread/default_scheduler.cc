@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Class tester for \c has_default_lock_param
+ * \brief Class \c zencxx::thread::default_scheduler (some explicit instantiations)
  *
- * \date Wed Aug 21 01:10:15 MSK 2013 -- Initial design
+ * \date Thu Aug 22 07:49:34 MSK 2013 -- Initial design
  */
 /*
  * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
@@ -26,20 +26,17 @@
  */
 
 // Project specific includes
-#include <zencxx/thread/details/has_default_lock_param.hh>
-#include <zencxx/thread/predefined_lock_types.hh>
+#include <zencxx/thread/default_scheduler.hh>
 
 // Standard includes
-// ALERT The following #define must be enabled only in one translation unit
-// per unit test binary (which may consists of several such modules)
-// #define BOOST_AUTO_TEST_MAIN
-#define BOOST_TEST_DYN_LINK
-#include <boost/test/auto_unit_test.hpp>
-#include <iostream>
 
-BOOST_AUTO_TEST_CASE(has_default_lock_param_test)
-{
-    BOOST_CHECK(!zencxx::thread::details::has_default_lock_param<int>::value);
-    BOOST_CHECK(!zencxx::thread::details::has_default_lock_param<zencxx::rw_lock>::value);
-    BOOST_CHECK(zencxx::thread::details::has_default_lock_param<zencxx::exclusive_lock>::value);
-}
+namespace zencxx { inline namespace thread { namespace details {
+template class default_scheduler_impl<exclusive_lock, true>;
+template class default_scheduler_impl<exclusive_lock, false>;
+template class default_scheduler_impl<rw_lock, false>;
+}                                                           // namespace details
+
+template class default_scheduler<exclusive_lock>;
+template class default_scheduler<rw_lock>;
+
+}}                                                          // namespace thread, zencxx

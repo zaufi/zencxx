@@ -32,7 +32,7 @@
 
 // Standard includes
 
-namespace zencxx { namespace thread { namespace details {
+namespace zencxx { inline namespace thread { namespace details {
 
 /// \internal
 enum class use_deadlock_check { yes, no };

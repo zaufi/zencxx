@@ -8,6 +8,11 @@ set(
     debug/print/containers.cc
     debug/print/std_chrono.cc
     exception.cc
+    thread/predefined_lock_types.cc
+    thread/details/lock_matrix.cc
+    thread/details/thread_lock_tracker.cc
+    thread/default_scheduler.cc
+    thread/priority_queue_adaptor.cc
     thread/unilock.cc
     ticker.cc
     utility/random.cc

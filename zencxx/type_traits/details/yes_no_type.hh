@@ -32,10 +32,13 @@
 
 // Standard includes
 
-namespace zencxx { namespace details {
+namespace zencxx { namespace type_traits { namespace details {
 
-typedef char no_type;
-typedef char (&yes_type)[2];
+typedef char yes_type;
+struct no_type
+{
+    char padding[8];
+};
 
-}}                                                          // namespace details, zencxx
+}}}                                                         // namespace details, type_traits, zencxx
 #endif                                                      // __ZENCXX__TYPE_TRAITS__DETAILS__YES_NO_TYPE_HH__

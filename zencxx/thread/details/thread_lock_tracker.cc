@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Class tester for \c has_default_lock_param
+ * \brief Class \c zencxx::thread::details::thread_lock_tracker (some explicit instantiations)
  *
- * \date Wed Aug 21 01:10:15 MSK 2013 -- Initial design
+ * \date Thu Aug 22 09:23:58 MSK 2013 -- Initial design
  */
 /*
  * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
@@ -26,20 +26,16 @@
  */
 
 // Project specific includes
-#include <zencxx/thread/details/has_default_lock_param.hh>
-#include <zencxx/thread/predefined_lock_types.hh>
+#include <zencxx/thread/details/thread_lock_tracker.hh>
 
 // Standard includes
-// ALERT The following #define must be enabled only in one translation unit
-// per unit test binary (which may consists of several such modules)
-// #define BOOST_AUTO_TEST_MAIN
-#define BOOST_TEST_DYN_LINK
-#include <boost/test/auto_unit_test.hpp>
-#include <iostream>
 
-BOOST_AUTO_TEST_CASE(has_default_lock_param_test)
-{
-    BOOST_CHECK(!zencxx::thread::details::has_default_lock_param<int>::value);
-    BOOST_CHECK(!zencxx::thread::details::has_default_lock_param<zencxx::rw_lock>::value);
-    BOOST_CHECK(zencxx::thread::details::has_default_lock_param<zencxx::exclusive_lock>::value);
-}
+namespace zencxx { inline namespace thread { namespace details {
+
+template class thread_lock_tracker<exclusive_lock, 1ul>;
+template class thread_lock_tracker<rw_lock, 2ul>;
+
+}}}                                                         // namespace details, thread, zencxx
+
+template class std::vector<boost::thread::id>;
+template class std::array<std::vector<boost::thread::id>, 2ul>;

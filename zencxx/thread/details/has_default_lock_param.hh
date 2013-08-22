@@ -33,7 +33,7 @@
 
 // Standard includes
 
-namespace zencxx { namespace thread { namespace details {
+namespace zencxx { inline namespace thread { namespace details {
 
 /**
  * Generate \c has_default_lock_param metafunction

@@ -112,9 +112,9 @@ namespace details {                                               \
 struct BOOST_PP_CAT(Name, _checker)                               \
 {                                                                 \
     template <typename...>                                        \
-    static ::zencxx::details::no_type test(...);                  \
+    static ::zencxx::type_traits::details::no_type test(...);     \
     template <BOOST_PP_TUPLE_ENUM(TplParamsT)>                    \
-    static ::zencxx::details::yes_type test(                      \
+    static ::zencxx::type_traits::details::yes_type test(         \
         int                                                       \
         BOOST_PP_COMMA_IF(BOOST_PP_TUPLE_SIZE(TestTplArgsT))      \
         BOOST_PP_TUPLE_ENUM(TestTplArgsT)                         \
@@ -134,7 +134,7 @@ struct Name : public std::is_same<                                \
           , nullptr                                               \
           )                                                       \
       )                                                           \
-  , ::zencxx::details::yes_type                                   \
+  , ::zencxx::type_traits::details::yes_type                      \
   >::type {}
 
 /**

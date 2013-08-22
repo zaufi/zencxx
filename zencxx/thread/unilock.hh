@@ -30,7 +30,10 @@
 
 // Project specific includes
 # include <zencxx/thread/exception.hh>
+# include <zencxx/thread/default_scheduler.hh>
 # include <zencxx/thread/details/use_deadlock_check.hh>
+# include <zencxx/thread/predefined_lock_types.hh>
+# include <zencxx/thread/priority_queue_adaptor.hh>
 # include <zencxx/details/export.hh>
 
 // Standard includes
@@ -40,43 +43,6 @@
 
 namespace zencxx { inline namespace thread {
 /**
- * \brief A matrix specification for exclusive lock.
- *
- * This matrix (1x1 size) defines the only type of lock.
- * \c unilock instantiated with this matrix and \c default_scheduler
- * becomes equivalent to an ordinal mutex.
- *
- * \sa default_scheduler
- */
-ZENCXX_EXPORT struct exclusive_lock
-{
-    enum type
-    {
-        lock
-    };
-    static constexpr bool matrix[1][1] = {{false}};
-    static constexpr type default_lock = lock;
-};
-
-/**
- * \brief A matrix specification for read/write lock
- *
- * Allows multiple read locks.
- */
-ZENCXX_EXPORT struct rw_lock
-{
-    enum type
-    {
-        read
-      , write
-    };
-    static constexpr bool matrix[2][2] = {                  //        Read  Write
-        {true,  false}                                      // Read    1      0
-      , {false, false}                                      // Write   0      0
-    };
-};
-
-/**
  * \brief Unilock - a universal lock.
  *
  * Unilock is an attempt to create a modular mechanism for creating lock
@@ -84,6 +50,9 @@ ZENCXX_EXPORT struct rw_lock
  * independent parts: high level wrapper (the unilock class itself), scheduler
  * (which is passed as a template argument) and lock compatibility matrix
  * (passed as a template parameter to the scheduler).
+ *
+ * \todo It seems better to pass variadic parameters by \b value instead
+ * of "perfect" forwarding.
  *
  */
 template <typename Scheduler>
@@ -95,6 +64,9 @@ class unilock
     using lock_func_t = bool (unilock::*)(boost::mutex::scoped_lock&, int, Args&&...);
 
 public:
+    unilock() {}
+    ~unilock() {}
+
     template <typename... Args>
     void lock(Args&&... args)
     {
@@ -208,10 +180,53 @@ private:
         return result;
     }
 
+    /// Delete copy ctor
+    unilock(const unilock&) = delete;
+    /// Delete copy-assign operator
+    unilock& operator=(const unilock&) = delete;
+    /// Delete move ctor
+    unilock(unilock&&) = delete;
+    /// Delete move-assign operator
+    unilock& operator=(unilock&&) = delete;
+
     boost::mutex m_mut;
     boost::condition_variable m_cond;
     scheduler_type m_sched;
 };
+
+extern ZENCXX_EXPORT template class unilock<priority_queue_adaptor<default_scheduler<exclusive_lock>>>;
+
+extern ZENCXX_EXPORT template bool unilock<
+    priority_queue_adaptor<
+        default_scheduler<exclusive_lock>
+      >
+  >::lock_decorator<int>(
+        bool(unilock<priority_queue_adaptor<default_scheduler<exclusive_lock>>>::*)(
+            boost::unique_lock<boost::mutex>&
+          , int
+          , int&&
+          )
+      , int&&
+      );
+
+
+extern ZENCXX_EXPORT template class unilock<priority_queue_adaptor<default_scheduler<rw_lock>>>;
+
+extern ZENCXX_EXPORT template bool unilock<
+    priority_queue_adaptor<
+        default_scheduler<rw_lock>
+      >
+  >::lock_decorator<int, rw_lock::type>(
+        bool(unilock<priority_queue_adaptor<default_scheduler<rw_lock>>>::*)(
+            boost::unique_lock<boost::mutex>&
+          , int
+          , int&&
+          , rw_lock::type&&
+          )
+      , int&&
+      , rw_lock::type&&
+      );
+
 
 }}                                                          // namespace thread, zencxx
 #endif                                                      // __ZENCXX__THREAD__UNILOCK_HH__
