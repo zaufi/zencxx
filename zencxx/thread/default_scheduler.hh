@@ -32,6 +32,7 @@
 # include <zencxx/thread/details/has_default_lock_param.hh>
 # include <zencxx/thread/details/lock_matrix.hh>
 # include <zencxx/thread/details/thread_lock_tracker.hh>
+# include <zencxx/thread/details/use_deadlock_check.hh>
 
 // Standard includes
 
@@ -52,35 +53,41 @@ public:
 
     bool try_lock(const use_deadlock_check check, const int, const lock_type p)
     {
-        // Check if current thread already own this lock type
-        if (check == use_deadlock_check::yes && m_lt.is_locked_by_this_thread(p))
-            ZENCXX_THROW(unilock_exception::deadlock());    // Yes! Do not allow deadlocks!
+        if (m_lt.is_locked_by_this_thread(p))               // Check if current thread already own this lock type
+        {
+            if (check == use_deadlock_check::yes)           // Should we throw if already locked?
+                // Yes! Do not allow deadlocks!
+                ZENCXX_THROW(unilock_exception::deadlock());
+            return false;                                   // Just return `false' as try_lock result
+        }
         // Ok, continue... can we lock it?
         const auto result = m_matrix.can_lock(p);
         if (result)
         {
-            m_lt.set_locked(p);                             // NOTE May throw exception::deadlock
+            m_lt.remember_lock_holder(check, p);            // NOTE May throw exception::deadlock
             m_matrix.lock(p);
         }
         return result;
     }
     void unlock(const lock_type p)
     {
-        m_lt.set_unlocked(p);
+        m_lt.forget_lock_holder(p);
         m_matrix.unlock(p);
     }
-    // unused by this policy
+    /// \note Unused by this policy actually, but required by adaptors
+    /// possible applied on top of this scheduler
     int assign_request_id(const lock_type)
     {
-        return 0;
+        return m_next_request_id++;
     }
-    // unused by this policy
+    /// \note Unused by this policy
     void unassign_request_id(const int, const lock_type)
     {}
 
 private:
     lock_matrix<matrix_type> m_matrix;
     thread_lock_tracker<matrix_type> m_lt;
+    int m_next_request_id = {0};
 };
 
 /**

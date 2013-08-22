@@ -36,11 +36,6 @@
 
 namespace zencxx { namespace thread { namespace details {
 
-enum class use_deadlock_check
-{
-    yes, no
-};
-
 /**
  * \brief [Type brief class description here]
  *
@@ -67,9 +62,13 @@ class lock_matrix
     typedef typename matrix_type::type lock_type;
 
 public:
-    constexpr lock_matrix() : m_state{}
+#ifndef NDEBUG
+    lock_matrix()
     {
+        for (auto i : m_state)
+            assert("Sanity check" && i == 0);
     }
+#endif
     void lock(const lock_type t)
     {
         ++m_state[t];
@@ -96,7 +95,7 @@ public:
     }
 
 private:
-    int m_state[STATE_SIZE];
+    int m_state[STATE_SIZE] = {};
 };
 
 }}}                                                         // namespace details, thread, zencxx

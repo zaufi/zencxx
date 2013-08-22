@@ -29,8 +29,8 @@
 # define __ZENCXX__THREAD__UNILOCK_HH__
 
 // Project specific includes
-# include <zencxx/thread/default_scheduler.hh>
-# include <zencxx/thread/priority_scheduler.hh>
+# include <zencxx/thread/exception.hh>
+# include <zencxx/thread/details/use_deadlock_check.hh>
 # include <zencxx/details/export.hh>
 
 // Standard includes

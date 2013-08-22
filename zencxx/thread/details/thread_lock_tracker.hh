@@ -30,9 +30,11 @@
 
 // Project specific includes
 # include <zencxx/thread/exception.hh>
+# include <zencxx/thread/details/use_deadlock_check.hh>
 
 // Standard includes
 # include <boost/thread/thread.hpp>
+# include <array>
 # include <vector>
 
 namespace zencxx { namespace thread { namespace details {
@@ -53,6 +55,12 @@ class thread_lock_tracker
     typedef typename matrix_type::type lock_type;
 
 public:
+    thread_lock_tracker() = default;
+#if 0
+    {
+        std::fill(begin(m_lock_holders), end(m_lock_holders), std::vector<boost::thread::id>());
+    }
+#endif
     /// Check if given lock type already acquired by this thread
     bool is_locked_by_this_thread(const lock_type t) const
     {
@@ -60,15 +68,14 @@ public:
         return std::find(begin(holders), end(holders), boost::this_thread::get_id()) != end(holders);
     }
     /// Set current thread ID as a holder of a lock of given type
-    void set_locked(const lock_type t)
+    void remember_lock_holder(use_deadlock_check check, const lock_type t)
     {
-        if (!is_locked_by_this_thread(t))
-            m_lock_holders[static_cast<std::size_t>(t)].emplace_back(boost::this_thread::get_id());
-        else
+        if (check == use_deadlock_check::yes && is_locked_by_this_thread(t))
             ZENCXX_THROW(unilock_exception::deadlock());
+        m_lock_holders[static_cast<std::size_t>(t)].emplace_back(boost::this_thread::get_id());
     }
     /// Unset current thread ID as a holder of a lock of given type
-    void set_unlocked(const lock_type t)
+    void forget_lock_holder(const lock_type t)
     {
         auto& holders = m_lock_holders[static_cast<std::size_t>(t)];
         auto it = std::find(begin(holders), end(holders), boost::this_thread::get_id());
@@ -79,7 +86,7 @@ public:
     }
 
 private:
-    std::vector<boost::thread::id> m_lock_holders[StateSize];
+    std::array<std::vector<boost::thread::id>, StateSize> m_lock_holders;
 };
 
 template <typename MatrixSpec>
@@ -89,40 +96,29 @@ class thread_lock_tracker<MatrixSpec, 1>
     typedef typename matrix_type::type lock_type;
 
 public:
-    /// Check if given lock type already acquired by this thread
+    /// Check if given (and the only) lock type already acquired by this thread
     bool is_locked_by_this_thread(const lock_type) const
     {
-        auto it = std::find(
-            begin(m_lock_holder)
-          , end(m_lock_holder)
-          , boost::this_thread::get_id()
-          );
-        return it != end(m_lock_holder);
+        return m_lock_holder == boost::this_thread::get_id();
     }
     /// Set current thread ID as a holder of a lock of given type
-    void set_locked(const lock_type t)
+    void remember_lock_holder(use_deadlock_check check, const lock_type t)
     {
-        if (!is_locked_by_this_thread(t))
-            m_lock_holder.emplace_back(boost::this_thread::get_id());
-        else
+        if (check == use_deadlock_check::yes && is_locked_by_this_thread(t))
             ZENCXX_THROW(unilock_exception::deadlock());
+        m_lock_holder = boost::this_thread::get_id();
     }
     /// Unset current thread ID as a holder of a lock of given type
-    void set_unlocked(const lock_type)
+    void forget_lock_holder(const lock_type t)
     {
-        auto it = std::find(
-            begin(m_lock_holder)
-          , end(m_lock_holder)
-          , boost::this_thread::get_id()
-          );
-        if (it != end(m_lock_holder))
-            m_lock_holder.erase(it);
+        if (is_locked_by_this_thread(t))
+            m_lock_holder = {};
         else
             ZENCXX_THROW(unilock_exception::not_owner_of_lock());
     }
 
 private:
-    std::vector<boost::thread::id> m_lock_holder;
+    boost::thread::id m_lock_holder = {};
 };
 
 }}}                                                         // namespace details, thread, zencxx

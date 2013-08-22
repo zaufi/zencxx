@@ -26,6 +26,7 @@
  */
 
 // Project specific includes
+#include <zencxx/thread/default_scheduler.hh>
 #include <zencxx/thread/unilock.hh>
 
 // Standard includes
@@ -57,6 +58,7 @@ BOOST_AUTO_TEST_CASE(st_ds_unilock_test)
     l.unlock(exclusive_lock::lock);
     BOOST_CHECK(l.try_lock(exclusive_lock::lock));
     l.unlock(exclusive_lock::lock);
+    BOOST_CHECK_THROW(l.unlock(exclusive_lock::lock), unilock_exception::not_owner_of_lock);
 }
 
 // Single thread, default exclusive scheduler test (default lock type check)

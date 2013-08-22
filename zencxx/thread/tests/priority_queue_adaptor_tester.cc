@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Class tester for \c priority_scheduler
+ * \brief Class tester for \c priority_queue_adaptor
  *
  * \date Wed Aug 21 07:59:50 MSK 2013 -- Initial design
  */
@@ -26,6 +26,8 @@
  */
 
 // Project specific includes
+#include <zencxx/thread/default_scheduler.hh>
+#include <zencxx/thread/priority_queue_adaptor.hh>
 #include <zencxx/thread/unilock.hh>
 
 // Standard includes
@@ -50,7 +52,7 @@ using namespace zencxx;
 // Single thread, priority exclusive scheduler test
 BOOST_AUTO_TEST_CASE(st_ps_unilock_test)
 {
-    unilock<priority_scheduler<exclusive_lock>> l;
+    unilock<priority_queue_adaptor<default_scheduler<exclusive_lock>>> l;
     l.lock(1, exclusive_lock::lock);
     BOOST_CHECK(!l.try_lock(1, exclusive_lock::lock));
     l.unlock(exclusive_lock::lock);
@@ -98,7 +100,7 @@ struct fixture_1
         }
     }
 
-    unilock<priority_scheduler<exclusive_lock>> m_lock;
+    unilock<priority_queue_adaptor<default_scheduler<exclusive_lock>>> m_lock;
     boost::promise<bool> m_promise;
     boost::promise<bool> m_exit_promise;
     std::atomic<int> m_ready_count = {0};
@@ -138,14 +140,16 @@ BOOST_FIXTURE_TEST_CASE(mt_ps_unilock_test, fixture_1)
 // Single thread, priority rw_lock scheduler test
 BOOST_AUTO_TEST_CASE(st_ps_rw_unilock_test)
 {
-    unilock<priority_scheduler<rw_lock>> l;
+    unilock<priority_queue_adaptor<default_scheduler<rw_lock>>> l;
     l.lock(1, rw_lock::read);
-    BOOST_CHECK(l.try_lock(1, rw_lock::read));
+    BOOST_CHECK(!l.try_lock(1, rw_lock::read));
     BOOST_CHECK(!l.try_lock(1, rw_lock::write));
     l.unlock(rw_lock::read);
-    l.unlock(rw_lock::read);
+    BOOST_CHECK_THROW(l.unlock(rw_lock::read), unilock_exception::not_owner_of_lock);
     BOOST_CHECK(l.try_lock(0, rw_lock::write));
     BOOST_CHECK(!l.try_lock(1, rw_lock::write));
+    BOOST_CHECK_THROW(l.lock(1, rw_lock::write), unilock_exception::deadlock);
     BOOST_CHECK(!l.try_lock(1, rw_lock::read));
     l.unlock(rw_lock::write);
+    BOOST_CHECK_THROW(l.unlock(rw_lock::write), unilock_exception::not_owner_of_lock);
 }
