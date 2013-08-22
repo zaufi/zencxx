@@ -43,8 +43,8 @@
  * so later it can be retrieved in a catch block...
  */
 #  define ZENCXX_THROW(Ex)                                        \
-    throw Ex << zencxx::exception::location_info(ZEN_THIS_LOCATION()) \
-      << zencxx::exception::original_type_info(typeid((Ex)).name())
+    throw Ex << ::zencxx::exception::location_info(ZEN_THIS_LOCATION()) \
+      << ::zencxx::exception::original_type_info(typeid((Ex)).name())
 
 namespace zencxx {
 
@@ -84,8 +84,14 @@ public:
     /// Type of nested exception attched to this exception
     typedef boost::error_info<struct tag_exception, std::exception_ptr> nested_exception_info;
 
-    /// Default constructor would attach backtrace to \c this instance
-    /// Drop 2 frames by default: backtrace and this exception class ctors
+    /**
+     * \brief Default constructor would attach backtrace to \c this instance
+     *
+     * Drop 2 frames by default: backtrace and this exception class ctors
+     *
+     * \throw \c std::bad_alloc
+     *
+     */
     explicit exception(const unsigned drop_frames = 2)
     {
         *this << trace_info(debug::backtrace(debug::backtrace::DEFAULT_STACK_DEPTH, drop_frames));

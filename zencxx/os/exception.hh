@@ -96,14 +96,13 @@ public:
      * \param[in] api_function_name name of a failed function. Must be non null
      *  string literal.
      *
+     * \throw \c std::bad_alloc
+     *
      * \invariant API function name can't be NULL
      */
     explicit exception(const char* const api_function_name)
-    {
-        assert("API function name must be provided" && api_function_name);
-        *this << error_code_info(boost::system::error_code(errno, boost::system::system_category()))
-              << boost::errinfo_api_function(api_function_name);
-    }
+      : exception(errno, api_function_name)
+    {}
 
     /**
      * \brief Make an exception instance with given code
@@ -112,14 +111,13 @@ public:
      * \param[in] api_function_name name of a failed function. Must be non null
      *  string literal.
      *
+     * \throw \c std::bad_alloc
+     *
      * \invariant API function name can't be NULL
      */
     exception(const int code, const char* const api_function_name)
-    {
-        assert("API function name must be provided" && api_function_name);
-        *this << error_code_info(boost::system::error_code(code, boost::system::system_category()))
-              << boost::errinfo_api_function(api_function_name);
-    }
+      : exception({code, boost::system::system_category()}, api_function_name)
+    {}
 
     /**
      * \brief Make an exception instance with given error code
@@ -127,6 +125,8 @@ public:
      * \param[in] code explicit error code
      * \param[in] api_function_name name of a failed function. Must be non null
      *  string literal.
+     *
+     * \throw \c std::bad_alloc
      *
      * \invariant API function name can't be NULL
      */

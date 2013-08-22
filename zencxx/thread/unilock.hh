@@ -40,7 +40,13 @@
 
 namespace zencxx { inline namespace thread {
 /**
- * \brief A matrix specification for exclusive lock
+ * \brief A matrix specification for exclusive lock.
+ *
+ * This matrix (1x1 size) defines the only type of lock.
+ * \c unilock instantiated with this matrix and \c default_scheduler
+ * becomes equivalent to an ordinal mutex.
+ *
+ * \sa default_scheduler
  */
 ZENCXX_EXPORT struct exclusive_lock
 {
@@ -71,9 +77,13 @@ ZENCXX_EXPORT struct rw_lock
 };
 
 /**
- * \brief [Type brief class description here]
+ * \brief Unilock - a universal lock.
  *
- * [More detailed description here]
+ * Unilock is an attempt to create a modular mechanism for creating lock
+ * managers with different characteristics. Unilock is constructed from three
+ * independent parts: high level wrapper (the unilock class itself), scheduler
+ * (which is passed as a template argument) and lock compatibility matrix
+ * (passed as a template parameter to the scheduler).
  *
  */
 template <typename Scheduler>
@@ -106,9 +116,14 @@ public:
             boost::mutex::scoped_lock l(m_mut);             // may throw boost::thread_resource_error
             m_sched.unlock(std::forward<Args>(args)...);
         }
-        catch (...)
+        catch (const exception&)
         {
-            throw boost::thread_resource_error();
+            throw;
+        }
+        catch (const boost::lock_error& e)
+        {
+            ZENCXX_THROW(unilock_exception::unilock_error(e.code()))
+              << exception::reason(e.what());
         }
         m_cond.notify_all();
     }
@@ -117,7 +132,7 @@ private:
     template <typename... Args>
     bool lock_impl(boost::mutex::scoped_lock& l, const int request_id, Args&&... args)
     {
-        while (!m_sched.try_lock(request_id, std::forward<Args>(args)...))
+        while (!m_sched.try_lock(details::use_deadlock_check::yes, request_id, std::forward<Args>(args)...))
             m_cond.wait(l);
         return true;
     }
@@ -125,7 +140,7 @@ private:
     template <typename... Args>
     bool try_lock_impl(boost::mutex::scoped_lock&, const int request_id, Args&&... args)
     {
-        return m_sched.try_lock(request_id, std::forward<Args>(args)...);
+        return m_sched.try_lock(details::use_deadlock_check::no, request_id, std::forward<Args>(args)...);
     }
 
     /// \todo Throw \c boost::thread_resource_error w/ some meaningful error condition
@@ -147,7 +162,7 @@ private:
             }
             catch (...)
             {
-                throw boost::thread_resource_error();
+                ZENCXX_THROW(unilock_exception::unilock_error());
             }
             /// - Call decorated member-function to acquire a lock, passing
             ///   all given params, including obtained request ID (as the first one)
@@ -178,11 +193,18 @@ private:
             }
             catch (...)
             {
-                throw boost::thread_resource_error();
+                ZENCXX_THROW(unilock_exception::unilock_error());
             }
         }
         /// - Notify other waiters
-        m_cond.notify_all();
+        try
+        {
+            m_cond.notify_all();
+        }
+        catch (...)
+        {
+            ZENCXX_THROW(unilock_exception::unilock_error());
+        }
         return result;
     }
 

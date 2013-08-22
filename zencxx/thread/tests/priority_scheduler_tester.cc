@@ -62,12 +62,18 @@ namespace {
 
 struct fixture_1
 {
+    enum priority
+    {
+        HIGH_PRIORITY = 10
+      , LOW_PRIORITY = 5
+    };
+
     // try to acquire a lock w/ priority 10 (winner)
     void lock_requester_1()
     {
         std::cout << "L1: Entering..." << std::endl;
         m_ready_count++;
-        m_lock.lock(10, exclusive_lock::lock);
+        m_lock.lock(HIGH_PRIORITY);
         m_promise.set_value(true);
         std::cout << "L1: Exiting..." << std::endl;
         // NOTE This method will not release the lock!
@@ -80,7 +86,7 @@ struct fixture_1
         m_ready_count++;
         try
         {
-            m_lock.lock(5, exclusive_lock::lock);
+            m_lock.lock(LOW_PRIORITY);
             m_promise.set_value(false);
             m_exit_promise.set_value(false);
             std::cout << "L2: Exiting..." << std::endl;
@@ -103,8 +109,8 @@ struct fixture_1
 BOOST_FIXTURE_TEST_CASE(mt_ps_unilock_test, fixture_1)
 {
     // Acquire the lock before test
-    m_lock.lock(0, exclusive_lock::lock);
-    BOOST_CHECK(!m_lock.try_lock(1, exclusive_lock::lock));
+    m_lock.lock(0);
+    BOOST_CHECK(!m_lock.try_lock(1));
 
     // Start concurrent locker threads: everyone will try
     // to acquire a lock, but with different priority
@@ -116,7 +122,7 @@ BOOST_FIXTURE_TEST_CASE(mt_ps_unilock_test, fixture_1)
         boost::this_thread::sleep_for(boost::chrono::milliseconds(100));
 
     // Relese the lock! Starting test...
-    m_lock.unlock(exclusive_lock::lock);
+    m_lock.unlock();
 
     // Get results
     BOOST_CHECK(m_promise.get_future().get());
@@ -127,4 +133,19 @@ BOOST_FIXTURE_TEST_CASE(mt_ps_unilock_test, fixture_1)
     locker_1.join();
     locker_2.join();
     BOOST_CHECK(m_exit_promise.get_future().get());
+}
+
+// Single thread, priority rw_lock scheduler test
+BOOST_AUTO_TEST_CASE(st_ps_rw_unilock_test)
+{
+    unilock<priority_scheduler<rw_lock>> l;
+    l.lock(1, rw_lock::read);
+    BOOST_CHECK(l.try_lock(1, rw_lock::read));
+    BOOST_CHECK(!l.try_lock(1, rw_lock::write));
+    l.unlock(rw_lock::read);
+    l.unlock(rw_lock::read);
+    BOOST_CHECK(l.try_lock(0, rw_lock::write));
+    BOOST_CHECK(!l.try_lock(1, rw_lock::write));
+    BOOST_CHECK(!l.try_lock(1, rw_lock::read));
+    l.unlock(rw_lock::write);
 }

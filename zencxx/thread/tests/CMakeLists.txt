@@ -10,7 +10,7 @@ add_boost_tests(
 
 target_link_libraries(
     ${UNIT_TESTS}
-    zencxx
+    zencxxos
     ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
   )
 

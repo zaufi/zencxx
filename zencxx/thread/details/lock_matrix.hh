@@ -36,6 +36,11 @@
 
 namespace zencxx { namespace thread { namespace details {
 
+enum class use_deadlock_check
+{
+    yes, no
+};
+
 /**
  * \brief [Type brief class description here]
  *

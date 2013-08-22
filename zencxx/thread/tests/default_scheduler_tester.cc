@@ -53,6 +53,7 @@ BOOST_AUTO_TEST_CASE(st_ds_unilock_test)
     unilock<default_scheduler<exclusive_lock>> l;
     l.lock(exclusive_lock::lock);
     BOOST_CHECK(!l.try_lock(exclusive_lock::lock));
+    BOOST_CHECK_THROW(l.lock(exclusive_lock::lock), unilock_exception::deadlock);
     l.unlock(exclusive_lock::lock);
     BOOST_CHECK(l.try_lock(exclusive_lock::lock));
     l.unlock(exclusive_lock::lock);

@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Class \c zencxx::thread::priority_scheduler (interface)
+ * \brief Class \c zencxx::thread::priority_scheduler
  *
  * \date Wed Aug 21 03:03:02 MSK 2013 -- Initial design
  */
@@ -29,6 +29,7 @@
 # define __ZENCXX__THREAD__PRIORITY_SCHEDULER_HH__
 
 // Project specific includes
+# include <zencxx/thread/details/has_default_lock_param.hh>
 # include <zencxx/thread/details/lock_matrix.hh>
 
 // Standard includes
@@ -36,27 +37,25 @@
 # include <cassert>
 # include <map>
 
-namespace zencxx { inline namespace thread {
-
+namespace zencxx { inline namespace thread { namespace details {
 /**
  * \brief Simple prioritized FIFO locking scheduler.
  *
- * In this scheduler request are sorted by their priority.
- * The bigger priority is the more chances the request gets.
- * Requests with equal priority are served in FIFO order.
+ * Generic implementation assume that \c MatrixSpec has more than one
+ * lock type (i.e. \c lock_type can't be default parameter).
  *
  * \tparam MatrixSpec a lock matrix type
  *
  * \todo Use \c boost::multiindex_container instead of \c std::multimap?
  */
-template <typename MatrixSpec>
-class priority_scheduler
+template <typename MatrixSpec, bool HasDefaultLockParam>
+class priority_scheduler_impl
 {
 public:
     typedef MatrixSpec matrix_type;
     typedef typename matrix_type::type lock_type;
 
-    bool try_lock(const int request_id, const int priority, const lock_type p)
+    bool try_lock(const use_deadlock_check, const int request_id, const int priority, const lock_type p)
     {
         // Lock if top request ID equal to a given one and a matrix tells that
         // lock is possible/compatible.
@@ -105,9 +104,65 @@ public:
 private:
     /// Lock/unlock requests queue: map priority to request ID
     std::multimap<int, int, std::greater<int>> m_queue;
-    details::lock_matrix<matrix_type> m_matrix;
+    lock_matrix<matrix_type> m_matrix;
     int m_next_request_id = {};
 };
+
+/**
+ * \brief Specialization of \c priority_scheduler_impl for
+ * \c MatrixSpec types w/ default lock type specified.
+ */
+template <typename MatrixSpec>
+class priority_scheduler_impl<MatrixSpec, true>
+  : public priority_scheduler_impl<MatrixSpec, false>
+{
+    typedef priority_scheduler_impl<MatrixSpec, false> base_class;
+
+public:
+    typedef typename base_class::matrix_type matrix_type;
+
+    // Bring inherited members into the scope
+    using base_class::try_lock;
+    using base_class::unlock;
+    using base_class::is_used;
+    using base_class::assign_request_id;
+    using base_class::unassign_request_id;
+
+    bool try_lock(const use_deadlock_check check, const int request_id, const int priority)
+    {
+        return this->try_lock(check, request_id, priority, matrix_type::default_lock);
+    }
+    void unlock()
+    {
+        this->unlock(matrix_type::default_lock);
+    }
+    int assign_request_id(const int priority)
+    {
+        return this->assign_request_id(priority, matrix_type::default_lock);
+    }
+    void unassign_request_id(const int request_id, const int priority)
+    {
+        this->unassign_request_id(request_id, priority, matrix_type::default_lock);
+    }
+};
+}                                                           // namespace details
+
+/**
+ * \brief Simple prioritized FIFO locking scheduler.
+ *
+ * In this scheduler request are sorted by their priority.
+ * The bigger priority is the more chances the request gets.
+ * Requests with equal priority are served in FIFO order.
+ *
+ * \tparam MatrixSpec a lock matrix type
+ */
+template <typename MatrixSpec>
+class priority_scheduler
+  : public details::priority_scheduler_impl<
+      MatrixSpec
+    , details::has_default_lock_param<MatrixSpec>::value
+    >
+{};
 
 }}                                                          // namespace thread, zencxx
 #endif                                                      // __ZENCXX__THREAD__PRIORITY_SCHEDULER_HH__

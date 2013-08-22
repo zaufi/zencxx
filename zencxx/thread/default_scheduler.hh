@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Class \c zencxx::default_scheduler (interface)
+ * \brief Class \c zencxx::default_scheduler
  *
  * \date Wed Jul 17 11:53:02 MSK 2013 -- Initial design
  */
@@ -31,6 +31,7 @@
 // Project specific includes
 # include <zencxx/thread/details/has_default_lock_param.hh>
 # include <zencxx/thread/details/lock_matrix.hh>
+# include <zencxx/thread/details/thread_lock_tracker.hh>
 
 // Standard includes
 
@@ -49,21 +50,24 @@ public:
     typedef MatrixSpec matrix_type;
     typedef typename matrix_type::type lock_type;
 
-    bool try_lock(const int, const lock_type p)
+    bool try_lock(const use_deadlock_check check, const int, const lock_type p)
     {
+        // Check if current thread already own this lock type
+        if (check == use_deadlock_check::yes && m_lt.is_locked_by_this_thread(p))
+            ZENCXX_THROW(unilock_exception::deadlock());    // Yes! Do not allow deadlocks!
+        // Ok, continue... can we lock it?
         const auto result = m_matrix.can_lock(p);
         if (result)
+        {
+            m_lt.set_locked(p);                             // NOTE May throw exception::deadlock
             m_matrix.lock(p);
+        }
         return result;
     }
     void unlock(const lock_type p)
     {
+        m_lt.set_unlocked(p);
         m_matrix.unlock(p);
-    }
-    //
-    bool is_used() const
-    {
-        return m_matrix.is_locked();
     }
     // unused by this policy
     int assign_request_id(const lock_type)
@@ -76,6 +80,7 @@ public:
 
 private:
     lock_matrix<matrix_type> m_matrix;
+    thread_lock_tracker<matrix_type> m_lt;
 };
 
 /**
@@ -92,21 +97,21 @@ class default_scheduler_impl<MatrixSpec, true>
   : public default_scheduler_impl<MatrixSpec, false>
 {
     typedef default_scheduler_impl<MatrixSpec, false> base_class;
+
 public:
     typedef typename base_class::matrix_type matrix_type;
 
     // Bring inherited members into the scope
     using base_class::try_lock;
     using base_class::unlock;
-    using base_class::is_used;
     using base_class::assign_request_id;
     using base_class::unassign_request_id;
 
     /// \name Overloads w/ default lock type
     //@{
-    bool try_lock(const int dummy)
+    bool try_lock(const use_deadlock_check check, const int dummy)
     {
-        return this->try_lock(dummy, matrix_type::default_lock);
+        return this->try_lock(check, dummy, matrix_type::default_lock);
     }
     void unlock()
     {
@@ -141,8 +146,7 @@ class default_scheduler
       MatrixSpec
     , details::has_default_lock_param<MatrixSpec>::value
     >
-{
-};
+{};
 
 }}                                                          // namespace thread, zencxx
 #endif                                                      // __ZENCXX__THREAD__DEFAULT_SCHEDULER_HH__
