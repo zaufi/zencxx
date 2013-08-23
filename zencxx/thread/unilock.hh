@@ -30,11 +30,6 @@
 
 // Project specific includes
 # include <zencxx/thread/exception.hh>
-# include <zencxx/thread/default_scheduler.hh>
-# include <zencxx/thread/details/use_deadlock_check.hh>
-# include <zencxx/thread/predefined_lock_types.hh>
-# include <zencxx/thread/priority_queue_adaptor.hh>
-# include <zencxx/details/export.hh>
 
 // Standard includes
 # include <boost/thread/condition_variable.hpp>
@@ -181,40 +176,6 @@ private:
     boost::condition_variable m_cond;
     scheduler_type m_sched;
 };
-
-extern ZENCXX_EXPORT template class unilock<priority_queue_adaptor<default_scheduler<exclusive_lock>>>;
-
-extern ZENCXX_EXPORT template bool unilock<
-    priority_queue_adaptor<
-        default_scheduler<exclusive_lock>
-      >
-  >::lock_decorator<int>(
-        bool(unilock<priority_queue_adaptor<default_scheduler<exclusive_lock>>>::*)(
-            boost::unique_lock<boost::mutex>&
-          , int
-          , int&&
-          )
-      , int&&
-      );
-
-
-extern ZENCXX_EXPORT template class unilock<priority_queue_adaptor<default_scheduler<rw_lock>>>;
-
-extern ZENCXX_EXPORT template bool unilock<
-    priority_queue_adaptor<
-        default_scheduler<rw_lock>
-      >
-  >::lock_decorator<int, rw_lock::type>(
-        bool(unilock<priority_queue_adaptor<default_scheduler<rw_lock>>>::*)(
-            boost::unique_lock<boost::mutex>&
-          , int
-          , int&&
-          , rw_lock::type&&
-          )
-      , int&&
-      , rw_lock::type&&
-      );
-
 
 }}                                                          // namespace thread, zencxx
 #endif                                                      // __ZENCXX__THREAD__UNILOCK_HH__

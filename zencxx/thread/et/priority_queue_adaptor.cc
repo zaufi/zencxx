@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Class \c zencxx::thread::default_scheduler (some explicit instantiations)
+ * \brief Class \c zencxx::thread::priority_queue_adaptor (some explicit instantiations)
  *
- * \date Thu Aug 22 07:49:34 MSK 2013 -- Initial design
+ * \date Thu Aug 22 10:01:04 MSK 2013 -- Initial design
  */
 /*
  * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
@@ -26,17 +26,29 @@
  */
 
 // Project specific includes
-#include <zencxx/thread/default_scheduler.hh>
+#include <zencxx/thread/et/priority_queue_adaptor.hh>
 
 // Standard includes
 
-namespace zencxx { inline namespace thread { namespace details {
-template class default_scheduler_impl<exclusive_lock, true>;
-template class default_scheduler_impl<exclusive_lock, false>;
-template class default_scheduler_impl<rw_lock, false>;
-}                                                           // namespace details
+namespace zencxx { inline namespace thread {
 
-template class default_scheduler<exclusive_lock>;
-template class default_scheduler<rw_lock>;
+template class priority_queue_adaptor<default_scheduler<exclusive_lock>>;
+
+template void priority_queue_adaptor<
+    default_scheduler<exclusive_lock>
+  >::unassign_request_id(int, int);
+
+template void priority_queue_adaptor<
+    default_scheduler<exclusive_lock>
+  >::unassign_request_id(int, int, exclusive_lock::type&&);
+
+
+template class priority_queue_adaptor<default_scheduler<rw_lock>>;
+
+template void priority_queue_adaptor<
+    default_scheduler<rw_lock>
+  >::unassign_request_id(int, int, rw_lock::type&&);
 
 }}                                                          // namespace thread, zencxx
+
+template class std::multimap<int, int, std::greater<int>>;

@@ -6,6 +6,7 @@ add_boost_tests(
         default_scheduler_tester.cc
         fifo_adaptor_tester.cc
         priority_queue_adaptor_tester.cc
+        parameterized_adaptor_tester.cc
     NO_CATCH_SYSTEM_ERRORS
   )
 

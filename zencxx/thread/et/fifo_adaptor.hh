@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Metafunction to check if given type \c T has \c default_lock member
+ * \brief Class \c zencxx::thread::fifo_adaptor (extern templates)
  *
- * \date Wed Aug 21 00:37:34 MSK 2013 -- Initial design
+ * \date Fri Aug 23 07:55:17 MSK 2013 -- Initial design
  */
 /*
  * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
@@ -28,27 +28,18 @@
 #pragma once
 
 // Project specific includes
-#include <zencxx/type_traits/details/expression_validity_checker.hh>
+#include <zencxx/thread/et/default_scheduler.hh>
+#include <zencxx/thread/fifo_adaptor.hh>
+#include <zencxx/thread/predefined_lock_types.hh>
+#include <zencxx/details/export.hh>
 
 // Standard includes
 
-namespace zencxx { inline namespace thread { namespace details {
+namespace zencxx { inline namespace thread {
 
-/**
- * Generate \c has_default_lock_param metafunction
- */
-ZENCXX_TT_EXPR_CHECKER(
-    has_default_lock_param
-  , (typename T)
-  , (T)
-  , (T::default_lock)
-  );
+extern ZENCXX_EXPORT template class fifo_adaptor<default_scheduler<exclusive_lock>>;
+extern ZENCXX_EXPORT template class fifo_adaptor<default_scheduler<rw_lock>>;
 
-/**
- * \struct has_default_lock_param
- * \brief Metafunction to check if given type \c T has \c default_lock member
- *
- * \tparam T type to check
- */
+}}                                                          // namespace thread, zencxx
 
-}}}                                                         // namespace details, thread, zencxx
+extern ZENCXX_EXPORT template class std::vector<int>;

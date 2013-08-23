@@ -26,7 +26,7 @@
  */
 
 // Project specific includes
-#include <zencxx/thread/details/lock_matrix.hh>
+#include <zencxx/thread/et/details/lock_matrix.hh>
 
 // Standard includes
 

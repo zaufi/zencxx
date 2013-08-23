@@ -165,8 +165,5 @@ private:
     int m_state[2] = {};
 };
 
-extern ZENCXX_EXPORT template class lock_matrix<exclusive_lock>;
-extern ZENCXX_EXPORT template class lock_matrix<rw_lock>;
-
 }}}                                                         // namespace details, thread, zencxx
 #endif                                                      // __ZENCXX__THREAD__DETAILS__LOCK_MATRIX_HH__

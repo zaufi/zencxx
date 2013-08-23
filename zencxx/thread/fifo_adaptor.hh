@@ -30,12 +30,10 @@
 
 // Project specific includes
 # include <zencxx/thread/details/use_deadlock_check.hh>
-# include <zencxx/thread/default_scheduler.hh>
-# include <zencxx/thread/predefined_lock_types.hh>
-# include <zencxx/details/export.hh>
 
 // Standard includes
 # include <algorithm>
+# include <cassert>
 # include <vector>
 
 namespace zencxx { namespace thread {
@@ -49,12 +47,7 @@ namespace zencxx { namespace thread {
 template <typename Scheduler>
 class fifo_adaptor
 {
-    typedef Scheduler scheduler_type;
-
 public:
-    typedef typename scheduler_type::matrix_type matrix_type;
-    typedef typename matrix_type::type lock_type;
-
     /// This adaptor add a \c priority parameter to this member
     template <typename... Args>
     bool try_lock(
@@ -68,12 +61,14 @@ public:
         return (*begin(m_queue) == request_id)
           && m_sched.try_lock(check, request_id, std::forward<Args>(args)...);
     }
+
     /// This adaptor add no parameters to this method
     template <typename... Args>
     void unlock(Args&&... args)
     {
         m_sched.unlock(std::forward<Args>(args)...);
     }
+
     template <typename... Args>
     int assign_request_id(Args&&... args)
     {
@@ -81,6 +76,7 @@ public:
         m_queue.emplace_back(rid);                          // Remember for future references
         return rid;
     }
+
     template <typename... Args>
     void unassign_request_id(const int request_id, Args&&... args)
     {
@@ -93,12 +89,10 @@ public:
     }
 
 private:
+    typedef Scheduler scheduler_type;
     scheduler_type m_sched;                                 ///< Underlaid scheduler instance
     std::vector<int> m_queue;
 };
-
-extern ZENCXX_EXPORT template class fifo_adaptor<default_scheduler<exclusive_lock>>;
-extern ZENCXX_EXPORT template class fifo_adaptor<default_scheduler<rw_lock>>;
 
 }}                                                          // namespace thread, zencxx
 #endif                                                      // __ZENCXX__THREAD__FIFO_ADAPTOR_HH__

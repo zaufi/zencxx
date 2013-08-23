@@ -27,7 +27,7 @@
 
 // Project specific includes
 #include <zencxx/thread/details/lock_matrix.hh>
-#include <zencxx/thread/unilock.hh>
+#include <zencxx/thread/predefined_lock_types.hh>
 
 // Standard includes
 // ALERT The following #define must be enabled only in one translation unit

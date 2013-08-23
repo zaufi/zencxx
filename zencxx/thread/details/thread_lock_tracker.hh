@@ -123,12 +123,5 @@ private:
     boost::thread::id m_lock_holder = {};
 };
 
-extern ZENCXX_EXPORT template class thread_lock_tracker<exclusive_lock, 1ul>;
-extern ZENCXX_EXPORT template class thread_lock_tracker<rw_lock, 2ul>;
-
 }}}                                                         // namespace details, thread, zencxx
-
-extern ZENCXX_EXPORT template class std::vector<boost::thread::id>;
-extern ZENCXX_EXPORT template class std::array<std::vector<boost::thread::id>, 2ul>;
-
 #endif                                                      // __ZENCXX__THREAD__DETAILS__THREAD_LOCK_TRACKER_HH__

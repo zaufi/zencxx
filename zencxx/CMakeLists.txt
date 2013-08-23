@@ -9,11 +9,13 @@ set(
     debug/print/std_chrono.cc
     exception.cc
     thread/predefined_lock_types.cc
-    thread/details/lock_matrix.cc
-    thread/details/thread_lock_tracker.cc
-    thread/default_scheduler.cc
-    thread/priority_queue_adaptor.cc
-    thread/unilock.cc
+    thread/et/details/lock_matrix.cc
+    thread/et/details/thread_lock_tracker.cc
+    thread/et/default_scheduler.cc
+    thread/et/fifo_adaptor.cc
+    thread/et/parameterized_adaptor.cc
+    thread/et/priority_queue_adaptor.cc
+    thread/et/unilock.cc
     ticker.cc
     utility/random.cc
   )

@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Class \c zencxx::thread::details::thread_lock_tracker (some explicit instantiations)
+ * \brief Class \c zencxx::thread::parameterized_adaptor (extern templates)
  *
- * \date Thu Aug 22 09:23:58 MSK 2013 -- Initial design
+ * \date Fri Aug 23 07:55:28 MSK 2013 -- Initial design
  */
 /*
  * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
@@ -25,17 +25,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
+#pragma once
+
 // Project specific includes
-#include <zencxx/thread/details/thread_lock_tracker.hh>
+#include <zencxx/thread/default_scheduler.hh>
+#include <zencxx/thread/predefined_lock_types.hh>
+#include <zencxx/thread/parameterized_adaptor.hh>
+#include <zencxx/details/export.hh>
 
 // Standard includes
 
-namespace zencxx { inline namespace thread { namespace details {
+namespace zencxx { inline namespace thread {
 
-template class thread_lock_tracker<exclusive_lock, 1ul>;
-template class thread_lock_tracker<rw_lock, 2ul>;
-
-}}}                                                         // namespace details, thread, zencxx
-
-template class std::vector<boost::thread::id>;
-template class std::array<std::vector<boost::thread::id>, 2ul>;
+}}                                                          // namespace thread, zencxx

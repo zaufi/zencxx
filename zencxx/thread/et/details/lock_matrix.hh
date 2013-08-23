@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Class \c zencxx::thread::fifo_adaptor (some explicit instantiations)
+ * \brief Class \c zencxx::thread::details::lock_matrix (extern templates)
  *
- * \date Thu Aug 22 15:18:45 MSK 2013 -- Initial design
+ * \date Fri Aug 23 07:55:03 MSK 2013 -- Initial design
  */
 /*
  * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
@@ -25,14 +25,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
+#pragma once
+
 // Project specific includes
-#include <zencxx/thread/fifo_adaptor.hh>
+#include <zencxx/thread/details/lock_matrix.hh>
 
 // Standard includes
 
-namespace zencxx { namespace thread {
+namespace zencxx { inline namespace thread { namespace details {
 
-template class fifo_adaptor<default_scheduler<exclusive_lock>>;
-template class fifo_adaptor<default_scheduler<rw_lock>>;
+extern ZENCXX_EXPORT template class lock_matrix<exclusive_lock>;
+extern ZENCXX_EXPORT template class lock_matrix<rw_lock>;
 
-}}                                                          // namespace thread, zencxx
+}}}                                                         // namespace details, thread, zencxx

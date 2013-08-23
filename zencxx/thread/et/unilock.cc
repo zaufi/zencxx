@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Class \c zencxx::unilock (implementation)
+ * \brief Class \c zencxx::unilock (some explicit instantiations)
  *
  * \date Wed Jul 17 12:06:25 MSK 2013 -- Initial design
  */
@@ -26,7 +26,7 @@
  */
 
 // Project specific includes
-#include <zencxx/thread/unilock.hh>
+#include <zencxx/thread/et/unilock.hh>
 
 // Standard includes
 

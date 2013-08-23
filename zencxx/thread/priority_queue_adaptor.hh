@@ -30,9 +30,6 @@
 
 // Project specific includes
 # include <zencxx/thread/details/use_deadlock_check.hh>
-# include <zencxx/thread/default_scheduler.hh>
-# include <zencxx/thread/predefined_lock_types.hh>
-# include <zencxx/details/export.hh>
 
 // Standard includes
 # include <algorithm>
@@ -56,12 +53,7 @@ namespace zencxx { inline namespace thread {
 template <typename Scheduler>
 class priority_queue_adaptor
 {
-    typedef Scheduler scheduler_type;
-
 public:
-    typedef typename scheduler_type::matrix_type matrix_type;
-    typedef typename matrix_type::type lock_type;
-
     /// This adaptor add a \c priority parameter to this member
     template <typename... Args>
     bool try_lock(
@@ -81,12 +73,14 @@ public:
         // Can't handle this request now, more prioritized requests are pending...
         return false;
     }
+
     /// This adaptor add no parameters to this method
     template <typename... Args>
     void unlock(Args&&... args)
     {
         m_sched.unlock(std::forward<Args>(args)...);
     }
+
     template <typename... Args>
     int assign_request_id(const int priority, Args&&... args)
     {
@@ -94,6 +88,7 @@ public:
         m_queue.emplace(priority, rid);                     // Remember for future references
         return rid;
     }
+
     /// \todo Need benchmarks of this method to decide is \c boost::multiindex_container
     /// can beat this straightforward (naive) approach...
     template <typename... Args>
@@ -117,33 +112,12 @@ public:
     }
 
 private:
+    typedef Scheduler scheduler_type;
+
     /// Lock/unlock requests queue: map priority to request ID
     std::multimap<int, int, std::greater<int>> m_queue;
     scheduler_type m_sched;                                 ///< Underlaid scheduler instance
 };
 
-//BEGIN Explicit instantiation of adaptor w/ default_scheduler and exclusive_lock policy
-extern ZENCXX_EXPORT template class priority_queue_adaptor<default_scheduler<exclusive_lock>>;
-
-extern ZENCXX_EXPORT template void priority_queue_adaptor<
-    default_scheduler<exclusive_lock>
-  >::unassign_request_id(int, int);
-
-extern ZENCXX_EXPORT template void priority_queue_adaptor<
-    default_scheduler<exclusive_lock>
-  >::unassign_request_id<exclusive_lock::type>(int, int, exclusive_lock::type&&);
-//END Explicit instantiation of adaptor w/ default_scheduler and exclusive_lock policy
-
-//BEGIN Explicit instantiation of adaptor w/ default_scheduler and rw_lock policy
-extern ZENCXX_EXPORT template class priority_queue_adaptor<default_scheduler<rw_lock>>;
-
-extern ZENCXX_EXPORT template void priority_queue_adaptor<
-    default_scheduler<rw_lock>
-  >::unassign_request_id<rw_lock::type>(int, int, rw_lock::type&&);
-//END Explicit instantiation of adaptor w/ default_scheduler and rw_lock policy
 }}                                                          // namespace thread, zencxx
-
-// Instantiate one more used type
-extern ZENCXX_EXPORT template class std::multimap<int, int, std::greater<int>>;
-
 #endif                                                      // __ZENCXX__THREAD__PRIORITY_QUEUE_ADAPTOR_HH__

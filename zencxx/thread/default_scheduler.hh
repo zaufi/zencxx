@@ -33,8 +33,6 @@
 # include <zencxx/thread/details/lock_matrix.hh>
 # include <zencxx/thread/details/thread_lock_tracker.hh>
 # include <zencxx/thread/details/use_deadlock_check.hh>
-# include <zencxx/thread/predefined_lock_types.hh>
-# include <zencxx/details/export.hh>
 
 // Standard includes
 
@@ -139,10 +137,6 @@ public:
     //@}
 };
 
-extern ZENCXX_EXPORT template class default_scheduler_impl<exclusive_lock, true>;
-extern ZENCXX_EXPORT template class default_scheduler_impl<exclusive_lock, false>;
-extern ZENCXX_EXPORT template class default_scheduler_impl<rw_lock, false>;
-
 }                                                           // namespace details
 
 /**
@@ -161,9 +155,6 @@ class default_scheduler
     >
 {
 };
-
-extern ZENCXX_EXPORT template class default_scheduler<exclusive_lock>;
-extern ZENCXX_EXPORT template class default_scheduler<rw_lock>;
 
 }}                                                          // namespace thread, zencxx
 #endif                                                      // __ZENCXX__THREAD__DEFAULT_SCHEDULER_HH__

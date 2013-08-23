@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Metafunction to check if given type \c T has \c default_lock member
+ * \brief Class \c zencxx::thread::details::thread_lock_tracker (some explicit instantiations)
  *
- * \date Wed Aug 21 00:37:34 MSK 2013 -- Initial design
+ * \date Thu Aug 22 09:23:58 MSK 2013 -- Initial design
  */
 /*
  * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
@@ -25,30 +25,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#pragma once
-
 // Project specific includes
-#include <zencxx/type_traits/details/expression_validity_checker.hh>
+#include <zencxx/thread/et/details/thread_lock_tracker.hh>
 
 // Standard includes
 
 namespace zencxx { inline namespace thread { namespace details {
 
-/**
- * Generate \c has_default_lock_param metafunction
- */
-ZENCXX_TT_EXPR_CHECKER(
-    has_default_lock_param
-  , (typename T)
-  , (T)
-  , (T::default_lock)
-  );
-
-/**
- * \struct has_default_lock_param
- * \brief Metafunction to check if given type \c T has \c default_lock member
- *
- * \tparam T type to check
- */
+template class thread_lock_tracker<exclusive_lock, 1ul>;
+template class thread_lock_tracker<rw_lock, 2ul>;
 
 }}}                                                         // namespace details, thread, zencxx
+
+template class std::vector<boost::thread::id>;
+template class std::array<std::vector<boost::thread::id>, 2ul>;
