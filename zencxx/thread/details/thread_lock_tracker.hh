@@ -44,7 +44,7 @@ namespace zencxx { inline namespace thread { namespace details {
 /**
  * \brief Class to track thread IDs and corresponding lock state
  *
- * [More detailed description here]
+ * Generic template.
  *
  */
 template <
@@ -57,20 +57,6 @@ class thread_lock_tracker
     typedef typename matrix_type::type lock_type;
 
 public:
-    thread_lock_tracker()
-      : m_lock_holders{{}}
-    {}
-    ~thread_lock_tracker() {}
-
-    /// Delete copy ctor
-    thread_lock_tracker(const thread_lock_tracker&) = delete;
-    /// Delete copy-assign operator
-    thread_lock_tracker& operator=(const thread_lock_tracker&) = delete;
-    /// Delete move ctor
-    thread_lock_tracker(thread_lock_tracker&&) = delete;
-    /// Delete move-assign operator
-    thread_lock_tracker& operator=(thread_lock_tracker&&) = delete;
-
     /// Check if given lock type already acquired by this thread
     bool is_locked_by_this_thread(const lock_type t) const
     {
@@ -96,30 +82,22 @@ public:
     }
 
 private:
-    std::array<std::vector<boost::thread::id>, StateSize> m_lock_holders;
+    std::array<std::vector<boost::thread::id>, StateSize> m_lock_holders = {{}};
 };
 
-template <typename MatrixSpec>
-class thread_lock_tracker<MatrixSpec, 1ul>
+/**
+ * \brief Class to track thread IDs and corresponding lock state
+ *
+ * Specialzation for \c exclusive_lock
+ *
+ */
+template <>
+ZENCXX_EXPORT class thread_lock_tracker<exclusive_lock, 1ul>
 {
-    typedef MatrixSpec matrix_type;
+    typedef exclusive_lock matrix_type;
     typedef typename matrix_type::type lock_type;
 
 public:
-    thread_lock_tracker()
-      : m_lock_holder{}
-    {}
-    ~thread_lock_tracker() {}
-
-    /// Delete copy ctor
-    thread_lock_tracker(const thread_lock_tracker&) = delete;
-    /// Delete copy-assign operator
-    thread_lock_tracker& operator=(const thread_lock_tracker&) = delete;
-    /// Delete move ctor
-    thread_lock_tracker(thread_lock_tracker&&) = delete;
-    /// Delete move-assign operator
-    thread_lock_tracker& operator=(thread_lock_tracker&&) = delete;
-
     /// Check if given (and the only) lock type already acquired by this thread
     bool is_locked_by_this_thread(const lock_type) const
     {

@@ -64,9 +64,6 @@ class unilock
     using lock_func_t = bool (unilock::*)(boost::mutex::scoped_lock&, int, Args&&...);
 
 public:
-    unilock() {}
-    ~unilock() {}
-
     template <typename... Args>
     void lock(Args&&... args)
     {
@@ -179,15 +176,6 @@ private:
         }
         return result;
     }
-
-    /// Delete copy ctor
-    unilock(const unilock&) = delete;
-    /// Delete copy-assign operator
-    unilock& operator=(const unilock&) = delete;
-    /// Delete move ctor
-    unilock(unilock&&) = delete;
-    /// Delete move-assign operator
-    unilock& operator=(unilock&&) = delete;
 
     boost::mutex m_mut;
     boost::condition_variable m_cond;

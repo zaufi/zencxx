@@ -133,6 +133,9 @@ ZENCXX_EXPORT class lock_matrix<rw_lock>
     typedef rw_lock matrix_type;
     typedef typename matrix_type::type lock_type;
 
+    static constexpr std::size_t READ = 0;
+    static constexpr std::size_t WRITE = 1;
+
 public:
     void lock(const lock_type t)
     {
@@ -146,13 +149,12 @@ public:
     }
     constexpr bool can_lock(const lock_type t) const
     {
-        return ((t == matrix_type::read) && !bool(m_state[1]))
-            || ((t != matrix_type::read) && !bool(m_state[0]) && !bool(m_state[1]))
-          ;
+        return ((t == matrix_type::read) && !bool(m_state[WRITE]))
+            || ((t != matrix_type::read) && !bool(m_state[WRITE]) && !bool(m_state[READ]));
     }
     constexpr bool is_locked() const
     {
-        return (0 < m_state[0]) || (0 < m_state[1]);
+        return (0 < m_state[READ]) || (0 < m_state[WRITE]);
     }
     constexpr bool is_locked(const lock_type t) const
     {

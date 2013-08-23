@@ -71,7 +71,7 @@ public:
       , Args&&... args
       )
     {
-        // Lock if top request ID equal to a given one
+        // Lock (try to) if top request ID equal to a given one
         if (begin(m_queue)->second == request_id)
         {
             assert("Verify priority" && priority == begin(m_queue)->first);

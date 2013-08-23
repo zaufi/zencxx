@@ -53,21 +53,6 @@ public:
     typedef MatrixSpec matrix_type;
     typedef typename matrix_type::type lock_type;
 
-    default_scheduler_impl()
-      : m_next_request_id{0}
-    {
-    }
-    ~default_scheduler_impl() {}
-
-    /// Delete copy ctor
-    default_scheduler_impl(const default_scheduler_impl&) = delete;
-    /// Delete copy-assign operator
-    default_scheduler_impl& operator=(const default_scheduler_impl&) = delete;
-    /// Delete move ctor
-    default_scheduler_impl(default_scheduler_impl&&) = delete;
-    /// Delete move-assign operator
-    default_scheduler_impl& operator=(default_scheduler_impl&&) = delete;
-
     bool try_lock(const use_deadlock_check check, const int, const lock_type p)
     {
         if (m_lt.is_locked_by_this_thread(p))               // Check if current thread already own this lock type
@@ -104,7 +89,7 @@ public:
 private:
     lock_matrix<matrix_type> m_matrix;
     thread_lock_tracker<matrix_type> m_lt;
-    int m_next_request_id;
+    int m_next_request_id = {};
 };
 
 /**
@@ -124,18 +109,6 @@ class default_scheduler_impl<MatrixSpec, true>
 
 public:
     typedef typename base_class::matrix_type matrix_type;
-
-    default_scheduler_impl() {}
-    ~default_scheduler_impl() {}
-
-    /// Delete copy ctor
-    default_scheduler_impl(const default_scheduler_impl&) = delete;
-    /// Delete copy-assign operator
-    default_scheduler_impl& operator=(const default_scheduler_impl&) = delete;
-    /// Delete move ctor
-    default_scheduler_impl(default_scheduler_impl&&) = delete;
-    /// Delete move-assign operator
-    default_scheduler_impl& operator=(default_scheduler_impl&&) = delete;
 
     // Bring inherited members into the scope
     using base_class::try_lock;
@@ -187,18 +160,6 @@ class default_scheduler
     , details::has_default_lock_param<MatrixSpec>::value
     >
 {
-public:
-    default_scheduler() {}
-    ~default_scheduler() {}
-
-    /// Delete copy ctor
-    default_scheduler(const default_scheduler&) = delete;
-    /// Delete copy-assign operator
-    default_scheduler& operator=(const default_scheduler&) = delete;
-    /// Delete move ctor
-    default_scheduler(default_scheduler&&) = delete;
-    /// Delete move-assign operator
-    default_scheduler& operator=(default_scheduler&&) = delete;
 };
 
 extern ZENCXX_EXPORT template class default_scheduler<exclusive_lock>;
