@@ -80,7 +80,7 @@ public:
     template <typename... Args>
     void unassign_request_id(const int request_id, Args&&... args)
     {
-        // Find a range of requests w/ same priority
+        // Find a given request ID in a queue
         auto it = std::find(begin(m_queue), end(m_queue), request_id);
         assert("Request expected to be in the queue" && it != end(m_queue));
         m_queue.erase(it);
