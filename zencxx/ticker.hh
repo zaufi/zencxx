@@ -243,7 +243,7 @@ inline ticker::ticker(boost::asio::io_service& srv)
 template <typename Functor>
 inline void ticker::call(Functor nulary_functor)
 {
-    m_srv.post(std::forward<Functor>(nulary_functor));
+    m_srv.post(std::move(nulary_functor));
 }
 
 template <typename Functor>
@@ -259,7 +259,7 @@ inline ticker::job ticker::call(
                 new boost::asio::system_timer(m_srv, at_time)
               )
           , std::chrono::system_clock::duration::zero()     // Ignored parameter
-          , std::forward<Functor>(nulary_functor)           // Function to execute
+          , std::move(nulary_functor)                       // Function to execute
           , details::registered_job::type::once             // No periodic runs required
           , details::registered_job::state::running         // Immediate schedule required
           )
