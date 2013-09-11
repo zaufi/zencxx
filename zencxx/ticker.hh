@@ -33,6 +33,7 @@
 
 // Standard includes
 # include <boost/asio/io_service.hpp>
+# include <boost/thread/lock_types.hpp>
 # include <boost/thread/mutex.hpp>
 # include <cassert>
 # include <functional>
@@ -70,8 +71,8 @@ public:
     {
         friend class ticker;
 
-        std::weak_ptr<ticker> m_ticker_wptr;                 ///< Weak pointer to parent ticker
-        unsigned m_job_id;                                   ///< ID of the registered job (key in jobs container)
+        std::weak_ptr<ticker> m_ticker_wptr;                ///< Weak pointer to parent ticker
+        unsigned m_job_id;                                  ///< ID of the registered job (key in jobs container)
 
         /// Make an instance of job from pointer to parent
         /// ticker and registered job iterator
@@ -148,13 +149,25 @@ public:
     /// Append a job to the list of registered jobs
     job append_job(details::registered_job&&);
     /// Put a given job into a schedule (w/ lock acquired)
-    ZENCXX_NO_EXPORT void reschedule_job(registered_jobs::iterator, const boost::mutex::scoped_lock&);
-    ZENCXX_NO_EXPORT void one_time_job_handler(registered_jobs::iterator, const boost::system::error_code&);
-    ZENCXX_NO_EXPORT void periodic_job_handler(registered_jobs::iterator, const boost::system::error_code&);
+    ZENCXX_NO_EXPORT void reschedule_job(
+        registered_jobs::iterator
+      , const boost::unique_lock<boost::mutex>&
+      );
+    ZENCXX_NO_EXPORT void one_time_job_handler(
+        registered_jobs::iterator
+      , const boost::system::error_code&
+      );
+    ZENCXX_NO_EXPORT void periodic_job_handler(
+        registered_jobs::iterator
+      , const boost::system::error_code&
+      );
     ZENCXX_NO_EXPORT void remove_if_needed(registered_jobs::iterator);
-    ZENCXX_NO_EXPORT void remove_if_needed(registered_jobs::iterator, boost::mutex::scoped_lock&);
+    ZENCXX_NO_EXPORT void remove_if_needed(
+        registered_jobs::iterator
+      , boost::unique_lock<boost::mutex>&
+      );
     void remove_job(const unsigned);
-    void remove_job(registered_jobs::iterator, boost::mutex::scoped_lock&);
+    void remove_job(registered_jobs::iterator, boost::unique_lock<boost::mutex>&);
     void pause_job(const unsigned);
     void resume_job(const unsigned);
 
@@ -298,7 +311,7 @@ inline boost::asio::io_service& ticker::service()
 
 inline void ticker::remove_job(const unsigned job_id)
 {
-    boost::mutex::scoped_lock l(m_jobs_mut);                // Guard iterator access under the lock
+    boost::unique_lock<boost::mutex> l(m_jobs_mut);         // Guard iterator access under the lock
     auto job_it = m_jobs.find(job_id);
     if (job_it != end(m_jobs))
         remove_job(job_it, l);

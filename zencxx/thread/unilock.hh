@@ -56,7 +56,7 @@ class unilock
     typedef Scheduler scheduler_type;
 
     template <typename... Args>
-    using lock_func_t = bool (unilock::*)(boost::mutex::scoped_lock&, int, Args&&...);
+    using lock_func_t = bool (unilock::*)(boost::unique_lock<boost::mutex>&, int, Args&&...);
 
 public:
     template <typename... Args>
@@ -77,7 +77,8 @@ public:
     {
         try
         {
-            boost::mutex::scoped_lock l(m_mut);             // may throw boost::thread_resource_error
+            // NOTE May throw boost::thread_resource_error
+            auto l = boost::unique_lock<boost::mutex>{m_mut};
             m_sched.unlock(std::forward<Args>(args)...);
         }
         catch (const exception&)
@@ -94,7 +95,7 @@ public:
 
 private:
     template <typename... Args>
-    bool lock_impl(boost::mutex::scoped_lock& l, const int request_id, Args&&... args)
+    bool lock_impl(boost::unique_lock<boost::mutex>& l, const int request_id, Args&&... args)
     {
         while (!m_sched.try_lock(details::use_deadlock_check::yes, request_id, std::forward<Args>(args)...))
             m_cond.wait(l);
@@ -102,7 +103,7 @@ private:
     }
 
     template <typename... Args>
-    bool try_lock_impl(boost::mutex::scoped_lock&, const int request_id, Args&&... args)
+    bool try_lock_impl(boost::unique_lock<boost::mutex>&, const int request_id, Args&&... args)
     {
         return m_sched.try_lock(details::use_deadlock_check::no, request_id, std::forward<Args>(args)...);
     }
@@ -113,7 +114,8 @@ private:
     {
         bool result = false;
         {
-            boost::mutex::scoped_lock l(m_mut);             // may throw boost::thread_resource_error
+            // NOTE  may throw boost::thread_resource_error
+            auto l = boost::unique_lock<boost::mutex>{m_mut};
             /// - Ask for unique request ID from the underlaid schduler
             int request_id;
             try

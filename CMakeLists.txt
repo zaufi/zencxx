@@ -78,6 +78,9 @@ add_definitions(-DBOOST_ASIO_DISABLE_BOOST_CHRONO)
 # Don't want to use any deprecated API
 add_definitions(-DBOOST_SYSTEM_NO_DEPRECATED)
 add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
+# Use latest available Boost.Thread library
+# (stay as close as possible to the C++11 Standard)
+add_definitions(-DBOOST_THREAD_VERSION=4)
 
 # TODO Add STL debug mode (-D_GLIBCXX_DEBUG) in debug builds, but
 # unfortunately this compiler option must be synchronized with boost

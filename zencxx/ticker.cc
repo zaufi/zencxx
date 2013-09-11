@@ -44,7 +44,7 @@ std::atomic<unsigned> s_next_job_id = {0};
 ticker::~ticker()
 {
     {
-        boost::mutex::scoped_lock l(m_jobs_mut);
+        boost::unique_lock<boost::mutex> l(m_jobs_mut);
         for (auto job_it = begin(m_jobs), last = end(m_jobs); job_it != last;)
         {
             switch (job_it->second.m_state)
@@ -73,7 +73,7 @@ ticker::~ticker()
     /// \todo Is it reliable?
     while (true)
     {
-        boost::mutex::scoped_lock l(m_jobs_mut);
+        boost::unique_lock<boost::mutex> l(m_jobs_mut);
         if (m_jobs.empty()) break;
     }
 }
@@ -105,7 +105,7 @@ ticker::job ticker::append_job(details::registered_job&& job_info)
       ));
 #  endif                                                    // NDEBUG
 
-    boost::mutex::scoped_lock l(m_jobs_mut);
+    boost::unique_lock<boost::mutex> l(m_jobs_mut);
     registered_jobs::iterator new_job = end(m_jobs);
     unsigned id = 0;
     try
@@ -142,7 +142,7 @@ ticker::job ticker::append_job(details::registered_job&& job_info)
     return job(shared_from_this(), id);
 }
 
-void ticker::reschedule_job(registered_jobs::iterator job_it, const boost::mutex::scoped_lock&)
+void ticker::reschedule_job(registered_jobs::iterator job_it, const boost::unique_lock<boost::mutex>&)
 {
     assert("Sanity check" && job_it != end(m_jobs));
     assert(
@@ -188,7 +188,7 @@ void ticker::one_time_job_handler(registered_jobs::iterator job_it, const boost:
         // No! We didn't!
         std::function<void()> nulary_function;
         {
-            boost::mutex::scoped_lock l(m_jobs_mut);        // Guard iterator access under the lock
+            boost::unique_lock<boost::mutex> l(m_jobs_mut); // Guard iterator access under the lock
             // Assert the job type and status
             assert(
                 "Type of job expected to be 'one-time'"
@@ -205,7 +205,7 @@ void ticker::one_time_job_handler(registered_jobs::iterator job_it, const boost:
             job_it->second.m_state = details::registered_job::state::running;
         }
         nulary_function();                                  // Ok! Ready to do the job...
-        boost::mutex::scoped_lock l(m_jobs_mut);            // Guard iterator access under the lock
+        boost::unique_lock<boost::mutex> l(m_jobs_mut);     // Guard iterator access under the lock
         job_it->second.m_state = details::registered_job::state::scheduled_for_removal;
         remove_if_needed(job_it, l);                        // Don't need this job anymore...
     }
@@ -227,7 +227,7 @@ void ticker::periodic_job_handler(registered_jobs::iterator job_it, const boost:
         // No! We didn't!
         std::function<void()> nulary_function;
         {
-            boost::mutex::scoped_lock l(m_jobs_mut);        // Guard iterator access under the lock
+            boost::unique_lock<boost::mutex> l(m_jobs_mut); // Guard iterator access under the lock
             // Assert the job type and status
             assert(
                 "Type of a job expected to be 'periodic'"
@@ -245,7 +245,7 @@ void ticker::periodic_job_handler(registered_jobs::iterator job_it, const boost:
         }
 
         nulary_function();                                  // Ok! Ready to do the job...
-        boost::mutex::scoped_lock l(m_jobs_mut);            // Guard iterator access under the lock
+        boost::unique_lock<boost::mutex> l(m_jobs_mut);     // Guard iterator access under the lock
         // Check if job still needed to reschedule
         if (details::registered_job::state::running == job_it->second.m_state)
         {
@@ -267,11 +267,11 @@ void ticker::periodic_job_handler(registered_jobs::iterator job_it, const boost:
 
 inline void ticker::remove_if_needed(registered_jobs::iterator job_it)
 {
-    boost::mutex::scoped_lock l(m_jobs_mut);                // Guard iterator access under the lock
+    auto l = boost::unique_lock<boost::mutex>{m_jobs_mut};  // Guard iterator access under the lock
     remove_if_needed(job_it, l);
 }
 
-void ticker::remove_if_needed(registered_jobs::iterator job_it, boost::mutex::scoped_lock&)
+void ticker::remove_if_needed(registered_jobs::iterator job_it, boost::unique_lock<boost::mutex>&)
 {
     assert(
         "Job couldn't be in a running state right now! Review your code!"
@@ -284,7 +284,7 @@ void ticker::remove_if_needed(registered_jobs::iterator job_it, boost::mutex::sc
     }                                                       // Otherwise, someone just stopped the job...
 }
 
-void ticker::remove_job(registered_jobs::iterator job_it, boost::mutex::scoped_lock& l)
+void ticker::remove_job(registered_jobs::iterator job_it, boost::unique_lock<boost::mutex>& l)
 {
     assert("Sanity check" && job_it != end(m_jobs));
     assert(
@@ -316,7 +316,7 @@ void ticker::remove_job(registered_jobs::iterator job_it, boost::mutex::scoped_l
 
 void ticker::pause_job(const unsigned job_id)
 {
-    boost::mutex::scoped_lock l(m_jobs_mut);                // Guard iterator access under the lock
+    auto l = boost::unique_lock<boost::mutex>{m_jobs_mut};  // Guard iterator access under the lock
     auto job_it = m_jobs.find(job_id);
     if (job_it != end(m_jobs))
     {
@@ -343,7 +343,7 @@ void ticker::pause_job(const unsigned job_id)
 /// \todo What if timer already in the past?
 void ticker::resume_job(const unsigned job_id)
 {
-    boost::mutex::scoped_lock l(m_jobs_mut);                // Guard iterator access under the lock
+    auto l = boost::unique_lock<boost::mutex>{m_jobs_mut};  // Guard iterator access under the lock
     auto job_it = m_jobs.find(job_id);
     if (job_it != end(m_jobs))
     {
