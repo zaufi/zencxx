@@ -52,7 +52,7 @@ include(GenerateExportHeader)
 #---------------------------------------------------------
 set(Boost_USE_MULTITHREADED ON)
 find_package(
-    Boost 1.48 REQUIRED COMPONENTS
+    Boost 1.53 REQUIRED COMPONENTS
     # Lets keep libs list sorted... :)
     system
     thread

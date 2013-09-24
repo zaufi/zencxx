@@ -31,10 +31,6 @@
 
 // Standard includes
 #include <boost/io/ios_state.hpp>
-// ALERT The following #define must be enabled only in one translation unit
-// per unit test binary (which may consists of several such modules)
-#define BOOST_AUTO_TEST_MAIN
-#define BOOST_TEST_DYN_LINK
 #include <boost/test/auto_unit_test.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
