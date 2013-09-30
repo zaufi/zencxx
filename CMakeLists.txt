@@ -286,6 +286,7 @@ set(DOXYGEN_PREDEFINED "DOXYGEN_RUNNING ZENCXX_EXPORT ZENCXX_NO_EXPORT ZENCXXOS_
 set(DOXYGEN_PROJECT_NUMBER ${ZENCXX_VERSION})
 include(DefineDoxyDocsTargetIfPossible)
 
+set(USE_PRAGMA_ONCE ON)
 include(DefineSkeletonGenerationTargetsIfPossible)
 define_skeleton_generation_targets(
     PROJECT_LICENSE LGPL
