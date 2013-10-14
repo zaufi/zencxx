@@ -61,6 +61,8 @@ namespace zencxx { namespace debug { namespace print { namespace details {
 
 /**
  * Metafunction to find an appropriate outputer for given type \c T.
+ *
+ * \todo Add print functions for \c boost::system::error_code (and for \c std)
  */
 template <typename T>
 class any_chooser
