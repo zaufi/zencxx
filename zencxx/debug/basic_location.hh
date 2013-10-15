@@ -30,8 +30,11 @@
 # include <ostream>
 
 namespace zencxx { namespace debug {
+/// \ingroup DEBUG
+//@{
 
 /**
+ *
  * \brief Class to hold a position in source code
  *
  * Most of the time source code location needed for logging purposes.
@@ -127,5 +130,6 @@ inline std::ostream& operator<<(std::ostream& os, const basic_location<File, Lin
     return os;
 }
 
+//@}
 }}                                                          // namespace debug, zencxx
 #endif                                                      // __ZENCXX__DEBUG__BASIC_LOCATION_HH__

@@ -33,6 +33,9 @@
 # include <boost/preprocessor/if.hpp>
 # include <boost/preprocessor/stringize.hpp>
 
+/// \ingroup DEBUG
+//@{
+
 /// Macro to get current file (short form)
 /// \internal
 # define ZENCXX_PP_CURRENT_FILE_SHORT_ \
@@ -103,6 +106,7 @@ inline basic_location<File, Line, Function> make_location(File file, Line line, 
 {
     return basic_location<File, Line, Function>(file, line, function);
 }
-
 }}                                                          // namespace debug, zencxx
+
+//@}
 #endif                                                      // __ZENCXX__DEBUG__LOCATION_HH__

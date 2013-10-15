@@ -284,6 +284,7 @@ if(EXISTS $ENV{HOME}/.cache/doxygen/libstdc++.tag)
 endif()
 set(DOXYGEN_PREDEFINED "DOXYGEN_RUNNING ZENCXX_EXPORT ZENCXX_NO_EXPORT ZENCXXOS_EXPORT ZENCXXOS_NO_EXPORT")
 set(DOXYGEN_PROJECT_NUMBER ${ZENCXX_VERSION})
+set(DOXYGEN_EXCLUDE_PATTERNS zencxx-pch.hh)
 include(DefineDoxyDocsTargetIfPossible)
 
 include(DefineSkeletonGenerationTargetsIfPossible)

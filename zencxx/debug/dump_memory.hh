@@ -32,8 +32,11 @@
 # include <vector>
 
 namespace zencxx { namespace debug {
+/// \ingroup DEBUG
+//@{
 
 /**
+ *
  * \brief Class to print hex dumped memory
  *
  * The main purpose of this class, as one probably already guessed, is to
@@ -91,5 +94,6 @@ private:
     const std::size_t m_size;                               ///< Size of block to dump
 };
 
+//@}
 }}                                                          // namespace debug, zencxx
 #endif                                                      // __ZENCXX__DEBUG__DUMP_MEMORY_HH__

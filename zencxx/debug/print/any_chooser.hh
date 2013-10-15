@@ -62,9 +62,6 @@ namespace zencxx { namespace debug { namespace print { namespace details {
 
 /**
  * Metafunction to find an appropriate outputer for given type \c T.
- *
- * \todo Is it possible to generalize all specialized checks into
- * something like \c is_any_wrapped_class<T> ... ;-)
  */
 template <typename T>
 class any_chooser

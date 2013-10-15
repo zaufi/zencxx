@@ -34,6 +34,8 @@
 # include <typeinfo>
 
 namespace zencxx { namespace debug {
+/// \ingroup DEBUG
+//@{
 
 /**
  * \brief Try to demangle given name
@@ -90,5 +92,6 @@ inline std::string type_name()
     return demangle_name(typeid(T).name());
 }
 
+//@}
 }}                                                          // namespace debug, zencxx
 #endif                                                      // __ZENCXX__DEBUG__TYPE_NAME_HH__

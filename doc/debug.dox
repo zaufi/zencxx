@@ -1,0 +1,16 @@
+namespace zencxx {
+/**
+ * \defgroup DEBUG Debug facilities
+ *
+ * \c zencxx/debug/ directory (and corresponsing \c namespace \c zencxx::debug) contains a
+ * various debug related facilities.
+ *
+ * - \c zencxx::debug::backtrace a _platform depended_ class to obtain a stacktrace at the moment
+ *   of its constructor call
+ * - \c zencxx::debug::location a flexible class to incapculate source code location information
+ * - \c zencxx:debug::print::any extensible debug pretty printing for various types
+ * - type demangling and printng functions
+ */
+namespace debug {}
+}
+// kate: hl C++11;

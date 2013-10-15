@@ -32,6 +32,8 @@
 # include <vector>
 
 namespace zencxx { namespace debug { namespace details { inline namespace linux_impl {
+/// \ingroup DEBUG
+//@{
 
 /**
  * \brief Class to collect an execution backtrace
@@ -54,7 +56,7 @@ public:
     typedef std::vector<std::string> stack_type;            ///< Result type for \c stack() method
     typedef stack_type::size_type size_type;                ///< Type for size of collected trace
 
-    /// Collect N backtraces, exclude first \e E frames
+    /// Collect \c N backtraces, exclude first \e E frames
     explicit backtrace(
         const unsigned depth = DEFAULT_STACK_DEPTH
       , const unsigned exclude_cnt = DEFAULT_EXCLUDE_FIRST_FRAMES_COUNT
@@ -89,5 +91,6 @@ private:
 /// Make \c backtrace printable to C++ output streams
 ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, const backtrace&);
 
+//@}
 }}}}                                                        // namespace linux_impl, details, debug, zencxx
 #endif                                                      // __ZENCXX__DEBUG__DETAILS__BACKTRACE_IMPL_LINUX_HH__
