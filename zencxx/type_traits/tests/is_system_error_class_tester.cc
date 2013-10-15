@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Class \c zencxx::debug::print::details::any_stub (interface)
+ * \brief Class tester for \c is_system_error_class
  *
- * \date Sun Jul 28 13:53:30 MSK 2013 -- Initial design
+ * \date Tue Oct 15 03:42:50 MSK 2013 -- Initial design
  */
 /*
  * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
@@ -25,31 +25,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__ANY_STUB_HH__
-# define __ZENCXX__DEBUG__PRINT__ANY_STUB_HH__
-
 // Project specific includes
-# include <zencxx/debug/print/any_wrapper.hh>
-# include <zencxx/debug/type_name.hh>
+#include <zencxx/type_traits/is_system_error_class.hh>
 
 // Standard includes
-# include <ostream>
+#include <boost/test/auto_unit_test.hpp>
+#include <iostream>
 
-namespace zencxx { namespace debug { namespace print { namespace details {
-
-template <typename T>
-struct any_stub : public any_wrapper<T>
+BOOST_AUTO_TEST_CASE(is_system_error_class_test)
 {
-    using any_wrapper<T>::any_wrapper;
-};
+    BOOST_CHECK_EQUAL(zencxx::is_system_error_class<int>::value, false);
+    BOOST_CHECK_EQUAL(zencxx::is_system_error_class<std::ostream>::value, false);
 
-/// Make \c any streamable
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const any_stub<T>&)
-{
-    os << '<' << type_name<T>() << " is not printable>";
-    return os;
+    BOOST_CHECK_EQUAL(zencxx::is_system_error_class<std::error_code>::value, true);
+    BOOST_CHECK_EQUAL(zencxx::is_system_error_class<boost::system::error_code>::value, true);
 }
-
-}}}}                                                        // namespace details, print, debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_STUB_HH__

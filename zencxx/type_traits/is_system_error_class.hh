@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Class \c zencxx::debug::print::details::any_stub (interface)
+ * \brief Metafunction to check is given type is a some \c error_code class
  *
- * \date Sun Jul 28 13:53:30 MSK 2013 -- Initial design
+ * \date Tue Oct 15 03:39:59 MSK 2013 -- Initial design
  */
 /*
  * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
@@ -25,31 +25,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__ANY_STUB_HH__
-# define __ZENCXX__DEBUG__PRINT__ANY_STUB_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/debug/print/any_wrapper.hh>
-# include <zencxx/debug/type_name.hh>
 
 // Standard includes
-# include <ostream>
+#include <boost/system/error_code.hpp>
+#include <system_error>
+#include <type_traits>
 
-namespace zencxx { namespace debug { namespace print { namespace details {
+namespace zencxx {
 
+/**
+ * \brief Metafunction to check is given type is a some \c error_code class
+ *
+ * Tries to handle both: boost and standard error codes.
+ *
+ */
 template <typename T>
-struct any_stub : public any_wrapper<T>
-{
-    using any_wrapper<T>::any_wrapper;
-};
+struct is_system_error_class : public std::integral_constant<
+    bool
+  , std::is_base_of<std::error_code, T>::value || std::is_base_of<boost::system::error_code, T>::value
+  >
+{};
 
-/// Make \c any streamable
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const any_stub<T>&)
-{
-    os << '<' << type_name<T>() << " is not printable>";
-    return os;
-}
-
-}}}}                                                        // namespace details, print, debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_STUB_HH__
+}                                                           // namespace zencxx

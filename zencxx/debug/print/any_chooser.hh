@@ -37,6 +37,7 @@
 # include <zencxx/debug/print/std_chrono.hh>
 # include <zencxx/debug/print/std_pair.hh>
 # include <zencxx/debug/print/std_tuple.hh>
+# include <zencxx/debug/print/system_error_class.hh>
 # include <zencxx/mpl/seq.hh>
 # include <zencxx/mpl/v_or.hh>
 # include <zencxx/type_traits/has_left_shift.hh>
@@ -62,7 +63,8 @@ namespace zencxx { namespace debug { namespace print { namespace details {
 /**
  * Metafunction to find an appropriate outputer for given type \c T.
  *
- * \todo Add print functions for \c boost::system::error_code (and for \c std)
+ * \todo Is it possible to generalize all specialized checks into
+ * something like \c is_any_wrapped_class<T> ... ;-)
  */
 template <typename T>
 class any_chooser
@@ -103,6 +105,11 @@ class any_chooser
       , boost::mpl::pair<
             is_std_chrono_time_point<pure_type>
           , boost::mpl::quote1<any_time_point>
+          >
+        // pretty print for system error_code classes (boost or std)
+      , boost::mpl::pair<
+            is_system_error_class<pure_type>
+          , boost::mpl::quote1<any_error_code_class>
           >
         // check if given type can be printed w/ operator<<(ostream&, ...)
       , boost::mpl::pair<

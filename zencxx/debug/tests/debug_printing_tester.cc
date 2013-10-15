@@ -30,6 +30,7 @@
 #include <zencxx/debug/type_name.hh>
 
 // Standard includes
+#include <boost/asio/error.hpp>
 #include <boost/io/ios_state.hpp>
 #include <boost/test/auto_unit_test.hpp>
 #include <boost/uuid/uuid_generators.hpp>
@@ -270,5 +271,17 @@ BOOST_AUTO_TEST_CASE(std_chrono_system_duration_debug_printing_test)
     {
         auto d = std::chrono::hours(60) + std::chrono::minutes(35) + std::chrono::seconds(46);
         std::cout << print::any(d) << std::endl;
+    }
+}
+
+BOOST_AUTO_TEST_CASE(system_error_code_class_debug_printing_test)
+{
+    {
+        auto error = std::make_error_code(std::errc::file_exists);
+        std::cout << print::any(error) << std::endl;
+    }
+    {
+        auto error = boost::system::error_code{boost::asio::error::connection_refused};
+        std::cout << print::any(error) << std::endl;
     }
 }

@@ -6,6 +6,7 @@ set(UNIT_TESTS_SOURCES
     is_incrementable_tester.cc
     is_swappable_tester.cc
     is_iterator_tester.cc
+    is_system_error_class_tester.cc
     range_iterable_tester.cc
     to_string_tester.cc
   )

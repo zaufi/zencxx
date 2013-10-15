@@ -1,9 +1,9 @@
 /**
  * \file
  *
- * \brief Class \c zencxx::debug::print::details::any_stub (interface)
+ * \brief Class \c zencxx::debug::print::details::system_error_class (interface)
  *
- * \date Sun Jul 28 13:53:30 MSK 2013 -- Initial design
+ * \date Tue Oct 15 04:00:30 MSK 2013 -- Initial design
  */
 /*
  * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
@@ -25,31 +25,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__ANY_STUB_HH__
-# define __ZENCXX__DEBUG__PRINT__ANY_STUB_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/debug/print/any_wrapper.hh>
-# include <zencxx/debug/type_name.hh>
+#include <zencxx/debug/print/any_wrapper.hh>
+#include <zencxx/type_traits/is_system_error_class.hh>
 
 // Standard includes
-# include <ostream>
+#include <ostream>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
 
 template <typename T>
-struct any_stub : public any_wrapper<T>
+struct any_error_code_class : public any_wrapper<T>
 {
+    static_assert(
+        is_system_error_class<typename std::decay<T>::type>::value
+      , "Type T is not an error_code class"
+      );
     using any_wrapper<T>::any_wrapper;
 };
 
 /// Make \c any streamable
 template <typename T>
-std::ostream& operator<<(std::ostream& os, const any_stub<T>&)
+std::ostream& operator<<(std::ostream& os, const any_error_code_class<T>& error)
 {
-    os << '<' << type_name<T>() << " is not printable>";
+    {
+        details::show_type_info_saver s(os);
+        no_show_type_info(os);
+        os << error.data().message()
+           << " (" << error.data().category().name() << ':' << error.data().value() << ')';
+    }
+    // Show type info if needed
+    details::show_type_info_impl<typename any_error_code_class<T>::wrapped_type>(os);
     return os;
 }
 
 }}}}                                                        // namespace details, print, debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_STUB_HH__
