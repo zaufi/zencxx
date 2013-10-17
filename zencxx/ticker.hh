@@ -138,6 +138,9 @@ public:
     /// Get I/O underlaid service
     boost::asio::io_service& service();
 
+    /// Get count of registered tasks
+    registered_jobs::size_type tasks_count() const;
+
   private:
     /// Use I/O service
     ZENCXX_NO_EXPORT ticker(boost::asio::io_service&);
@@ -307,6 +310,13 @@ inline ticker::job ticker::call(
 inline boost::asio::io_service& ticker::service()
 {
     return m_srv;
+}
+
+/// \note This function can be used mostly for debug purposes in caller's code
+inline auto ticker::tasks_count() const -> registered_jobs::size_type
+{
+    boost::unique_lock<boost::mutex> l(m_jobs_mut);
+    return m_jobs.size();
 }
 
 inline void ticker::remove_job(const unsigned job_id)
