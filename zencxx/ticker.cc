@@ -44,7 +44,7 @@ std::atomic<unsigned> s_next_job_id = {0};
 ticker::~ticker()
 {
     {
-        boost::unique_lock<boost::mutex> l(m_jobs_mut);
+        auto l = boost::unique_lock<boost::mutex>{m_jobs_mut};
         for (auto job_it = begin(m_jobs), last = end(m_jobs); job_it != last;)
         {
             switch (job_it->second.m_state)
@@ -73,7 +73,7 @@ ticker::~ticker()
     /// \todo Is it reliable?
     while (true)
     {
-        boost::unique_lock<boost::mutex> l(m_jobs_mut);
+        auto l = boost::unique_lock<boost::mutex>{m_jobs_mut};
         if (m_jobs.empty()) break;
     }
 }
@@ -105,7 +105,7 @@ ticker::job ticker::append_job(details::registered_job&& job_info)
       ));
 #  endif                                                    // NDEBUG
 
-    boost::unique_lock<boost::mutex> l(m_jobs_mut);
+    auto l = boost::unique_lock<boost::mutex>{m_jobs_mut};
     registered_jobs::iterator new_job = end(m_jobs);
     unsigned id = 0;
     try
