@@ -139,20 +139,6 @@ endif()
 # (a target to be build in every tests/ directories)
 set(UNIT_TESTS unit_tests)
 
-include(CMakePackageConfigHelpers)
-configure_package_config_file(
-    ${CMAKE_SOURCE_DIR}/cmake/modules/ZenCxxConfig.cmake.in
-    ${CMAKE_BINARY_DIR}/ZenCxxConfig.cmake
-    INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
-    PATH_VARS CMAKE_INSTALL_PREFIX CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR
-    NO_CHECK_REQUIRED_COMPONENTS_MACRO
-  )
-write_basic_package_version_file(
-    ${CMAKE_BINARY_DIR}/ZenCxxConfigVersion.cmake
-    VERSION ${ZENCXX_VERSION}
-    COMPATIBILITY AnyNewerVersion
-  )
-
 #---------------------------------------------------------
 # Section: Package options
 # ALERT It should be after subdirs traversal
@@ -310,16 +296,9 @@ use_pch_file(
     # EXCLUDE_HEADERS ext/hash_set ext/hash_map
   )
 
-
 #---------------------------------------------------------
 # Section: Top level installs
 #---------------------------------------------------------
-
-install(
-    FILES ${CMAKE_BINARY_DIR}/ZenCxxConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/ZenCxxConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_CMAKE_MODULESDIR}
-    COMPONENT ${LIBZENCXX_DEV_PACKAGE}
-  )
 
 if(NOT NO_DOXY_DOCS OR NOT NO_DOXY_DOCS STREQUAL "ON")
     install(
