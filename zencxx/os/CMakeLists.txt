@@ -24,17 +24,33 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
         ${Boost_SYSTEM_LIBRARY}
       )
 
+    export(
+        TARGETS zencxx zencxxos
+        NAMESPACE zencxx::
+        FILE zencxxos.cmake
+        EXPORT_LINK_INTERFACE_LIBRARIES
+      )
+
     set_target_properties(
         zencxxos
-        PROPERTIES VERSION "0.0"
+        PROPERTIES
+            VERSION "0.0"
+            EXPORT_NAME "os"
       )
 
     install(
         TARGETS zencxxos
+        EXPORT zencxxos
         DESTINATION ${CMAKE_INSTALL_LIBDIR}
         COMPONENT ${LIBZENCXX_PACKAGE}
       )
 
+    install(
+        EXPORT zencxxos
+        DESTINATION ${CMAKE_INSTALL_CMAKE_MODULESDIR}
+        NAMESPACE zencxx::
+        EXPORT_LINK_INTERFACE_LIBRARIES
+      )
 
     file(GLOB HEADERS *.hh)
     install(

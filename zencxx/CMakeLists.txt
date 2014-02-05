@@ -41,15 +41,32 @@ target_link_libraries(
     ${Boost_THREAD_LIBRARY}
   )
 
+export(
+    TARGETS zencxx
+    NAMESPACE zencxx::
+    FILE zencxxshared.cmake
+    EXPORT_LINK_INTERFACE_LIBRARIES
+  )
+
 set_target_properties(
     zencxx
-    PROPERTIES VERSION "0.0"
+    PROPERTIES
+        VERSION "0.0"
+        EXPORT_NAME "shared"
   )
 
 install(
     TARGETS zencxx
+    EXPORT zencxxshared
     DESTINATION ${CMAKE_INSTALL_LIBDIR}
     COMPONENT ${LIBZENCXX_PACKAGE}
+  )
+
+install(
+    EXPORT zencxxshared
+    DESTINATION ${CMAKE_INSTALL_CMAKE_MODULESDIR}
+    NAMESPACE zencxx::
+    EXPORT_LINK_INTERFACE_LIBRARIES
   )
 
 file(GLOB HEADERS *.hh)

@@ -1,0 +1,67 @@
+set(ZENCXX_VERSION "@ZENCXX_VERSION@")
+
+@PACKAGE_INIT@
+
+set_and_check(ZENCXX_INSTALL_PREFIX @PACKAGE_CMAKE_INSTALL_PREFIX@)
+set_and_check(ZENCXX_INCLUDE_DIR @PACKAGE_CMAKE_INSTALL_INCLUDEDIR@)
+set(ZENCXX_INCLUDE_DIRS @PACKAGE_CMAKE_INSTALL_INCLUDEDIR@ @Boost_INCLUDE_DIRS@)
+set_and_check(ZENCXX_LIBRARIES_DIR @PACKAGE_CMAKE_INSTALL_LIBDIR@)
+
+# Set 'main' library as a default component
+if(NOT ZenCxx_FIND_COMPONENTS)
+    set(ZenCxx_FIND_COMPONENTS shared)
+endif()
+
+set(_ZENCXX_FIND_PARTS_REQUIRED)
+if (ZenCxx_FIND_REQUIRED)
+    set(_ZENCXX_FIND_PARTS_REQUIRED REQUIRED)
+endif()
+
+set(_ZENCXX_FIND_PARTS_QUIET)
+if (ZenCxx_FIND_QUIETLY)
+    set(_ZENCXX_FIND_PARTS_QUIET QUIET)
+endif()
+
+
+set(_zencxx_notfound_message)
+get_filename_component(_zencxx_cmake_modules_path "${CMAKE_CURRENT_LIST_DIR}" ABSOLUTE)
+
+foreach(module ${ZenCxx_FIND_COMPONENTS})
+    include(
+        "${_zencxx_cmake_modules_path}/zencxx${module}.cmake"
+        OPTIONAL
+        RESULT_VARIABLE _zencxx_${module}_found
+      )
+    if(NOT _zencxx_${module}_found)
+        set(_fail_to_find_module TRUE)
+        set(_fail_to_find_module_reason "failed to include config file")
+    else()
+        if(DEFINED ZenCxx_FOUND)
+            if(NOT ZenCxx_FOUND)
+                set(_fail_to_find_module TRUE)
+                set(_fail_to_find_module_reason "${ZenCxx_NOT_FOUND_MESSAGE}")
+                unset(ZenCxx_FOUND)
+            endif()
+        endif()
+    endif()
+
+    if(_fail_to_find_module)
+        if (ZenCxx_FIND_REQUIRED_${module})
+            if(NOT _zencxx_notfound_message)
+                set(_zencxx_notfound_message "Filed to find the following requested zencxx component(s):")
+            endif()
+            set(_zencxx_notfound_message "${_zencxx_notfound_message}\n  ${module} -- ${_fail_to_find_module_reason}")
+        elseif(NOT ZenCxx_FIND_QUIETLY)
+            message(WARNING "Filed to find zencxx component: ${module} -- ${_fail_to_find_module_reason}")
+        endif()
+    endif()
+    unset(_fail_to_find_module)
+    unset(_fail_to_find_module_reason)
+endforeach()
+
+if(_zencxx_notfound_message)
+    set(ZenCxx_NOT_FOUND_MESSAGE "${_zencxx_notfound_message}")
+    set(ZenCxx_FOUND NOTFOUND)
+endif()
+
+# kate: hl CMake;

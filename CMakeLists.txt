@@ -11,6 +11,7 @@ cmake_minimum_required(VERSION 2.6)
 # Enable non unique target names in different subdirs
 # (used for unit tests)
 cmake_policy(SET CMP0002 OLD)
+cmake_policy(SET CMP0022 NEW)
 
 project(libzencxx CXX)
 
@@ -39,6 +40,7 @@ include(GNUInstallDirs)
 set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/zencxx-${ZENCXX_VERSION})
 set(CMAKE_INSTALL_PKGLIBDIR ${CMAKE_INSTALL_LIBDIR}/zencxx-${ZENCXX_VERSION})
 set(CMAKE_INSTALL_DOCDIR ${CMAKE_INSTALL_DOCDIR}-${ZENCXX_VERSION})
+set(CMAKE_INSTALL_CMAKE_MODULESDIR ${CMAKE_INSTALL_LIBDIR}/cmake/zencxx-${ZENCXX_VERSION})
 
 # Custom (from package's cmake/modules/ directory)
 include(AddBoostTests)
@@ -136,16 +138,17 @@ endif()
 # Set a project-wide name for unit tests executable
 # (a target to be build in every tests/ directories)
 set(UNIT_TESTS unit_tests)
+
 include(CMakePackageConfigHelpers)
 configure_package_config_file(
-    ${CMAKE_SOURCE_DIR}/cmake/modules/ZenCXXConfig.cmake.in
-    ${CMAKE_BINARY_DIR}/ZenCXXConfig.cmake
+    ${CMAKE_SOURCE_DIR}/cmake/modules/ZenCxxConfig.cmake.in
+    ${CMAKE_BINARY_DIR}/ZenCxxConfig.cmake
     INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
     PATH_VARS CMAKE_INSTALL_PREFIX CMAKE_INSTALL_INCLUDEDIR CMAKE_INSTALL_LIBDIR
     NO_CHECK_REQUIRED_COMPONENTS_MACRO
   )
 write_basic_package_version_file(
-    ${CMAKE_BINARY_DIR}/ZenCXXConfigVersion.cmake
+    ${CMAKE_BINARY_DIR}/ZenCxxConfigVersion.cmake
     VERSION ${ZENCXX_VERSION}
     COMPATIBILITY AnyNewerVersion
   )
@@ -313,8 +316,8 @@ use_pch_file(
 #---------------------------------------------------------
 
 install(
-    FILES ${CMAKE_BINARY_DIR}/ZenCXXConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/ZenCXXConfigVersion.cmake
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/zencxx-${ZENCXX_VERSION}
+    FILES ${CMAKE_BINARY_DIR}/ZenCxxConfig.cmake ${CMAKE_CURRENT_BINARY_DIR}/ZenCxxConfigVersion.cmake
+    DESTINATION ${CMAKE_INSTALL_CMAKE_MODULESDIR}
     COMPONENT ${LIBZENCXX_DEV_PACKAGE}
   )
 
