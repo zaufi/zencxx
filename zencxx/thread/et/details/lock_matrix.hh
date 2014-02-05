@@ -34,7 +34,7 @@
 
 namespace zencxx { inline namespace thread { namespace details {
 
-extern ZENCXX_EXPORT template class lock_matrix<exclusive_lock>;
-extern ZENCXX_EXPORT template class lock_matrix<rw_lock>;
+extern template class lock_matrix<exclusive_lock>;
+extern template class lock_matrix<rw_lock>;
 
 }}}                                                         // namespace details, thread, zencxx

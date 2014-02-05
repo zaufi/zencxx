@@ -34,10 +34,10 @@
 
 namespace zencxx { inline namespace thread { namespace details {
 
-extern ZENCXX_EXPORT template class thread_lock_tracker<exclusive_lock, 1ul>;
-extern ZENCXX_EXPORT template class thread_lock_tracker<rw_lock, 2ul>;
+extern template class thread_lock_tracker<exclusive_lock, 1ul>;
+extern template class thread_lock_tracker<rw_lock, 2ul>;
 
 }}}                                                         // namespace details, thread, zencxx
 
-extern ZENCXX_EXPORT template class std::vector<boost::thread::id>;
-extern ZENCXX_EXPORT template class std::array<std::vector<boost::thread::id>, 2ul>;
+extern template class std::vector<boost::thread::id>;
+extern template class std::array<std::vector<boost::thread::id>, 2ul>;

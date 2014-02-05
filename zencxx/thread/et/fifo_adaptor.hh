@@ -31,15 +31,14 @@
 #include <zencxx/thread/et/default_scheduler.hh>
 #include <zencxx/thread/fifo_adaptor.hh>
 #include <zencxx/thread/predefined_lock_types.hh>
-#include <zencxx/details/export.hh>
 
 // Standard includes
 
 namespace zencxx { inline namespace thread {
 
-extern ZENCXX_EXPORT template class fifo_adaptor<default_scheduler<exclusive_lock>>;
-extern ZENCXX_EXPORT template class fifo_adaptor<default_scheduler<rw_lock>>;
+extern template class fifo_adaptor<default_scheduler<exclusive_lock>>;
+extern template class fifo_adaptor<default_scheduler<rw_lock>>;
 
 }}                                                          // namespace thread, zencxx
 
-extern ZENCXX_EXPORT template class std::vector<int>;
+extern template class std::vector<int>;

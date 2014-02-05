@@ -31,7 +31,6 @@
 #include <zencxx/thread/default_scheduler.hh>
 #include <zencxx/thread/predefined_lock_types.hh>
 #include <zencxx/thread/parameterized_adaptor.hh>
-#include <zencxx/details/export.hh>
 
 // Standard includes
 

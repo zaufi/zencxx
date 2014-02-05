@@ -8,14 +8,6 @@ set(
     debug/print/containers.cc
     debug/print/std_chrono.cc
     exception.cc
-    thread/predefined_lock_types.cc
-    thread/et/details/lock_matrix.cc
-    thread/et/details/thread_lock_tracker.cc
-    thread/et/default_scheduler.cc
-    thread/et/fifo_adaptor.cc
-    thread/et/parameterized_adaptor.cc
-    thread/et/priority_queue_adaptor.cc
-    thread/et/unilock.cc
     ticker.cc
     utility/random.cc
   )
@@ -26,19 +18,23 @@ endif()
 
 add_library(
     zencxx
+    ${ZENCXX_LIB_TYPE}
     ${ZENCXX_SOURCES}
     ${ZENCXX_EXTRA_SOURCES}
-  )
-
-generate_export_header(
-    zencxx
-    EXPORT_FILE_NAME details/export.hh
   )
 
 target_link_libraries(
     zencxx
     ${Boost_SYSTEM_LIBRARY}
     ${Boost_THREAD_LIBRARY}
+  )
+
+generate_export_header(zencxx EXPORT_FILE_NAME details/export.hh)
+
+install(
+    TARGETS zencxx
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    COMPONENT ${LIBZENCXX_PACKAGE}
   )
 
 file(GLOB HEADERS *.hh)
@@ -57,11 +53,11 @@ install(
 
 add_subdirectory(mpl)
 add_subdirectory(os)
+add_subdirectory(thread)
 add_subdirectory(type_traits)
 
 # Compile tests only if needed
 if(BUILD_TESTING)
     add_subdirectory(debug/tests)
     add_subdirectory(tests)
-    add_subdirectory(thread/tests)
 endif()

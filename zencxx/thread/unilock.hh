@@ -25,16 +25,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__THREAD__UNILOCK_HH__
-# define __ZENCXX__THREAD__UNILOCK_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/thread/exception.hh>
+#include <zencxx/thread/exception.hh>
 
 // Standard includes
-# include <boost/thread/condition_variable.hpp>
-# include <boost/thread/mutex.hpp>
-# include <utility>
+#include <boost/thread/condition_variable.hpp>
+#include <boost/thread/mutex.hpp>
+#include <utility>
 
 namespace zencxx { inline namespace thread {
 /**
@@ -180,4 +179,3 @@ private:
 };
 
 }}                                                          // namespace thread, zencxx
-#endif                                                      // __ZENCXX__THREAD__UNILOCK_HH__

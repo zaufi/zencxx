@@ -3,6 +3,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
 
     add_library(
         zencxxos
+        ${ZENCXX_LIB_TYPE}
         charset/convert.cc
         color.cc
         daemon_application.cc
@@ -13,15 +14,23 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
         utils.cc
       )
 
+    target_link_libraries(
+        zencxxos
+        zencxx
+        ${Boost_SYSTEM_LIBRARY}
+      )
+    get_target_property(ZZ zencxxos COMPILE_DEFINITIONS_Debug)
+    message("compiler defs: ${ZZ}")
+
     generate_export_header(
         zencxxos
         EXPORT_FILE_NAME details/export.hh
       )
 
-    target_link_libraries(
-        zencxxos
-        zencxx
-        ${Boost_SYSTEM_LIBRARY}
+    install(
+        TARGETS zencxxos
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        COMPONENT ${LIBZENCXX_PACKAGE}
       )
 
     file(GLOB HEADERS *.hh)

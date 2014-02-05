@@ -25,8 +25,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__THREAD__DETAILS__USE_DEADLOCK_CHECK_HH__
-# define __ZENCXX__THREAD__DETAILS__USE_DEADLOCK_CHECK_HH__
+#pragma once
 
 // Project specific includes
 
@@ -38,4 +37,3 @@ namespace zencxx { inline namespace thread { namespace details {
 enum class use_deadlock_check { yes, no };
 
 }}}                                                         // namespace details, thread, zencxx
-#endif                                                      // __ZENCXX__THREAD__DETAILS__USE_DEADLOCK_CHECK_HH__

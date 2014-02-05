@@ -25,11 +25,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__THREAD__PREDEFINED_LOCK_TYPES_HH__
-# define __ZENCXX__THREAD__PREDEFINED_LOCK_TYPES_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/details/export.hh>
+#include <zencxx/thread/details/export.hh>
 
 // Standard includes
 
@@ -43,7 +42,7 @@ namespace zencxx { inline namespace thread {
  *
  * \sa default_scheduler
  */
-ZENCXX_EXPORT struct exclusive_lock
+struct ZENCXXTHREAD_EXPORT exclusive_lock
 {
     enum type
     {
@@ -58,7 +57,7 @@ ZENCXX_EXPORT struct exclusive_lock
  *
  * Allows multiple read locks.
  */
-ZENCXX_EXPORT struct rw_lock
+struct ZENCXXTHREAD_EXPORT rw_lock
 {
     enum type
     {
@@ -72,4 +71,3 @@ ZENCXX_EXPORT struct rw_lock
 };
 
 }}                                                          // namespace thread, zencxx
-#endif                                                      // __ZENCXX__THREAD__PREDEFINED_LOCK_TYPES_HH__

@@ -34,15 +34,14 @@
 #include <zencxx/thread/et/priority_queue_adaptor.hh>
 #include <zencxx/thread/predefined_lock_types.hh>
 #include <zencxx/thread/unilock.hh>
-#include <zencxx/details/export.hh>
 
 // Standard includes
 
 namespace zencxx { inline namespace thread {
 
-extern ZENCXX_EXPORT template class unilock<priority_queue_adaptor<default_scheduler<exclusive_lock>>>;
+extern template class unilock<priority_queue_adaptor<default_scheduler<exclusive_lock>>>;
 
-extern ZENCXX_EXPORT template bool unilock<
+extern template bool unilock<
     priority_queue_adaptor<
         default_scheduler<exclusive_lock>
       >
@@ -56,9 +55,9 @@ extern ZENCXX_EXPORT template bool unilock<
       );
 
 
-extern ZENCXX_EXPORT template class unilock<priority_queue_adaptor<default_scheduler<rw_lock>>>;
+extern template class unilock<priority_queue_adaptor<default_scheduler<rw_lock>>>;
 
-extern ZENCXX_EXPORT template bool unilock<
+extern template bool unilock<
     priority_queue_adaptor<
         default_scheduler<rw_lock>
       >

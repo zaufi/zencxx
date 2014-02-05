@@ -37,7 +37,7 @@
 # include <ostream>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
-ZENCXX_NO_EXPORT extern const int s_show_type_idx;
+ZENCXX_EXPORT extern const int s_show_type_idx;
 
 class show_type_info_saver : public boost::io::ios_iword_saver
 {

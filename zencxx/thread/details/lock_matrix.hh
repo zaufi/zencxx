@@ -25,16 +25,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__THREAD__DETAILS__LOCK_MATRIX_HH__
-# define __ZENCXX__THREAD__DETAILS__LOCK_MATRIX_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/thread/predefined_lock_types.hh>
-# include <zencxx/details/export.hh>
+#include <zencxx/thread/predefined_lock_types.hh>
+#include <zencxx/thread/details/export.hh>
 
 // Standard includes
-# include <cassert>
-# include <type_traits>
+#include <cassert>
+#include <type_traits>
 
 namespace zencxx { inline namespace thread { namespace details {
 
@@ -94,7 +93,7 @@ private:
 };
 
 template <>
-ZENCXX_EXPORT class lock_matrix<exclusive_lock>
+class ZENCXXTHREAD_EXPORT lock_matrix<exclusive_lock>
 {
     typedef exclusive_lock matrix_type;
     typedef typename matrix_type::type lock_type;
@@ -128,7 +127,7 @@ private:
 };
 
 template <>
-ZENCXX_EXPORT class lock_matrix<rw_lock>
+class ZENCXXTHREAD_EXPORT lock_matrix<rw_lock>
 {
     typedef rw_lock matrix_type;
     typedef typename matrix_type::type lock_type;
@@ -166,4 +165,3 @@ private:
 };
 
 }}}                                                         // namespace details, thread, zencxx
-#endif                                                      // __ZENCXX__THREAD__DETAILS__LOCK_MATRIX_HH__

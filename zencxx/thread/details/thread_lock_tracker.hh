@@ -25,19 +25,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__THREAD__DETAILS__THREAD_LOCK_TRACKER_HH__
-# define __ZENCXX__THREAD__DETAILS__THREAD_LOCK_TRACKER_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/details/export.hh>
-# include <zencxx/thread/details/use_deadlock_check.hh>
-# include <zencxx/thread/exception.hh>
-# include <zencxx/thread/predefined_lock_types.hh>
+#include <zencxx/thread/details/export.hh>
+#include <zencxx/thread/details/use_deadlock_check.hh>
+#include <zencxx/thread/exception.hh>
+#include <zencxx/thread/predefined_lock_types.hh>
 
 // Standard includes
-# include <boost/thread/thread.hpp>
-# include <array>
-# include <vector>
+#include <boost/thread/thread.hpp>
+#include <array>
+#include <vector>
 
 namespace zencxx { inline namespace thread { namespace details {
 
@@ -92,7 +91,7 @@ private:
  *
  */
 template <>
-ZENCXX_EXPORT class thread_lock_tracker<exclusive_lock, 1ul>
+class ZENCXXTHREAD_EXPORT thread_lock_tracker<exclusive_lock, 1ul>
 {
     typedef exclusive_lock matrix_type;
     typedef typename matrix_type::type lock_type;
@@ -124,4 +123,3 @@ private:
 };
 
 }}}                                                         // namespace details, thread, zencxx
-#endif                                                      // __ZENCXX__THREAD__DETAILS__THREAD_LOCK_TRACKER_HH__

@@ -25,16 +25,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__THREAD__FIFO_ADAPTOR_HH__
-# define __ZENCXX__THREAD__FIFO_ADAPTOR_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/thread/details/use_deadlock_check.hh>
+#include <zencxx/thread/details/use_deadlock_check.hh>
 
 // Standard includes
-# include <algorithm>
-# include <cassert>
-# include <vector>
+#include <algorithm>
+#include <cassert>
+#include <vector>
 
 namespace zencxx { namespace thread {
 
@@ -95,4 +94,3 @@ private:
 };
 
 }}                                                          // namespace thread, zencxx
-#endif                                                      // __ZENCXX__THREAD__FIFO_ADAPTOR_HH__

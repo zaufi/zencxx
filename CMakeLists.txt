@@ -6,7 +6,7 @@
 #---------------------------------------------------------
 # Section: Init cmake
 #---------------------------------------------------------
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.12)
 
 # Enable non unique target names in different subdirs
 # (used for unit tests)
@@ -64,6 +64,12 @@ find_package(
 #---------------------------------------------------------
 # Section: Configure builing process
 #---------------------------------------------------------
+
+option(ZENCXX_BUILD_SHARED_LIBS "Build shared libraries" OFF)
+if(ZENCXX_BUILD_SHARED_LIBS)
+    set(ZENCXX_LIB_TYPE SHARED)
+    message(STATUS "Build shared libraries: enabled")
+endif()
 
 # Allow GNU extensions
 add_definitions(-D_GNU_SOURCE)

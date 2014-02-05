@@ -25,12 +25,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__THREAD__EXCEPTION_HH__
-# define __ZENCXX__THREAD__EXCEPTION_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/os/exception.hh>
-# include <zencxx/details/export.hh>
+#include <zencxx/os/exception.hh>
+#include <zencxx/thread/details/export.hh>
 
 // Standard includes
 
@@ -42,7 +41,7 @@ namespace zencxx { inline namespace thread {
  * This group consist of particular exceptions the \c unilock class may throw.
  *
  */
-ZENCXX_EXPORT struct unilock_exception : public os::exception
+struct ZENCXXTHREAD_EXPORT unilock_exception : public os::exception
 {
     struct deadlock;
     struct not_owner_of_lock;
@@ -55,7 +54,7 @@ ZENCXX_EXPORT struct unilock_exception : public os::exception
 
 }                                                           // namespace thread
 
-ZENCXX_EXPORT struct thread::unilock_exception::deadlock
+struct ZENCXXTHREAD_EXPORT thread::unilock_exception::deadlock
   : public thread::unilock_exception
 {
     deadlock()
@@ -66,7 +65,7 @@ ZENCXX_EXPORT struct thread::unilock_exception::deadlock
     {}
 };
 
-ZENCXX_EXPORT struct thread::unilock_exception::not_owner_of_lock
+struct ZENCXXTHREAD_EXPORT thread::unilock_exception::not_owner_of_lock
   : public thread::unilock_exception
 {
     not_owner_of_lock()
@@ -83,7 +82,7 @@ ZENCXX_EXPORT struct thread::unilock_exception::not_owner_of_lock
  * This is an exception used to transform any other underlaid boost exceptions
  * can happen under the hood.
  */
-ZENCXX_EXPORT struct thread::unilock_exception::unilock_error
+struct ZENCXXTHREAD_EXPORT thread::unilock_exception::unilock_error
   : public thread::unilock_exception
 {
     explicit unilock_error(const int code = errno)
@@ -95,4 +94,3 @@ ZENCXX_EXPORT struct thread::unilock_exception::unilock_error
 };
 
 }                                                           // namespace zencxx
-#endif                                                      // __ZENCXX__THREAD__EXCEPTION_HH__

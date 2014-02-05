@@ -30,19 +30,18 @@
 // Project specific includes
 #include <zencxx/thread/default_scheduler.hh>
 #include <zencxx/thread/predefined_lock_types.hh>
-#include <zencxx/details/export.hh>
 
 // Standard includes
 
 namespace zencxx { inline namespace thread { namespace details {
 
-extern ZENCXX_EXPORT template class default_scheduler_impl<exclusive_lock, true>;
-extern ZENCXX_EXPORT template class default_scheduler_impl<exclusive_lock, false>;
-extern ZENCXX_EXPORT template class default_scheduler_impl<rw_lock, false>;
+extern template class default_scheduler_impl<exclusive_lock, true>;
+extern template class default_scheduler_impl<exclusive_lock, false>;
+extern template class default_scheduler_impl<rw_lock, false>;
 
 }                                                           // namespace details
 
-extern ZENCXX_EXPORT template class default_scheduler<exclusive_lock>;
-extern ZENCXX_EXPORT template class default_scheduler<rw_lock>;
+extern template class default_scheduler<exclusive_lock>;
+extern template class default_scheduler<rw_lock>;
 
 }}                                                          // namespace thread, zencxx

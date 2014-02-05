@@ -25,14 +25,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__THREAD__DEFAULT_SCHEDULER_HH__
-# define __ZENCXX__THREAD__DEFAULT_SCHEDULER_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/thread/details/has_default_lock_param.hh>
-# include <zencxx/thread/details/lock_matrix.hh>
-# include <zencxx/thread/details/thread_lock_tracker.hh>
-# include <zencxx/thread/details/use_deadlock_check.hh>
+#include <zencxx/thread/details/has_default_lock_param.hh>
+#include <zencxx/thread/details/lock_matrix.hh>
+#include <zencxx/thread/details/thread_lock_tracker.hh>
+#include <zencxx/thread/details/use_deadlock_check.hh>
 
 // Standard includes
 
@@ -157,4 +156,3 @@ class default_scheduler
 };
 
 }}                                                          // namespace thread, zencxx
-#endif                                                      // __ZENCXX__THREAD__DEFAULT_SCHEDULER_HH__
