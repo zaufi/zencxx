@@ -1,0 +1,93 @@
+# - Find zencxx package
+# ZenCxx is a collection of reusable C++ code
+#
+# Search for `zencxx` and set the following variables
+# (as recommended by CMake finder module guidelines):
+#   ZENCXX_FOUND          - is package found
+#   ZENCXX_INSTALL_PREFIX - install prefix used at configuration time
+#   ZENCXX_VERSION_STRING - found package version
+#   ZENCXX_INCLUDE_DIRS   - dir w/ header files
+#   ZENCXX_DEFINITIONS    - other than `-I' compiler flags
+#
+# Some other variables might be useful as well:
+#   ZENCXX_VERSION_MAJOR
+#   ZENCXX_VERSION_MINOR
+#   ZENCXX_VERSION_PATCH
+#
+
+#=============================================================================
+#
+# Copyright 2011-2014 by Alex Turbov <i.zaufi@gmail.com>
+#
+# ZenCxx is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# ZenCxx is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+# See the GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.";
+#
+#=============================================================================
+
+@PACKAGE_INIT@
+
+# Set and check some paths
+if(NOT ZENCXX_INSTALL_PREFIX)
+    set_and_check(ZENCXX_INSTALL_PREFIX @PACKAGE_CMAKE_INSTALL_PREFIX@)
+endif()
+if(NOT ZENCXX_INCLUDE_DIR)
+    set_and_check(ZENCXX_INCLUDE_DIR @PACKAGE_CMAKE_INSTALL_INCLUDEDIR@)
+endif()
+if(NOT ZENCXX_LIBRARIES_DIR)
+    set_and_check(ZENCXX_LIBRARIES_DIR @PACKAGE_CMAKE_INSTALL_LIBDIR@)
+endif()
+if(NOT ZENCXX_CMAKE_MODULESDIR)
+    set_and_check(ZENCXX_CMAKE_MODULESDIR @PACKAGE_CMAKE_INSTALL_CMAKE_MODULESDIR@)
+endif()
+
+# Setup some version strings as recommended by CMake guidelines
+set(ZENCXX_VERSION_STRING "@ZENCXX_VERSION@")
+set(ZENCXX_VERSION_MAJOR "@ZENCXX_MAJOR@")
+set(ZENCXX_VERSION_MINOR "@ZENCXX_MINOR@")
+set(ZENCXX_VERSION_PATCH "@ZENCXX_PATCH@")
+
+# Setup "global" #include paths
+set(ZENCXX_INCLUDE_DIRS @PACKAGE_CMAKE_INSTALL_INCLUDEDIR@ @Boost_INCLUDE_DIRS@)
+
+# Find components if requested
+set(_ZENCXX_NOTFOUND_MESSAGE)
+foreach(module ${zencxx_FIND_COMPONENTS})
+    include(
+        "${ZENCXX_CMAKE_MODULESDIR}/zencxx-${module}.cmake"
+        OPTIONAL
+        RESULT_VARIABLE ZENCXX_${module}_FOUND
+      )
+    if(NOT ZENCXX_${module}_FOUND)
+        if (zencxx_FIND_REQUIRED_${module})
+            if(NOT _ZENCXX_NOTFOUND_MESSAGE)
+                set(_ZENCXX_NOTFOUND_MESSAGE "Failed to find the following requested zencxx component(s):")
+            endif()
+            set(_ZENCXX_NOTFOUND_MESSAGE "${_ZENCXX_NOTFOUND_MESSAGE}\n  ${module}")
+        elseif(NOT zencxx_FIND_QUIETLY)
+            message(WARNING "Failed to find zencxx component: ${module}")
+        endif()
+    endif()
+endforeach()
+
+if(_ZENCXX_NOTFOUND_MESSAGE)
+    set(zencxx_NOT_FOUND_MESSAGE "${_ZENCXX_NOTFOUND_MESSAGE}")
+    set(zencxx_FOUND NOTFOUND)
+    set(ZENCXX_FOUND NOTFOUND)
+else()
+    set(zencxx_FOUND TRUE)
+    set(ZENCXX_FOUND TRUE)
+endif()
+
+unset(_ZENCXX_NOTFOUND_MESSAGE)
+
+# kate: hl CMake;

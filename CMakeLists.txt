@@ -1,6 +1,6 @@
 # kate: hl cmake;
 #
-# Copyright 2011-2013 by Alex Turbov <i.zaufi@gmail.com>
+# Copyright 2011-2014 by Alex Turbov <i.zaufi@gmail.com>
 #
 
 #---------------------------------------------------------
@@ -37,10 +37,11 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 include(CTest)
 # Define install destination dirs
 include(GNUInstallDirs)
+# Fix some paths to allow this package to be multislotted (in terms of Gentoo)
 set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/zencxx-${ZENCXX_VERSION})
 set(CMAKE_INSTALL_PKGLIBDIR ${CMAKE_INSTALL_LIBDIR}/zencxx-${ZENCXX_VERSION})
 set(CMAKE_INSTALL_DOCDIR ${CMAKE_INSTALL_DOCDIR}-${ZENCXX_VERSION})
-set(CMAKE_INSTALL_CMAKE_MODULESDIR ${CMAKE_INSTALL_LIBDIR}/cmake/zencxx-${ZENCXX_VERSION})
+set(CMAKE_INSTALL_CMAKE_MODULESDIR ${CMAKE_INSTALL_LIBDIR}/zencxx-${ZENCXX_VERSION}/cmake)
 
 # Custom (from package's cmake/modules/ directory)
 include(AddBoostTests)
@@ -48,6 +49,8 @@ include(AddBoostTests)
 enable_testing()
 
 include(GenerateExportHeader)
+include(CMakePackageConfigHelpers)
+include(WriteExportDependencies)
 
 #---------------------------------------------------------
 # Section: Find used stuff
@@ -115,7 +118,7 @@ if(NOT CXX_COMPILER_HAS_CPP11_OPTION)
     message(FATAL_ERROR "C++11 compatible compiler required to build this project (gcc >= 4.8)")
 endif()
 
-# If CMAKE_BUILD_TYPE is not set, try to guess it
+# If CMAKE_BUILD_TYPE is not set, try to guess it now
 include(GuessBuildType)
 
 # Setup compiler options depending on build type
@@ -145,13 +148,31 @@ endif()
 # (a target to be build in every tests/ directories)
 set(UNIT_TESTS unit_tests)
 
+# Render a CMake finder
+configure_package_config_file(
+    zencxx-config.cmake.in
+    zencxx-config.cmake
+    INSTALL_DESTINATION ${CMAKE_INSTALL_CMAKE_MODULESDIR}
+    PATH_VARS
+        CMAKE_INSTALL_PREFIX
+        CMAKE_INSTALL_CMAKE_MODULESDIR
+        CMAKE_INSTALL_INCLUDEDIR
+        CMAKE_INSTALL_LIBDIR
+        CMAKE_INSTALL_PKGLIBDIR
+  )
+write_basic_package_version_file(
+    zencxx-config-version.cmake
+    VERSION ${ZENCXX_VERSION}
+    COMPATIBILITY AnyNewerVersion
+  )
+
 #---------------------------------------------------------
 # Section: Package options
 # ALERT It should be after subdirs traversal
 #       to make sure that all vars r defined!
 #---------------------------------------------------------
 
-# Obtain distribution codename according LSB
+# Obtain a distribution codename according LSB
 include(GetDistribInfo)
 
 # Specifying precise versions of some packages which are distinct
@@ -297,7 +318,7 @@ define_skeleton_generation_targets(
 
 include(UsePCHFile)
 use_pch_file(
-    PCH_FILE ${CMAKE_BINARY_DIR}/zencxx-pch.hh
+    PCH_FILE ${PROJECT_BINARY_DIR}/zencxx-pch.hh
     EXCLUDE_DIRS cmake docs tests
     # EXCLUDE_HEADERS ext/hash_set ext/hash_map
   )
@@ -326,4 +347,12 @@ install(
     FILES README.md LICENSE
     DESTINATION ${CMAKE_INSTALL_DOCDIR}
     COMPONENT ${LIBZENCXX_PACKAGE}
+  )
+
+install(
+    FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/zencxx-config.cmake
+        ${CMAKE_CURRENT_BINARY_DIR}/zencxx-config-version.cmake
+    DESTINATION ${CMAKE_INSTALL_CMAKE_MODULESDIR}
+    COMPONENT ${LIBZENCXX_DEV_PACKAGE}
   )

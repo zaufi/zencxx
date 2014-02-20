@@ -20,17 +20,50 @@ add_library(
 
 target_link_libraries(
     zencxxthread
-    zencxxos
+    PUBLIC zencxxos
   )
 
 generate_export_header(zencxxthread EXPORT_FILE_NAME details/export.hh)
 
+#BEGIN Export Component
+set_target_properties(
+    zencxxthread
+    PROPERTIES EXPORT_NAME "thread"
+  )
+export(
+    TARGETS zencxxthread zencxxos zencxx
+    NAMESPACE zencxx::
+    FILE zencxx-thread.cmake
+    EXPORT_LINK_INTERFACE_LIBRARIES
+  )
+write_export_dependencies(TARGET zencxxthread DEPENDENCIES os)
+#END Export Component
+
+# Install target library
 install(
     TARGETS zencxxthread
+    EXPORT zencxx-thread
     DESTINATION ${CMAKE_INSTALL_LIBDIR}
     COMPONENT ${LIBZENCXX_PACKAGE}
   )
 
+# Install cmake files
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/zencxx-thread-dependencies.cmake
+    DESTINATION ${CMAKE_INSTALL_CMAKE_MODULESDIR}
+    COMPONENT ${LIBZENCXX_DEV_PACKAGE}
+  )
+
+install(
+    EXPORT zencxx-thread
+    FILE zencxx-thread.cmake
+    DESTINATION ${CMAKE_INSTALL_CMAKE_MODULESDIR}
+    NAMESPACE zencxx::
+    EXPORT_LINK_INTERFACE_LIBRARIES
+    COMPONENT ${LIBZENCXX_DEV_PACKAGE}
+  )
+
+# Install header files
 file(GLOB HEADERS *.hh)
 install(
     FILES ${HEADERS}
