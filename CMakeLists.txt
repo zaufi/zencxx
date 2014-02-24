@@ -205,6 +205,7 @@ endif()
 include(CPack)
 set(CPACK_GENERATOR DEB)
 set(CPACK_SOURCE_GENERATOR TBZ2)
+set(REPREPRO_CUSTOM_OPTIONS "--ask-passphrase")
 include(AddPackage)
 
 # Make sign options available to set from the CLI/GUI
@@ -249,7 +250,6 @@ add_package(
         "libboost-system${BOOST_VERSION_PKG_DEP}"
         "libboost-thread${BOOST_VERSION_PKG_DEP}"
     REPLACES "libzencxx${CPACK_BUILD_FLAVOUR} (<= ${PKG_VERSION})"
-    SIGN_WITH
   )
 
 add_package(

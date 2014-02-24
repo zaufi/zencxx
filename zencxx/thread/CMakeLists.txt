@@ -20,7 +20,10 @@ add_library(
 
 target_link_libraries(
     zencxxthread
-    PUBLIC zencxxos
+    PUBLIC
+        zencxxos
+        ${Boost_THREAD_LIBRARY}
+        ${Boost_SYSTEM_LIBRARY}
   )
 
 generate_export_header(zencxxthread EXPORT_FILE_NAME details/export.hh)

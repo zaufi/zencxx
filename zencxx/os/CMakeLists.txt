@@ -41,7 +41,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     install(
         TARGETS zencxxos
         EXPORT zencxx-os
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}
         COMPONENT ${LIBZENCXX_PACKAGE}
       )
 

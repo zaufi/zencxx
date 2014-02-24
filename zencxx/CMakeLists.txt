@@ -25,8 +25,9 @@ add_library(
 
 target_link_libraries(
     zencxx
-    ${Boost_SYSTEM_LIBRARY}
-    ${Boost_THREAD_LIBRARY}
+    PUBLIC
+        ${Boost_SYSTEM_LIBRARY}
+        ${Boost_THREAD_LIBRARY}
   )
 
 generate_export_header(zencxx EXPORT_FILE_NAME details/export.hh)
@@ -48,8 +49,8 @@ export(
 install(
     TARGETS zencxx
     EXPORT zencxx-shared
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     COMPONENT ${LIBZENCXX_PACKAGE}
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )
 
 # Install cmake files
