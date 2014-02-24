@@ -17,6 +17,8 @@
 #
 # TODO Add help about generic usage and about set_common_package_options() particularly
 #
+# TODO One more way to deploy: `dput` to upload to launchpad's PPA
+#
 
 include(CMakeParseArguments)
 
@@ -302,7 +304,7 @@ endfunction()
 
 # X-Chewy-RepoBase: https://raw.github.com/mutanabbi/chewy-cmake-rep/master/
 # X-Chewy-Path: AddPackage.cmake
-# X-Chewy-Version: 3.9
+# X-Chewy-Version: 3.12
 # X-Chewy-Description: Add a target to make a .deb package
 # X-Chewy-AddonFile: CPackCommonPackageOptions.cmake.in
 # X-Chewy-AddonFile: CPackPackageConfig.cmake.in
