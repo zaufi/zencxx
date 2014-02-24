@@ -16,7 +16,7 @@ cmake_policy(SET CMP0022 NEW)
 project(libzencxx CXX)
 
 set(ZENCXX_MAJOR 0)
-set(ZENCXX_MINOR 1)
+set(ZENCXX_MINOR 2)
 set(ZENCXX_PATCH 0)
 # Include build number if specified
 # NOTE This feature used by build server to make a packages that
@@ -210,7 +210,7 @@ include(AddPackage)
 # Make sign options available to set from the CLI/GUI
 set(
     ZENCXX_SIGN_KEY_ID
-    "94CF01DC"
+    "37925FE2"
     CACHE STRING "GPG key ID to be used to sign result packages"
   )
 set(
@@ -220,7 +220,7 @@ set(
   )
 set(
     ZENCXX_DEB_REPOSITORY
-    "$ENV{HOME}/repo"
+    "$ENV{HOME}/ubuntu.repo"
     CACHE FILEPATH "Path to repository to deploy .deb packages to"
   )
 

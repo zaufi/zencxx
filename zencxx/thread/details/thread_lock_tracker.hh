@@ -56,20 +56,20 @@ class thread_lock_tracker
     typedef typename matrix_type::type lock_type;
 
 public:
-    /// Check if given lock type already acquired by this thread
+    /// Check if a given lock type already acquired by this thread
     bool is_locked_by_this_thread(const lock_type t) const
     {
         const auto& holders = m_lock_holders[static_cast<std::size_t>(t)];
         return std::find(begin(holders), end(holders), boost::this_thread::get_id()) != end(holders);
     }
     /// Set current thread ID as a holder of a lock of given type
-    void remember_lock_holder(use_deadlock_check check, const lock_type t)
+    void remember_lock_holder(const use_deadlock_check check, const lock_type t)
     {
         if (check == use_deadlock_check::yes && is_locked_by_this_thread(t))
             ZENCXX_THROW(unilock_exception::deadlock());
         m_lock_holders[static_cast<std::size_t>(t)].emplace_back(boost::this_thread::get_id());
     }
-    /// Unset current thread ID as a holder of a lock of given type
+    /// Unset current thread ID as a holder of a lock of a given type
     void forget_lock_holder(const lock_type t)
     {
         auto& holders = m_lock_holders[static_cast<std::size_t>(t)];
@@ -97,19 +97,19 @@ class ZENCXXTHREAD_EXPORT thread_lock_tracker<exclusive_lock, 1ul>
     typedef typename matrix_type::type lock_type;
 
 public:
-    /// Check if given (and the only) lock type already acquired by this thread
+    /// Check if a given (and the only) lock type already acquired by this thread
     bool is_locked_by_this_thread(const lock_type) const
     {
         return m_lock_holder == boost::this_thread::get_id();
     }
     /// Set current thread ID as a holder of a lock of given type
-    void remember_lock_holder(use_deadlock_check check, const lock_type t)
+    void remember_lock_holder(const use_deadlock_check check, const lock_type t)
     {
         if (check == use_deadlock_check::yes && is_locked_by_this_thread(t))
             ZENCXX_THROW(unilock_exception::deadlock());
         m_lock_holder = boost::this_thread::get_id();
     }
-    /// Unset current thread ID as a holder of a lock of given type
+    /// Unset current thread ID as a holder of a lock of a given type
     void forget_lock_holder(const lock_type t)
     {
         if (is_locked_by_this_thread(t))

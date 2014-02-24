@@ -29,6 +29,7 @@
 
 // Project specific includes
 #include <zencxx/thread/exception.hh>
+#include <zencxx/thread/details/use_deadlock_check.hh>
 
 // Standard includes
 #include <boost/thread/condition_variable.hpp>
@@ -58,19 +59,32 @@ class unilock
     using lock_func_t = bool (unilock::*)(boost::unique_lock<boost::mutex>&, int, Args&&...);
 
 public:
+    /**
+     * Lock the \c unilock instance passign given parameters to
+     * the underlaid scheduler
+     */
     template <typename... Args>
     void lock(Args&&... args)
     {
         lock_decorator(&unilock::lock_impl, std::forward<Args>(args)...);
     }
 
+    /**
+     * Try to lock the \c unilock instance passign given parameters to
+     * the underlaid scheduler
+     */
     template <typename... Args>
     bool try_lock(Args&&... args)
     {
         return lock_decorator(&unilock::try_lock_impl, std::forward<Args>(args)...);
     }
 
-    /// \todo Is thread interrupt handler needed? Really?
+    /**
+     * Unlock the \c unilock instance passign given parameters to
+     * the underlaid scheduler.
+     *
+     * \todo Is thread interrupt handler needed? Really?
+     */
     template <typename... Args>
     void unlock(Args&&... args)
     {

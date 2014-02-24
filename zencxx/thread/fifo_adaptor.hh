@@ -46,6 +46,8 @@ namespace zencxx { namespace thread {
 template <typename Scheduler>
 class fifo_adaptor
 {
+    typedef Scheduler scheduler_type;
+
 public:
     /// This adaptor add a \c priority parameter to this member
     template <typename... Args>
@@ -87,8 +89,10 @@ public:
         m_sched.unassign_request_id(request_id, std::forward<Args>(args)...);
     }
 
+    /// \c lock() and \c unlock() parameters depend on underlaid scheduler
+    static constexpr bool symmetric_lock_unlock = scheduler_type::symmetric_lock_unlock;
+
 private:
-    typedef Scheduler scheduler_type;
     scheduler_type m_sched;                                 ///< Underlaid scheduler instance
     std::vector<int> m_queue;
 };

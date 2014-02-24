@@ -52,6 +52,8 @@ namespace zencxx { inline namespace thread {
 template <typename Scheduler>
 class priority_queue_adaptor
 {
+    typedef Scheduler scheduler_type;
+
 public:
     /// This adaptor add a \c priority parameter to this member
     template <typename... Args>
@@ -110,8 +112,10 @@ public:
         m_sched.unassign_request_id(request_id, std::forward<Args>(args)...);
     }
 
+    /// \c lock() and \c unlock() parameters are not the same for this schduler
+    static constexpr bool symmetric_lock_unlock = false;
+
 private:
-    typedef Scheduler scheduler_type;
 
     /// Lock/unlock requests queue: map priority to request ID
     std::multimap<int, int, std::greater<int>> m_queue;

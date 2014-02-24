@@ -130,6 +130,9 @@ public:
         it->second.second.unassign_request_id(request_id, std::forward<Args>(args)...);
     }
 
+    /// \c lock() and \c unlock() parameters depend on underlaid scheduler
+    static constexpr bool symmetric_lock_unlock = scheduler_type::symmetric_lock_unlock;
+
 private:
     /// Lock/unlock requests map: key --> (use-count, scheduler)
     std::map<key_type, std::pair<int, scheduler_type>> m_locks;

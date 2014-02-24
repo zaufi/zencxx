@@ -153,6 +153,9 @@ class default_scheduler
     , details::has_default_lock_param<MatrixSpec>::value
     >
 {
+public:
+    /// \c lock() and \c unlock() parameters are the same for this schduler
+    static constexpr bool symmetric_lock_unlock = true;
 };
 
 }}                                                          // namespace thread, zencxx
