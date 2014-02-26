@@ -54,6 +54,12 @@ BOOST_AUTO_TEST_CASE(st_fs_fifo_adaptor_test)
     BOOST_CHECK_THROW(l.lock(), unilock_exception::deadlock);
     l.unlock();
     BOOST_CHECK_THROW(l.unlock(), unilock_exception::not_owner_of_lock);
+    {
+        decltype(l)::scoped_lock sl(l);
+        BOOST_CHECK(!l.try_lock());
+    }
+    BOOST_CHECK(l.try_lock());
+    l.unlock();
 }
 
 BOOST_AUTO_TEST_CASE(st_fs_rw_fifo_adaptor_test)

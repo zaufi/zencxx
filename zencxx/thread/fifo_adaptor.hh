@@ -82,6 +82,10 @@ public:
     void unassign_request_id(const int request_id, Args&&... args)
     {
         // Find a given request ID in a queue
+        // NOTE Yeah, just linear search through the vector, cuz it is supposed
+        // to be a really short.
+        /// \todo Improve search for the request for high contention case!
+        /// Use \c std::unordered_set?
         auto it = std::find(begin(m_queue), end(m_queue), request_id);
         assert("Request expected to be in the queue" && it != end(m_queue));
         m_queue.erase(it);

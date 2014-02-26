@@ -29,12 +29,16 @@
 
 // Project specific includes
 #include <zencxx/thread/exception.hh>
+#include <zencxx/thread/details/scoped_lock_impl.hh>
 #include <zencxx/thread/details/use_deadlock_check.hh>
 
 // Standard includes
 #include <boost/thread/condition_variable.hpp>
 #include <boost/thread/mutex.hpp>
 #include <utility>
+#if defined(__GNUC__)
+# include <cxxabi.h>
+#endif
 
 namespace zencxx { inline namespace thread {
 /**
@@ -59,6 +63,8 @@ class unilock
     using lock_func_t = bool (unilock::*)(boost::unique_lock<boost::mutex>&, int, Args&&...);
 
 public:
+    using scoped_lock = details::scoped_lock_impl<unilock, Scheduler::symmetric_lock_unlock>;
+
     /**
      * Lock the \c unilock instance passign given parameters to
      * the underlaid scheduler
@@ -125,66 +131,86 @@ private:
     template <typename... Args>
     bool lock_decorator(lock_func_t<Args...> lf, Args&&... args)
     {
-        bool result = false;
+        auto result = false;
+        try
         {
             // NOTE  may throw boost::thread_resource_error
             auto l = boost::unique_lock<boost::mutex>{m_mut};
-            /// - Ask for unique request ID from the underlaid schduler
-            int request_id;
-            try
             {
-                request_id = m_sched.assign_request_id(std::forward<Args>(args)...);
-            }
-            catch (const boost::thread_interrupted&)
-            {
-                throw;
-            }
-            catch (...)
-            {
-                ZENCXX_THROW(unilock_exception::unilock_error());
-            }
-            /// - Call decorated member-function to acquire a lock, passing
-            ///   all given params, including obtained request ID (as the first one)
-            try
-            {
-                result = (this->*lf)(l, request_id, std::forward<Args>(args)...);
-            }
-            catch (const boost::thread_interrupted& e)
-            {
+                /// - Ask for unique request ID from the underlaid schduler
+                auto request_id = int{};
                 try
                 {
+                    request_id = m_sched.assign_request_id(std::forward<Args>(args)...);
+                }
+                catch (...)
+                {
+                    translate_exception();
+                }
+                try
+                {
+                    /// - Call decorated member-function to acquire a lock, passing
+                    ///   all given params, including obtained request ID (as the first one)
+                    result = (this->*lf)(l, request_id, std::forward<Args>(args)...);
+                }
+                catch (...)
+                {
+                    try
+                    {
+                        // Emergency unassign request ID
+                        m_sched.unassign_request_id(request_id, std::forward<Args>(args)...);
+                    }
+                    catch (...)
+                    {
+                        // Ignore possible errors
+                    }
+                    throw;                                  // Does it rethrows the outer exception?
+                }
+                try
+                {
+                    /// - Unassign request ID
                     m_sched.unassign_request_id(request_id, std::forward<Args>(args)...);
                 }
                 catch (...)
                 {
-                    // ignore possible errors! original exception is more important!
+                    translate_exception();
                 }
-                throw e;                                    // rethrow original thread_interrupted anyway
             }
-            /// - Unassign request ID
-            try
-            {
-                m_sched.unassign_request_id(request_id, std::forward<Args>(args)...);
-            }
-            catch (const boost::thread_interrupted&)
-            {
-                throw;
-            }
-            catch (...)
-            {
-                ZENCXX_THROW(unilock_exception::unilock_error());
-            }
+            /// - Notify other waiters
+            m_cond.notify_all();                            // nothrow
         }
-        /// - Notify other waiters
-        try
+        catch (const unilock_exception&)
         {
-            m_cond.notify_all();
+            throw;
         }
         catch (...)
         {
-            ZENCXX_THROW(unilock_exception::unilock_error());
+            translate_exception();
         }
         return result;
+    }
+
+    [[noreturn]] static void translate_exception()
+    {
+#if defined(__GNUC__)
+        assert(
+            "No need to call this function w/o active exception"
+          && 0 != abi::__cxa_current_exception_type()
+          );
+#endif
+        try
+        {
+            throw;
+        }
+        catch (const boost::thread_interrupted&)
+        {
+            throw;
+        }
+        catch (...)
+        {
+            /// \todo Attach details
+            ZENCXX_THROW(unilock_exception::unilock_error());
+        }
     }
 
     boost::mutex m_mut;

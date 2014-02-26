@@ -55,6 +55,10 @@ BOOST_AUTO_TEST_CASE(st_ds_unilock_test)
     BOOST_CHECK(l.try_lock(exclusive_lock::lock));
     l.unlock(exclusive_lock::lock);
     BOOST_CHECK_THROW(l.unlock(exclusive_lock::lock), unilock_exception::not_owner_of_lock);
+    {
+        decltype(l)::scoped_lock sl(l, exclusive_lock::lock);
+        BOOST_CHECK(!l.try_lock(exclusive_lock::lock));
+    }
 }
 
 // Single thread, default exclusive scheduler test (default lock type check)
@@ -66,6 +70,10 @@ BOOST_AUTO_TEST_CASE(st_ds_unilock_test_2)
     l.unlock();
     BOOST_CHECK(l.try_lock());
     l.unlock();
+    {
+        decltype(l)::scoped_lock sl(l);
+        BOOST_CHECK(!l.try_lock());
+    }
 }
 
 namespace {
@@ -100,6 +108,7 @@ BOOST_FIXTURE_TEST_CASE(mt_ds_unilock_test, fixture_1)
 
     BOOST_CHECK(m_promise.get_future().get());
     BOOST_CHECK_EQUAL(m_count, MAX_THREADS);
+    g.join_all();
 }
 
 // Single thread, default rw_lock scheduler test
@@ -112,6 +121,14 @@ BOOST_AUTO_TEST_CASE(st_ds_rw_unilock_test)
     BOOST_CHECK(l.try_lock(rw_lock::write));
     BOOST_CHECK(!l.try_lock(rw_lock::read));
     l.unlock(rw_lock::write);
+    {
+        decltype(l)::scoped_lock sl(l, rw_lock::read);
+        BOOST_CHECK(!l.try_lock(rw_lock::read));
+    }
+    {
+        decltype(l)::scoped_lock sl(l, rw_lock::write);
+        BOOST_CHECK(!l.try_lock(rw_lock::write));
+    }
 }
 
 namespace {
