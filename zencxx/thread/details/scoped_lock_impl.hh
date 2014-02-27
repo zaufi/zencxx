@@ -97,6 +97,9 @@ private:
     std::tuple<Args...> m_args;
 };
 
+/**
+ * \brief Parameterless specialization of \c unlock_invoker
+ */
 template <typename Unilock>
 class unlock_invoker<Unilock>
 {

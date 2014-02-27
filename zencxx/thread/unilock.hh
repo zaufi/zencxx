@@ -127,7 +127,6 @@ private:
         return m_sched.try_lock(details::use_deadlock_check::no, request_id, std::forward<Args>(args)...);
     }
 
-    /// \todo Throw \c boost::thread_resource_error w/ some meaningful error condition
     template <typename... Args>
     bool lock_decorator(lock_func_t<Args...> lf, Args&&... args)
     {
@@ -211,6 +210,7 @@ private:
             /// \todo Attach details
             ZENCXX_THROW(unilock_exception::unilock_error());
         }
+        /// \todo Catch and translate \c boost::thread exceptions and get failure code
     }
 
     boost::mutex m_mut;
