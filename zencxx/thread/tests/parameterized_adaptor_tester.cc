@@ -76,3 +76,29 @@ BOOST_AUTO_TEST_CASE(parameterized_adaptor_test)
     BOOST_CHECK(l.try_lock(RESOURCE_2));
     l.unlock(RESOURCE_2);
 }
+
+BOOST_AUTO_TEST_CASE(parameterized_adaptor_test_1)
+{
+    typedef unilock<
+        parameterized_adaptor<
+            default_scheduler<exclusive_lock>
+          , std::string
+          >
+      > lock_type;
+
+    lock_type l;
+    l.lock("RESOURCE_1");
+    BOOST_CHECK(l.try_lock("RESOURCE_2"));
+    BOOST_CHECK_THROW(l.lock("RESOURCE_1"), unilock_exception::deadlock);
+    l.unlock("RESOURCE_1");
+    BOOST_CHECK_THROW(l.unlock("RESOURCE_1"), unilock_exception::not_owner_of_lock);
+    l.unlock("RESOURCE_2");
+    {
+        lock_type::scoped_lock sl1(l, "RESOURCE_1");
+        lock_type::scoped_lock sl2(l, "RESOURCE_2");
+        BOOST_CHECK_THROW(l.lock("RESOURCE_1"), unilock_exception::deadlock);
+        BOOST_CHECK_THROW(l.lock("RESOURCE_2"), unilock_exception::deadlock);
+    }
+    BOOST_CHECK(l.try_lock("RESOURCE_2"));
+    l.unlock("RESOURCE_2");
+}
