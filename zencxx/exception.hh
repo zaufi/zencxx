@@ -20,29 +20,29 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__EXCEPTION_HH__
-# define __ZENCXX__EXCEPTION_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/debug/backtrace.hh>
-# include <zencxx/debug/location.hh>
-# include <zencxx/debug/type_name.hh>
-# include <zencxx/details/export.hh>
+#include <zencxx/debug/backtrace.hh>
+#include <zencxx/debug/location.hh>
+#include <zencxx/debug/type_name.hh>
+#include <zencxx/details/export.hh>
 
 // Standard includes
-# include <boost/exception/diagnostic_information.hpp>
-# include <boost/exception/error_info.hpp>
-# include <boost/exception/exception.hpp>
-# include <boost/exception/get_error_info.hpp>
-# include <boost/exception/info.hpp>
-# include <boost/format/format_fwd.hpp>
+#include <boost/exception/diagnostic_information.hpp>
+#include <boost/exception/error_info.hpp>
+#include <boost/exception/exception.hpp>
+#include <boost/exception/get_error_info.hpp>
+#include <boost/exception/info.hpp>
+#include <boost/format/format_fwd.hpp>
+#include <exception>
 
 /**
  * Macro to throw exceptions with attached location in a convenient way.
  * This will attach location info "transparently" for user (programmer)
  * so later it can be retrieved in a catch block...
  */
-#  define ZENCXX_THROW(Ex)                                        \
+#define ZENCXX_THROW(Ex)                                                \
     throw Ex << ::zencxx::exception::location_info(ZEN_THIS_LOCATION()) \
       << ::zencxx::exception::original_type_info(typeid((Ex)).name())
 
@@ -147,7 +147,7 @@ public:
      */
     static nested_exception_info current_exception()
     {
-        assert("This function must be called in catch() block only!" && std::uncaught_exception());
+        assert("This function must be called w/ active exception!" && std::current_exception() != nullptr);
         return nested_exception_info(std::current_exception());
     }
 
@@ -261,4 +261,3 @@ public:
 };
 
 }                                                           // namespace zencxx
-#endif                                                      // __ZENCXX__EXCEPTION_HH__
