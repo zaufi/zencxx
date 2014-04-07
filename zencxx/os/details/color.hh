@@ -100,14 +100,6 @@ public:
     }
 
 private:
-    /**
-     * \internal Get RGB index from components according formula
-     * \todo Provide refs to docs
-     */
-    int components_to_index() const
-    {
-        return r_ * 36 + g_ * 6 + b_ + 16;
-    }
     std::uint8_t r_;
     std::uint8_t g_;
     std::uint8_t b_;
