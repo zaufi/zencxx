@@ -69,7 +69,7 @@ namespace zencxx { namespace os {
  *  {
  *    do_system_work();
  *  }
- *  catch (const os::Exception& e)
+ *  catch (const os::exception& e)
  *  {
  *    // Is this smth really serious? (not EAGAIN)
  *    if (e.error_code() != boost::system::errc::resource_unavailable_try_again)

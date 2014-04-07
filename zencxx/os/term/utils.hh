@@ -32,9 +32,20 @@
 
 namespace zencxx { namespace os { namespace term {
 
+/// Enumerate terminal color support capabilities
+enum class color
+{
+    unknown                                                 ///< Unable to get terminal capabilities
+  , none                                                    ///< Terminal doesn't support colors
+  , basic_8_color                                           ///< Terminal supports basic 8 colors
+  , indexed_256_color                                       ///< Terminal supports indexed 256 palette
+  , true_color                                              ///< Terminal supports true color (16M) palette
+};
+
 /// Get terminal dimensions
 ZENCXXOS_EXPORT std::pair<unsigned, unsigned> get_term_size();
-
+/// Get terminal's color capabilities
+ZENCXXOS_EXPORT color get_term_color_capability();
 /// Check if terminal supports colors
 ZENCXXOS_EXPORT bool is_color_term();
 

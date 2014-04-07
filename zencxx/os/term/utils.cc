@@ -25,11 +25,71 @@
 
 // Standard includes
 #include <sys/ioctl.h>
+#include <term.h>
+#include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
-namespace zencxx { namespace os { namespace term {
+namespace zencxx { namespace os { namespace term { namespace {
+constexpr auto RGB_COLORS_COUNT = 256 * 256 * 256;
+
+/// \internal Helper function to get number of terminal colors
+int get_supported_colors_count()
+{
+    static const char* const TERM = std::getenv("TERM");
+
+    // ATTENTION Hardcoded known to be quite enough buffer size ;-)
+    char term_buffer[2048];
+
+    const auto success = tgetent(term_buffer, TERM);
+    const auto result = 0;
+    switch (success)
+    {
+        case -1:
+        case 0:
+            break;
+        case 1:
+        {
+            // Get number of color available
+            const auto nc = tgetnum("Co");
+            if (nc != -1)
+            {
+                /// \attention Workaround for `konsole` terminal: it is known
+                /// that latter is capable to support true color. So, check
+                /// \c TERM and try to recognize "well known" value.
+                if (std::strcmp(TERM, "konsole-256color") == 0)
+                    return RGB_COLORS_COUNT;
+                return nc;
+            }
+            break;
+        }
+        default:
+            assert(!"Unexpected result value from tgetent()");
+            break;
+    }
+    return result;
+}
+/// \internal Helper function to get \c color enum value by number of colors obtained from termcap DB.
+color num_to_color_transform(const int number_of_colors)
+{
+    switch (number_of_colors)
+    {
+        case 0:
+            return color::none;
+        case 8:
+            return color::basic_8_color;
+        case 256:
+            return color::indexed_256_color;
+        case RGB_COLORS_COUNT:
+            return color::true_color;
+        default:
+            assert(!"Unexpected result value of number of colors");
+            break;
+    }
+    return color::unknown;
+}
+}                                                           // anonymous namespace
 /**
  * Use \c ioctl to get terminal dimenstions.
  *
@@ -47,27 +107,26 @@ std::pair<unsigned, unsigned> get_term_size()
 }
 
 /**
+ * Use \c curses library to get terminal capabilities
+ */
+color get_term_color_capability()
+{
+#ifdef USE_CURSES
+    static const auto color_caps = num_to_color_transform(get_supported_colors_count());
+    return color_caps;
+#else
+    /// \todo Implementation w/o using \e curses required
+    return color::unknown;
+#endif                                                      // USE_CURSES
+}
+
+/**
  * \brief Check if terminal supports colors
- *
- * This is very stoopid checker! However lots of open source programs
- * check color support in this way :)) For example GNU grep :)
- * I dunno why... probably cuz real checking require to link w/ curses...
- *
- * The real checker (I think) have to use terminfo DB...
- * \code
- *  static char term_buffer[2048];
- *  int success = tgetent(term_buffer, getenv("TERM"));
- *  if (success)
- *    // see `man 5 terminfo`: "Co" == max_colors numeric value
- *    int nc = tgetnum("Co");
- *    // nc must be > 0 if term supports colours
- * \endcode
- * \todo Any better idea how to check color support for current terminal?
  */
 bool is_color_term()
 {
-    static const char* const term = getenv("TERM");
-    return term && strcmp(term, "dumb");
+    const auto color_caps = get_term_color_capability();
+    return color_caps != color::unknown && color_caps != color::none;
 }
 
 }}}                                                         // namespace term, os, zencxx

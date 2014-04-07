@@ -1,5 +1,8 @@
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     add_compiler_export_flags()
+    if(USE_CURSES AND CURSES_FOUND)
+        add_definitions(-DUSE_CURSES)
+    endif()
 
     add_library(
         zencxxos
@@ -19,6 +22,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
         PUBLIC
             zencxx
             ${Boost_SYSTEM_LIBRARY}
+            ${CURSES_LIBRARIES}
       )
 
     generate_export_header(zencxxos EXPORT_FILE_NAME details/export.hh)

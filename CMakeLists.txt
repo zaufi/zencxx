@@ -64,6 +64,11 @@ find_package(
     unit_test_framework
   )
 
+option(USE_CURSES "Use curses library to get some terminal capabilities (like colors)" ON)
+if(USE_CURSES)
+    find_package(Curses)
+endif()
+
 #---------------------------------------------------------
 # Section: Configure builing process
 #---------------------------------------------------------
