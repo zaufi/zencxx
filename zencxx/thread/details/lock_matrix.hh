@@ -51,6 +51,7 @@ class lock_matrix
     static constexpr std::size_t STATE_SIZE = std::extent<decltype(matrix_type::matrix)>::value;
     static constexpr std::size_t STATE_SIZE_1__ = std::extent<decltype(matrix_type::matrix), 1>::value;
 
+    /// \todo Assert that matrix has \c bool values
     static_assert(
         STATE_SIZE == STATE_SIZE_1__
       , "`matrix' member of a MatrixSpec must be a NxN array of booleans"
