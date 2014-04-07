@@ -9,7 +9,7 @@
  * But need to wait for full C++11 support (in the standard library).
  */
 /*
- * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
+ * Copyright (C) 2010-2014 Alex Turbov and contributors, all rights reserved.
  * This is free software. It is licensed for use, modification and
  * redistribution under the terms of the GNU Lesser General Public License,
  * version 3 or later <http://gnu.org/licenses/lgpl.html>

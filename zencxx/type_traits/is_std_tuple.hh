@@ -6,7 +6,7 @@
  * \date Sun Jul 28 21:27:45 MSK 2013 -- Initial design
  */
 /*
- * Copyright (C) 2010-2013 Alex Turbov and contributors, all rights reserved.
+ * Copyright (C) 2010-2014 Alex Turbov and contributors, all rights reserved.
  * This is free software. It is licensed for use, modification and
  * redistribution under the terms of the GNU Lesser General Public License,
  * version 3 or later <http://gnu.org/licenses/lgpl.html>

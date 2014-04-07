@@ -316,7 +316,7 @@ define_skeleton_generation_targets(
     PROJECT_NAMESPACE "zencxx"
     PROJECT_PREFIX "ZenCxx"
     PROJECT_OWNER "Alex Turbov and contributors"
-    PROJECT_YEARS "2010-2013"
+    PROJECT_YEARS "2010-2014"
     ENABLE_TESTS
     USE_PRAGMA_ONCE
   )
