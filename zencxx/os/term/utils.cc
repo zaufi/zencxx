@@ -4,6 +4,7 @@
  * \brief Terminal utility functions (implementation)
  *
  * \date Sun Oct  2 00:12:48 MSK 2011 -- Initial design
+ * \date Mon Apr  7 14:23:05 MSK 2014 -- Add a color support detector via termcap DB (curses library)
  */
 /*
  * ZenCxx is free software: you can redistribute it and/or modify it
@@ -111,7 +112,7 @@ std::pair<unsigned, unsigned> get_term_size()
  */
 color get_term_color_capability()
 {
-#ifdef USE_CURSES
+#ifdef ZENCXX_USE_CURSES
     static const auto color_caps = num_to_color_transform(get_supported_colors_count());
     return color_caps;
 #else

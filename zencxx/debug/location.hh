@@ -73,8 +73,7 @@
 
 namespace zencxx { namespace debug { namespace details {
 /// \internal Function to get file name from full path
-template <std::size_t N>
-constexpr inline const char* file_basename(const char (&path)[N])
+constexpr inline const char* file_basename(const char* const path)
 {
     return ct::strrchr(path, '/') ? ct::strrchr(path, '/') + 1 : path;
 }

@@ -1,6 +1,8 @@
 add_boost_tests(
     TARGET ${UNIT_TESTS}
-    SOURCES charset_conversion_tester.cc
+    SOURCES
+        charset_conversion_tester.cc
+        color_tester.cc
     NO_CATCH_SYSTEM_ERRORS
   )
 

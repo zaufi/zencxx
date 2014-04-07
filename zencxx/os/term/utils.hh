@@ -4,6 +4,7 @@
  * \brief Terminal utility functions
  *
  * \date Sun Oct  2 00:12:48 MSK 2011 -- Initial design
+ * \date Mon Apr  7 14:23:05 MSK 2014 -- Add a color support detector via termcap DB (curses library)
  */
 /*
  * ZenCxx is free software: you can redistribute it and/or modify it
@@ -20,8 +21,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__OS__TERM__UTILS_HH__
-# define __ZENCXX__OS__TERM__UTILS_HH__
+#pragma once
 
 // Project specific includes
 # include <zencxx/os/exception.hh>
@@ -50,4 +50,3 @@ ZENCXXOS_EXPORT color get_term_color_capability();
 ZENCXXOS_EXPORT bool is_color_term();
 
 }}}                                                         // namespace term, os, zencxx
-#endif                                                      // __ZENCXX__OS__TERM__UTILS_HH__

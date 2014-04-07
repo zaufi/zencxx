@@ -10,18 +10,17 @@
  * under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * ZenCxx is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__OS__ESCAPE_SEQUENCES_HH__
-# define __ZENCXX__OS__ESCAPE_SEQUENCES_HH__
+#pragma once
 
 // Project specific includes
 # include <zencxx/os/details/export.hh>
@@ -54,7 +53,7 @@ struct ZENCXXOS_EXPORT reverse
     static const char* const off;
 };
 
-extern const char* const reset;
+extern ZENCXXOS_EXPORT const char* const reset;
 
 struct ZENCXXOS_EXPORT fg
 {
@@ -92,4 +91,3 @@ struct ZENCXXOS_EXPORT bg
 };
 
 }}}                                                         // namespace esc, os, zencxx
-#endif                                                      // __ZENCXX__OS__ESCAPE_SEQUENCES_HH__

@@ -1,14 +1,15 @@
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     add_compiler_export_flags()
+
+    # Tell to terminal related functions to use curses library
     if(USE_CURSES AND CURSES_FOUND)
-        add_definitions(-DUSE_CURSES)
+        add_definitions(-DZENCXX_USE_CURSES)
     endif()
 
     add_library(
         zencxxos
         ${ZENCXX_LIB_TYPE}
         charset/convert.cc
-        color.cc
         daemon_application.cc
         escape_sequences.cc
         exception.cc
@@ -73,7 +74,7 @@ if(CMAKE_SYSTEM_NAME MATCHES "Linux")
         COMPONENT ${LIBZENCXX_DEV_PACKAGE}
       )
     install(
-        DIRECTORY charset signal term
+        DIRECTORY charset details signal term
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/zencxx/os
         COMPONENT ${LIBZENCXX_DEV_PACKAGE}
         FILES_MATCHING PATTERN *.hh

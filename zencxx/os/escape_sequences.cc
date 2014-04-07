@@ -4,6 +4,8 @@
  * \brief Escape sequence codes for terminal (definition)
  *
  * \date Fri Oct 22 05:29:54 MSD 2010 -- Initial design
+ *
+ * \todo Use \c curses and termcap DB instead of hardcoded colors?
  */
 /*
  * ZenCxx is free software: you can redistribute it and/or modify it
