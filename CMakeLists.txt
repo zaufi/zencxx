@@ -122,6 +122,8 @@ use_compiler_option(OPTION -std=c++11 LANGUAGE CXX OUTPUT CXX_COMPILER_HAS_CPP11
 if(NOT CXX_COMPILER_HAS_CPP11_OPTION)
     message(FATAL_ERROR "C++11 compatible compiler required to build this project (gcc >= 4.8)")
 endif()
+# Add -fvisibility option if needed
+add_compiler_export_flags()
 
 # If CMAKE_BUILD_TYPE is not set, try to guess it now
 include(GuessBuildType)
@@ -183,17 +185,18 @@ include(GetDistribInfo)
 # Specifying precise versions of some packages which are distinct
 # in different distributions.
 if(DISTRIB_CODENAME STREQUAL "precise")
-  set(BOOST_DEV_VERSION_PKG_DEP "1.48")
+  set(BOOST_DEV_VERSION_PKG_DEP "1.48.0")
 elseif(DISTRIB_CODENAME STREQUAL "quantal")
-  set(BOOST_DEV_VERSION_PKG_DEP "1.50")
+  set(BOOST_DEV_VERSION_PKG_DEP "1.50.0")
 elseif(DISTRIB_CODENAME STREQUAL "raring")
-  set(BOOST_DEV_VERSION_PKG_DEP "1.53")
+  set(BOOST_DEV_VERSION_PKG_DEP "1.53.0")
 elseif(DISTRIB_CODENAME STREQUAL "saucy")
-  set(BOOST_DEV_VERSION_PKG_DEP "1.54")
+  set(BOOST_DEV_VERSION_PKG_DEP "1.54.0")
+elseif(DISTRIB_CODENAME STREQUAL "gentoo")
+    # Do nothing
 else()
-  message(STATUS "WARNING: Target distribution codename is unknown! Do not even try to build .deb packages!")
+  message(STATUS "WARNING: Target distribution codename is unknown! Do not build any packages!")
 endif()
-set(BOOST_VERSION_PKG_DEP "${BOOST_DEV_VERSION_PKG_DEP}.0")
 
 if(
      CMAKE_BUILD_TYPE STREQUAL "Debug"
@@ -207,80 +210,83 @@ else()
 endif()
 
 # Include CPack support
-include(CPack)
-set(CPACK_GENERATOR DEB)
 set(CPACK_SOURCE_GENERATOR TBZ2)
-set(REPREPRO_CUSTOM_OPTIONS "--ask-passphrase")
-include(AddPackage)
+include(CPack)
 
-# Make sign options available to set from the CLI/GUI
-set(
-    ZENCXX_SIGN_KEY_ID
-    "37925FE2"
-    CACHE STRING "GPG key ID to be used to sign result packages"
-  )
-set(
-    ZENCXX_SIGN_USER_NAME
-    "builder"
-    CACHE STRING "User name to be used to sign packages (builder)"
-  )
-set(
-    ZENCXX_DEB_REPOSITORY
-    "$ENV{HOME}/ubuntu.repo"
-    CACHE FILEPATH "Path to repository to deploy .deb packages to"
-  )
+if(NOT DISTRIB_CODENAME STREQUAL "gentoo")
+    set(CPACK_GENERATOR ${DISTRIB_PKG_FMT})
+    set(REPREPRO_CUSTOM_OPTIONS "--ask-passphrase")
+    include(AddPackage)
 
-set_common_package_options(
-    PROJECT_VERSION "${ZENCXX_VERSION}"
-    VENDOR_NAME "Alex Turbov"
-    VENDOR_CONTACT "Alex Turbov <i.zaufi@gmail.com>"
-    BUILD_FLAVOUR "${CPACK_BUILD_FLAVOUR}"
-    SIGN_BY ${ZENCXX_SIGN_USER_NAME}
-    SIGN_WITH ${ZENCXX_SIGN_KEY_ID}
-    ALLOW_DEPLOY_PACKAGES
-    DEPLOY_TO ${ZENCXX_DEB_REPOSITORY}
-  )
+    # Make sign options available to set from the CLI/GUI
+    set(
+        ZENCXX_SIGN_KEY_ID
+        "37925FE2"
+        CACHE STRING "GPG key ID to be used to sign result packages"
+      )
+    set(
+        ZENCXX_SIGN_USER_NAME
+        "builder"
+        CACHE STRING "User name to be used to sign packages (builder)"
+      )
+    set(
+        ZENCXX_DEB_REPOSITORY
+        "$ENV{HOME}/ubuntu.repo"
+        CACHE FILEPATH "Path to repository to deploy .deb packages to"
+      )
 
-set(PKG_VERSION "${ZENCXX_VERSION}-0ubuntu2")
+    set_common_package_options(
+        PROJECT_VERSION "${ZENCXX_VERSION}"
+        VENDOR_NAME "Alex Turbov"
+        VENDOR_CONTACT "Alex Turbov <i.zaufi@gmail.com>"
+        BUILD_FLAVOUR "${CPACK_BUILD_FLAVOUR}"
+        SIGN_BY ${ZENCXX_SIGN_USER_NAME}
+        SIGN_WITH ${ZENCXX_SIGN_KEY_ID}
+        ALLOW_DEPLOY_PACKAGES
+        DEPLOY_TO ${ZENCXX_DEB_REPOSITORY}
+      )
 
-add_package(
-    NAME libzencxx
-    SUMMARY "ZEN C++ library"
-    DESCRIPTION "Redistributable library"
-    HOMEPAGE "https://github.com/zaufi/zencxx"
-    VERSION "${PKG_VERSION}"
-    SECTION "libs"
-    DEPENDS
-        "libstdc++6 (>= 4.6)"
-        "libboost-system${BOOST_VERSION_PKG_DEP}"
-        "libboost-thread${BOOST_VERSION_PKG_DEP}"
-    REPLACES "libzencxx${CPACK_BUILD_FLAVOUR} (<= ${PKG_VERSION})"
-  )
+    set(PKG_VERSION "${ZENCXX_VERSION}-0ubuntu2")
 
-add_package(
-    NAME libzencxx-dev
-    SUMMARY "Developer files for ZEN C++ library"
-    DESCRIPTION "C++ headers and CMake configuration support files"
-    HOMEPAGE "https://github.com/zaufi/zencxx"
-    VERSION "${PKG_VERSION}"
-    SECTION "devel"
-    DEPENDS
-        "libzencxx${CPACK_BUILD_FLAVOUR} (= ${PKG_VERSION})"
-        "libboost${BOOST_DEV_VERSION_PKG_DEP}-all-dev"
-    REPLACES "libzencxx-dev (<= ${PKG_VERSION})"
-  )
-
-if(NOT NO_DOXY_DOCS OR NOT NO_DOXY_DOCS STREQUAL "ON")
     add_package(
-        NAME libzencxx-doc
-        SUMMARY "ZEN C++ library API documentation"
-        DESCRIPTION "Doxygened library API documentation"
+        NAME libzencxx
+        SUMMARY "ZEN C++ library"
+        DESCRIPTION "Redistributable library"
+        HOMEPAGE "https://github.com/zaufi/zencxx"
+        VERSION "${PKG_VERSION}"
+        SECTION "libs"
+        DEPENDS
+            "libstdc++6 (>= 4.6)"
+            "libboost-system${BOOST_VERSION_PKG_DEP}"
+            "libboost-thread${BOOST_VERSION_PKG_DEP}"
+        REPLACES "libzencxx${CPACK_BUILD_FLAVOUR} (<= ${PKG_VERSION})"
+      )
+
+    add_package(
+        NAME libzencxx-dev
+        SUMMARY "Developer files for ZEN C++ library"
+        DESCRIPTION "C++ headers and CMake configuration support files"
         HOMEPAGE "https://github.com/zaufi/zencxx"
         VERSION "${PKG_VERSION}"
         SECTION "devel"
-        REPLACES "libzencxx-doc (<= ${PKG_VERSION})"
-        PRE_BUILD doxygen
+        DEPENDS
+            "libzencxx${CPACK_BUILD_FLAVOUR} (= ${PKG_VERSION})"
+            "libboost${BOOST_DEV_VERSION_PKG_DEP}-all-dev"
+        REPLACES "libzencxx-dev (<= ${PKG_VERSION})"
       )
+
+    if(NOT NO_DOXY_DOCS OR NOT NO_DOXY_DOCS STREQUAL "ON")
+        add_package(
+            NAME libzencxx-doc
+            SUMMARY "ZEN C++ library API documentation"
+            DESCRIPTION "Doxygened library API documentation"
+            HOMEPAGE "https://github.com/zaufi/zencxx"
+            VERSION "${PKG_VERSION}"
+            SECTION "devel"
+            REPLACES "libzencxx-doc (<= ${PKG_VERSION})"
+            PRE_BUILD doxygen
+          )
+    endif()
 endif()
 
 #---------------------------------------------------------

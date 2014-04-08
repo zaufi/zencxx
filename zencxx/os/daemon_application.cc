@@ -25,8 +25,9 @@
 
 // Standard includes
 #include <fcntl.h>
-#include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include <unistd.h>
 #include <csignal>
 
@@ -36,14 +37,18 @@ namespace zencxx { namespace os {
  */
 bool daemon_application::daemonize()
 {
-    pid_t pid = fork();
+    auto pid = fork();
     if (pid == -1)
         ZENCXX_THROW(exception::daemionization_failure("fork"));
 
-    if (pid > 0) return false;                              // Return false to the parent
+    if (pid > 0)                                            // Return false to the parent
+        /// \todo waitpid?
+        return false;
 
-    pid_t rc = setsid();                                    // Set current process be a group leader
-    assert("setsid() expected to be Ok" && rc != -1);
+    {
+        const auto rc = setsid();                           // Set current process be a group leader
+        assert("setsid() expected to be Ok" && rc != -1);
+    }
 
     // `fork()' again so the parent, (the session group leader), can exit.
     // This means that we, as a non-session group leader, can never regain a
@@ -52,19 +57,24 @@ bool daemon_application::daemonize()
     if (pid == -1)
         ZENCXX_THROW(exception::daemionization_failure("fork"));
 
-    if (pid > 0) return false;                              // Return false to the parent
+    if (pid > 0)                                            // Return false to the parent
+        return false;
 
     // Redirect standard streams to /dev/null
-    int fd = open("/dev/null", O_RDWR, 0);
+    const auto fd = open("/dev/null", O_RDWR, 0);
     if (fd == -1)
         ZENCXX_THROW(exception::daemionization_failure("open"));
 
     if (dup2(fd, STDIN_FILENO) == -1 || dup2(fd, STDOUT_FILENO) == -1 || dup2(fd, STDERR_FILENO) == -1)
         ZENCXX_THROW(exception::daemionization_failure("dup2"));
-    if (fd > 2) close(fd);
-    // Change current directory to root to avoid possible filesystem lock
-    int tmp = chdir("/");
-    assert("Can't chdir to /" && 0 == tmp);
+    if (fd > 2)
+        close(fd);
+
+    {
+        // Change current directory to root to avoid possible filesystem lock
+        const auto rc = chdir("/");
+        assert("Can't chdir to /" && 0 == tmp);
+    }
     umask(0);                                               // Drop umask
     return true;                                            // Return true to the child
 }

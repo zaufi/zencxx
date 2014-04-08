@@ -1,5 +1,4 @@
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    add_compiler_export_flags()
 
     # Tell to terminal related functions to use curses library
     if(USE_CURSES AND CURSES_FOUND)

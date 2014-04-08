@@ -59,7 +59,7 @@ public:
     /// Cleanup iconv resources
     ~converter()
     {
-        int r = iconv_close(m_cd);
+        const auto r = iconv_close(m_cd);
         assert(r != -1);
     }
     /// Do a conversion

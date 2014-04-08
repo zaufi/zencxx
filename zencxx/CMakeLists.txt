@@ -1,5 +1,3 @@
-add_compiler_export_flags()
-
 set(
     ZENCXX_SOURCES
     debug/dump_memory.cc

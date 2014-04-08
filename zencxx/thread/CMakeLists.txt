@@ -1,5 +1,3 @@
-add_compiler_export_flags()
-
 set(
     ZENCXX_THREAD_SOURCES
     predefined_lock_types.cc
