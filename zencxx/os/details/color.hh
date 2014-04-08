@@ -29,6 +29,7 @@
 
 // Project specific includes
 #include <zencxx/os/details/color_enabler_base.hh>
+#include <zencxx/os/details/color_reset_base.hh>
 #include <zencxx/exception.hh>
 
 // Standard includes
@@ -74,14 +75,17 @@ inline constexpr const char* get_initial_seq<background_tag, true_color_tag>()
  * \brief Class to produce true color ESC sequences
  */
 template <typename TypeTag>
-class rgb : protected color_enabler_base
+class rgb
+  : protected color_enabler_base
+  , public color_reset_base
 {
 public:
     /**
      * Construct from indeces of 256x256x256 color cube
      */
-    rgb(const int r, const int g, const int b)
-      : r_(r)
+    rgb(const int r, const int g, const int b, const bool reset_required = true)
+      : color_reset_base(reset_required)
+      , r_(r)
       , g_(g)
       , b_(b)
     {
@@ -95,7 +99,12 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const rgb& c)
     {
         if (color_enabler_base::is_enabled())
-            os << get_initial_seq<TypeTag, true_color_tag>() << int(c.r_) << ';' << int(c.g_) << ';' << int(c.b_) <<  'm';
+            os << c.reset_if_needed(os)
+            << get_initial_seq<TypeTag, true_color_tag>()
+            << int(c.r_) << ';'
+            << int(c.g_) << ';'
+            << int(c.b_) << 'm'
+            ;
         return os;
     }
 
@@ -109,14 +118,17 @@ private:
  * \brief Class to produce 256 colors ESC sequences
  */
 template <typename TypeTag>
-class indexed_rgb : protected color_enabler_base
+class indexed_rgb
+  : protected color_enabler_base
+  , public color_reset_base
 {
 public:
     /**
      * Construct from indeces of 6x6x6 color cube
      */
-    indexed_rgb(const int r, const int g, const int b)
-      : r_(r)
+    indexed_rgb(const int r, const int g, const int b, const bool reset_required = true)
+      : color_reset_base(reset_required)
+      , r_(r)
       , g_(g)
       , b_(b)
     {
@@ -130,7 +142,11 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const indexed_rgb& c)
     {
         if (color_enabler_base::is_enabled())
-            os << get_initial_seq<TypeTag, rgb_tag>() << c.components_to_index() << 'm';
+            os << c.reset_if_needed(os)
+               << get_initial_seq<TypeTag, rgb_tag>() 
+               << c.components_to_index() 
+               << 'm'
+               ;
         return os;
     }
 
@@ -152,14 +168,17 @@ private:
  * \brief Class to produce grayscale ESC sequences supported by 256 color terminals.
  */
 template <typename TypeTag>
-class grayscale : protected color_enabler_base
+class grayscale 
+  : protected color_enabler_base
+  , public color_reset_base
 {
 public:
     /**
      * Construct from grayscale color index, which is a value in the range <tt>[0, 24]</tt>.
      */
-    explicit grayscale(const int index)
-      : m_index(index)
+    explicit grayscale(const int index, const bool reset_required = true)
+      : color_reset_base(reset_required)
+      , m_index(index)
     {
         const auto MAX_VALID_INDEX = 24;
         if (MAX_VALID_INDEX < m_index)
@@ -171,7 +190,11 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const grayscale& c)
     {
         if (color_enabler_base::is_enabled())
-            os << get_initial_seq<TypeTag, rgb_tag>() << c.transform_index() << 'm';
+            os << c.reset_if_needed(os)
+               << get_initial_seq<TypeTag, rgb_tag>() 
+               << c.transform_index()
+               << 'm'
+               ;
         return os;
     }
 

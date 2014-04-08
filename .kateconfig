@@ -1,2 +1,1 @@
-kate: space-indent on; indent-width 4; replace-tabs on; hl: C++;
-
+kate: space-indent on; indent-width 4; replace-tabs on; hl: C++; remove-trailing-spaces all;

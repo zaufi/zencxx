@@ -32,7 +32,6 @@
 // Project specific includes
 #include <zencxx/os/details/export.hh>
 #include <zencxx/os/details/color.hh>
-#include <zencxx/os/escape_sequences.hh>
 
 // Standard includes
 #include <cassert>
@@ -45,27 +44,40 @@ namespace zencxx { namespace os {
  *
  * This manipulator will check is color enabled,
  * and suppress output of ESC sequences if it doesn't.
+ *
+ * Typical usage is like the following:
+ * \code
+ * std::cerr << color(esc::fg::red) << "Error: blah-blah!" << color(esc::reset) << '\n';
+ * \endcode
  */
-class ZENCXXOS_EXPORT color : public details::color_enabler_base
+class ZENCXXOS_EXPORT color
+  : public details::color_enabler_base
+  , public details::color_reset_base
 {
     const char* const m_color;
 
 public:
-    explicit color(const char* const c)
-      : m_color(c)
+    /**
+     * \brief Construct from ESC sequence.
+     *
+     * ESC sequences are defined for all named colors and modes
+     * in the \c zencxx/os/escape_sequences.hh which is included
+     * into this (\c zencxx/os/color.hh) file as well.
+     *
+     * \param c pointer to ESC sequence
+     * \param reset_required whether terminal reset required before
+     * output of the given color
+     */
+    explicit color(const char* const c, const bool reset_required = true)
+      : details::color_reset_base{reset_required}
+      , m_color{c}
     {
         assert("Sanity check" && c);
     }
-    /// Get stored color esc sequence
+    /// Get stored color ESC sequence
     const char* get() const
     {
         return m_color;
-    }
-    friend std::ostream& operator<<(std::ostream& os, const color& c)
-    {
-        if (color::is_enabled())
-            os << c.m_color;
-        return os;
     }
 
     /// \name Nested types to use different color spaces
@@ -84,5 +96,12 @@ public:
     };
     //@}
 };
+
+inline std::ostream& operator<<(std::ostream& os, const color& c)
+{
+    if (color::is_enabled())
+        os << c.reset_if_needed(os) << c.get();
+    return os;
+}
 
 }}                                                          // namespace os, zencxx
