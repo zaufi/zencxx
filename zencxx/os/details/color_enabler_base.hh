@@ -54,7 +54,7 @@ public:
 private:
     static bool* get_flag_location()
     {
-        static bool s_is_color_enabled;
+        static bool s_is_color_enabled = term::is_color_term();
         return &s_is_color_enabled;
     }
 };
