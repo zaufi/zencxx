@@ -64,7 +64,12 @@ find_package(
     unit_test_framework
   )
 
-option(USE_CURSES "Use curses library to get some terminal capabilities (like colors)" ON)
+if(WIN32)
+    set(_ZENCXX_DEFAULT_USE_CURSES OFF)
+else()
+    set(_ZENCXX_DEFAULT_USE_CURSES ON)
+endif()
+option(USE_CURSES "Use curses library to get some terminal capabilities (like colors)" ${_ZENCXX_DEFAULT_USE_CURSES})
 if(USE_CURSES)
     find_package(Curses)
 endif()
@@ -79,13 +84,11 @@ if(ZENCXX_BUILD_SHARED_LIBS)
     message(STATUS "Build shared libraries: enabled")
 endif()
 
-# Allow GNU extensions
-add_definitions(-D_GNU_SOURCE)
-
 # NOTE Order is important!
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_BINARY_DIR})
 include_directories(${Boost_INCLUDE_DIRS})
+
 # Tell to boost::result_of to use decltype to decay return type of callable.
 # NOTE This would enabel to use C++11 labmda expressions w/ boost::rage adaptors
 add_definitions(-DBOOST_RESULT_OF_USE_DECLTYPE)
@@ -98,54 +101,62 @@ add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
 # (stay as close as possible to the C++11 Standard)
 add_definitions(-DBOOST_THREAD_VERSION=4)
 
-# TODO Add STL debug mode (-D_GLIBCXX_DEBUG) in debug builds, but
-# unfortunately this compiler option must be synchronized with boost
-# binary libraries.
-#
-# NOTE One may use GLIBCXX_FORCE_NEW to disable any memory caching in STL allocators.
-#
-# TODO Also it would be nice to enable STL profiling mode (-D_GLIBCXX_PROFILE)
-# (read more http://gcc.gnu.org/onlinedocs/libstdc++/manual/profile_mode.html)
-
-# Do not link w/ libraries which isn't provide undefined symbols.
-# (they are specified as dependencies for other targets from this
-# project, but listed as unused by `ldd -u binary`)
-set(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed ${CMAKE_EXE_LINKER_FLAGS}")
-set(CMAKE_MODULE_LINKER_FLAGS "-Wl,--as-needed ${CMAKE_MODULE_LINKER_FLAGS}")
-
-# Include declaration of use_compiler_option()
-include(MacroUseCompilerOption)
-# Set some compiler options
-use_compiler_option(OPTION -pipe LANGUAGE CXX OUTPUT COMPILER_HAS_PIPE_OPTION)
-use_compiler_option(OPTION -Wall LANGUAGE CXX OUTPUT COMPILER_HAS_WALL_OPTION)
-use_compiler_option(OPTION -std=c++11 LANGUAGE CXX OUTPUT CXX_COMPILER_HAS_CPP11_OPTION)
-if(NOT CXX_COMPILER_HAS_CPP11_OPTION)
-    message(FATAL_ERROR "C++11 compatible compiler required to build this project (gcc >= 4.8)")
-endif()
-# Add -fvisibility option if needed
-add_compiler_export_flags()
-
 # If CMAKE_BUILD_TYPE is not set, try to guess it now
 include(GuessBuildType)
 
-# Setup compiler options depending on build type
-message(STATUS "Setting options for ${CMAKE_BUILD_TYPE} build type")
-if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DebugFull")
-    # Show even more warnings in debug mode
-    use_compiler_option(OPTION -Wextra LANGUAGE CXX OUTPUT COMPILER_HAS_WALL_OPTION)
-    use_compiler_option(OPTION -ggdb3 LANGUAGE CXX OUTPUT COMPILER_HAS_GGDB3_OPTION)
-    if(NOT COMPILER_HAS_GGDB3_OPTION)
-        use_compiler_option(OPTION -g3 LANGUAGE CXX OUTPUT COMPILER_HAS_G3_OPTION)
+# Do compiler dependent options tuning
+message(STATUS "Configuring options for C++ compiler: ${CMAKE_CXX_COMPILER_ID}")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    # Allow GNU extensions
+    add_definitions(-D_GNU_SOURCE)
+
+    # TODO Add STL debug mode (-D_GLIBCXX_DEBUG) in debug builds, but
+    # unfortunately this compiler option must be synchronized with boost
+    # binary libraries.
+    #
+    # NOTE One may use GLIBCXX_FORCE_NEW to disable any memory caching in STL allocators.
+    #
+    # TODO Also it would be nice to enable STL profiling mode (-D_GLIBCXX_PROFILE)
+    # (read more http://gcc.gnu.org/onlinedocs/libstdc++/manual/profile_mode.html)
+
+    # Do not link w/ libraries which isn't provide undefined symbols.
+    # (they are specified as dependencies for other targets from this
+    # project, but listed as unused by `ldd -u binary`)
+    set(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed ${CMAKE_EXE_LINKER_FLAGS}")
+    set(CMAKE_MODULE_LINKER_FLAGS "-Wl,--as-needed ${CMAKE_MODULE_LINKER_FLAGS}")
+
+    # Include declaration of use_compiler_option()
+    include(MacroUseCompilerOption)
+    # Set some compiler options
+    use_compiler_option(OPTION -pipe LANGUAGE CXX OUTPUT COMPILER_HAS_PIPE_OPTION)
+    use_compiler_option(OPTION -Wall LANGUAGE CXX OUTPUT COMPILER_HAS_WALL_OPTION)
+    use_compiler_option(OPTION -std=c++11 LANGUAGE CXX OUTPUT CXX_COMPILER_HAS_CPP11_OPTION)
+    if(NOT CXX_COMPILER_HAS_CPP11_OPTION)
+        message(FATAL_ERROR "C++11 compatible compiler required to build this project (gcc >= 4.8)")
     endif()
-else()
-    # More linker optimizations in release mode
-    set(CMAKE_EXE_LINKER_FLAGS_RELEASE
-        "-Wl,-O1 -Wl,--sort-common ${CMAKE_EXE_LINKER_FLAGS_RELEASE}"
-      )
-    set(CMAKE_MODULE_LINKER_FLAGS_RELEASE
-        "-Wl,-O1 -Wl,--sort-common ${CMAKE_MODULE_LINKER_FLAGS_RELEASE}"
-      )
+
+    # Setup compiler options depending on build type
+    message(STATUS "Setting options for ${CMAKE_BUILD_TYPE} build type")
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DebugFull")
+        # Show even more warnings in debug mode
+        use_compiler_option(OPTION -Wextra LANGUAGE CXX OUTPUT COMPILER_HAS_WALL_OPTION)
+        use_compiler_option(OPTION -ggdb3 LANGUAGE CXX OUTPUT COMPILER_HAS_GGDB3_OPTION)
+        if(NOT COMPILER_HAS_GGDB3_OPTION)
+            use_compiler_option(OPTION -g3 LANGUAGE CXX OUTPUT COMPILER_HAS_G3_OPTION)
+        endif()
+    else()
+        # More linker optimizations in release mode
+        set(CMAKE_EXE_LINKER_FLAGS_RELEASE
+            "-Wl,-O1 -Wl,--sort-common ${CMAKE_EXE_LINKER_FLAGS_RELEASE}"
+          )
+        set(CMAKE_MODULE_LINKER_FLAGS_RELEASE
+            "-Wl,-O1 -Wl,--sort-common ${CMAKE_MODULE_LINKER_FLAGS_RELEASE}"
+          )
+    endif()
 endif()
+
+# Add -fvisibility option if needed
+add_compiler_export_flags()
 
 #---------------------------------------------------------
 # Section: Misc actions
@@ -195,7 +206,7 @@ elseif(DISTRIB_CODENAME STREQUAL "saucy")
 elseif(DISTRIB_CODENAME STREQUAL "gentoo")
     # Do nothing
 else()
-  message(STATUS "WARNING: Target distribution codename is unknown! Do not build any packages!")
+  message(STATUS "WARNING: Target distribution codename is unknown! Will not build binary packages!")
 endif()
 
 if(
@@ -213,7 +224,7 @@ endif()
 set(CPACK_SOURCE_GENERATOR TBZ2)
 include(CPack)
 
-if(NOT DISTRIB_CODENAME STREQUAL "gentoo")
+if(DISTRIB_PKG_FMT STREQUAL "DEB")
     set(CPACK_GENERATOR ${DISTRIB_PKG_FMT})
     set(REPREPRO_CUSTOM_OPTIONS "--ask-passphrase")
     include(AddPackage)

@@ -73,7 +73,7 @@ bool daemon_application::daemonize()
     {
         // Change current directory to root to avoid possible filesystem lock
         const auto rc = chdir("/");
-        assert("Can't chdir to /" && 0 == tmp);
+        assert("Can't chdir to /" && 0 == rc);
     }
     umask(0);                                               // Drop umask
     return true;                                            // Return true to the child
