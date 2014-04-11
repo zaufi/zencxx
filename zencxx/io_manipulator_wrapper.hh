@@ -22,8 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__IO_MANIPULATOR_WRAPPER_HH__
-# define __ZENCXX__IO_MANIPULATOR_WRAPPER_HH__
+#pragma once
 
 // Project specific includes
 
@@ -176,5 +175,3 @@
             return m_ref;                                      \
         }                                                      \
     }
-
-#endif                                                      // __ZENCXX__IO_MANIPULATOR_WRAPPER_HH__

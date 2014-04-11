@@ -25,19 +25,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__TYPE_TRAITS__DETAILS__RESULT_OF_EXPRESSION_HH__
-# define __ZENCXX__TYPE_TRAITS__DETAILS__RESULT_OF_EXPRESSION_HH__
+#pragma once
 
 // Project specific includes
 
 // Standard includes
-# include <boost/preprocessor/tuple/enum.hpp>
+#include <boost/preprocessor/tuple/enum.hpp>
 
-# define ZENCXX_TT_RESULT_OF_EXPR(Name, TplParamsT, ...) \
-    template <BOOST_PP_TUPLE_ENUM(TplParamsT)>           \
-    struct Name                                          \
-    {                                                    \
-        typedef decltype(__VA_ARGS__) type;              \
+#define ZENCXX_TT_RESULT_OF_EXPR(Name, TplParamsT, ...) \
+    template <BOOST_PP_TUPLE_ENUM(TplParamsT)>          \
+    struct Name                                         \
+    {                                                   \
+        typedef decltype(__VA_ARGS__) type;             \
     }
-
-#endif                                                      // __ZENCXX__TYPE_TRAITS__DETAILS__RESULT_OF_EXPRESSION_HH__

@@ -25,8 +25,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__TICKER_FWD_HH__
-# define __ZENCXX__TICKER_FWD_HH__
+#pragma once
 
 // Project specific includes
 
@@ -37,4 +36,3 @@ namespace zencxx {
 class ticker;
 
 }                                                           // namespace zencxx
-#endif                                                      // __ZENCXX__TICKER_FWD_HH__

@@ -25,11 +25,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__TYPE_TRAITS__IS_INCREMENTABLE_HH__
-# define __ZENCXX__TYPE_TRAITS__IS_INCREMENTABLE_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/type_traits/details/expression_validity_checker.hh>
+#include <zencxx/type_traits/details/expression_validity_checker.hh>
 
 // Standard includes
 
@@ -74,4 +73,3 @@ ZENCXX_TT_EXPR_CHECKER(
  */
 
 }                                                           // namespace zencxx
-#endif                                                      // __ZENCXX__TYPE_TRAITS__IS_INCREMENTABLE_HH__

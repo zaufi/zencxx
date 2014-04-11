@@ -25,15 +25,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__ANY_STUB_HH__
-# define __ZENCXX__DEBUG__PRINT__ANY_STUB_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/debug/print/any_wrapper.hh>
-# include <zencxx/debug/type_name.hh>
+#include <zencxx/debug/print/any_wrapper.hh>
+#include <zencxx/debug/type_name.hh>
 
 // Standard includes
-# include <ostream>
+#include <ostream>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
 
@@ -52,4 +51,3 @@ std::ostream& operator<<(std::ostream& os, const any_stub<T>&)
 }
 
 }}}}                                                        // namespace details, print, debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_STUB_HH__

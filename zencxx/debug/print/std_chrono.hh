@@ -25,20 +25,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__STD_CHRONO_HH__
-# define __ZENCXX__DEBUG__PRINT__STD_CHRONO_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/debug/print/any_fwd.hh>
-# include <zencxx/debug/print/any_manip.hh>
-# include <zencxx/debug/print/any_wrapper.hh>
-# include <zencxx/details/export.hh>
-# include <zencxx/type_traits/is_std_chrono_duration.hh>
-# include <zencxx/type_traits/is_std_chrono_time_point.hh>
+#include <zencxx/debug/print/any_fwd.hh>
+#include <zencxx/debug/print/any_manip.hh>
+#include <zencxx/debug/print/any_wrapper.hh>
+#include <zencxx/details/export.hh>
+#include <zencxx/type_traits/is_std_chrono_duration.hh>
+#include <zencxx/type_traits/is_std_chrono_time_point.hh>
 
 // Standard includes
-# include <ostream>
-# include <chrono>
+#include <ostream>
+#include <chrono>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
 
@@ -171,4 +170,3 @@ inline details::time_format_holder set_date_time_format(const char* const fmt)
 }
 
 }}}                                                         // namespace print, debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__PRINT__STD_CHRONO_HH__

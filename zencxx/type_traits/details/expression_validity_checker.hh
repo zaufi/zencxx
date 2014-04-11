@@ -20,20 +20,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__TYPE_TRAITS__DETAILS__EXPRESSION_VALIDITY_CHECKER_HH__
-# define __ZENCXX__TYPE_TRAITS__DETAILS__EXPRESSION_VALIDITY_CHECKER_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/type_traits/details/yes_no_type.hh>
+#include <zencxx/type_traits/details/yes_no_type.hh>
 
 // Standard includes
-# include <boost/preprocessor/comma_if.hpp>
-# include <boost/preprocessor/tuple/enum.hpp>
-# include <boost/preprocessor/tuple/size.hpp>
-# if !BOOST_PP_VARIADICS
-#   error this file require variadic macros support
-# endif
-# include <type_traits>
+#include <boost/preprocessor/comma_if.hpp>
+#include <boost/preprocessor/tuple/enum.hpp>
+#include <boost/preprocessor/tuple/size.hpp>
+#if !BOOST_PP_VARIADICS
+#  error this file require variadic macros support
+#endif
+#include <type_traits>
 
 /**
  * \brief Macro to generate type checkers
@@ -100,7 +99,7 @@
  * note that last two parameters is C++ expressions to be validated for given type \c T and
  * a fake parameter \c t, which is of <tt>const T&</tt> type.
  */
-# define ZENCXX_TT_EXPR_CHECKER_EX(                               \
+#define ZENCXX_TT_EXPR_CHECKER_EX(                                \
     Name                                                          \
   , TplParamsT                                                    \
   , TestTplArgsT                                                  \
@@ -143,14 +142,13 @@ struct Name : public std::is_same<                                \
  * This is reduced version of \c ZENCXX_TT_EXPR_CHECKER_EX, it doesn't use
  * anything except template parameters to validate some C++ expression.
  */
-# define ZENCXX_TT_EXPR_CHECKER(Name, TplParamsT, TestInstParamsT, ...) \
-  ZENCXX_TT_EXPR_CHECKER_EX(                                            \
-      Name                                                              \
-    , TplParamsT                                                        \
-    , (int)                                                             \
-    , TestInstParamsT                                                   \
-    , (0)                                                               \
-    , __VA_ARGS__                                                       \
+#define ZENCXX_TT_EXPR_CHECKER(Name, TplParamsT, TestInstParamsT, ...) \
+  ZENCXX_TT_EXPR_CHECKER_EX(                                           \
+      Name                                                             \
+    , TplParamsT                                                       \
+    , (int)                                                            \
+    , TestInstParamsT                                                  \
+    , (0)                                                              \
+    , __VA_ARGS__                                                      \
     )
 
-#endif                                                      // __ZENCXX__TYPE_TRAITS__DETAILS__EXPRESSION_VALIDITY_CHECKER_HH__

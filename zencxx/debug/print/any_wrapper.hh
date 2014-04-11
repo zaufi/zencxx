@@ -25,8 +25,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__ANY_WRAPPER_HH__
-# define __ZENCXX__DEBUG__PRINT__ANY_WRAPPER_HH__
+#pragma once
 
 // Project specific includes
 
@@ -83,4 +82,3 @@ private:
 };
 
 }}}                                                         // namespace print, debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_WRAPPER_HH__

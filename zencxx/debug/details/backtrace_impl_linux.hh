@@ -20,16 +20,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__DETAILS__BACKTRACE_IMPL_LINUX_HH__
-# define __ZENCXX__DEBUG__DETAILS__BACKTRACE_IMPL_LINUX_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/details/export.hh>
+#include <zencxx/details/export.hh>
 
 // Standard includes
-# include <iosfwd>
-# include <string>
-# include <vector>
+#include <iosfwd>
+#include <string>
+#include <vector>
 
 namespace zencxx { namespace debug { namespace details { inline namespace linux_impl {
 /// \ingroup DEBUG
@@ -93,4 +92,3 @@ ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, const backtrace&);
 
 //@}
 }}}}                                                        // namespace linux_impl, details, debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__DETAILS__BACKTRACE_IMPL_LINUX_HH__

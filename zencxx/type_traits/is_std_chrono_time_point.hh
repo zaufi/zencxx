@@ -25,14 +25,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__TYPE_TRAITS__IS_STD_CHRONO_TIME_POINT_HH__
-# define __ZENCXX__TYPE_TRAITS__IS_STD_CHRONO_TIME_POINT_HH__
+#pragma once
 
 // Project specific includes
 
 // Standard includes
-# include <chrono>
-# include <type_traits>
+#include <chrono>
+#include <type_traits>
 
 namespace zencxx {
 
@@ -46,4 +45,3 @@ struct is_std_chrono_time_point<std::chrono::time_point<Clock, Duration>>
 {};
 
 }                                                           // namespace zencxx
-#endif                                                      // __ZENCXX__TYPE_TRAITS__IS_STD_CHRONO_TIME_POINT_HH__

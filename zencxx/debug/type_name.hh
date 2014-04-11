@@ -20,18 +20,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__TYPE_NAME_HH__
-# define __ZENCXX__DEBUG__TYPE_NAME_HH__
+#pragma once
 
 // Project specific includes
 
 // Standard includes
-# if defined(__GNUC__) && __GNUC__ > 3
-#   include <cxxabi.h>
-#   include <cassert>
-# endif                                                     // defined(__GNUC__) && __GNUC__ > 3
-# include <string>
-# include <typeinfo>
+#if defined(__GNUC__) && __GNUC__ > 3
+#  include <cxxabi.h>
+#  include <cassert>
+#endif                                                      // defined(__GNUC__) && __GNUC__ > 3
+#include <string>
+#include <typeinfo>
 
 namespace zencxx { namespace debug {
 /// \ingroup DEBUG
@@ -94,4 +93,3 @@ inline std::string type_name()
 
 //@}
 }}                                                          // namespace debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__TYPE_NAME_HH__

@@ -23,23 +23,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__TICKER_HH__
-# define __ZENCXX__TICKER_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/details/export.hh>
-# include <zencxx/details/registered_job.hh>
-# include <zencxx/exception.hh>
+#include <zencxx/details/export.hh>
+#include <zencxx/details/registered_job.hh>
+#include <zencxx/exception.hh>
 
 // Standard includes
-# include <boost/asio/io_service.hpp>
-# include <boost/thread/lock_types.hpp>
-# include <boost/thread/mutex.hpp>
-# include <cassert>
-# include <functional>
-# include <memory>
-# include <unordered_map>
-# include <utility>
+#include <boost/asio/io_service.hpp>
+#include <boost/thread/lock_types.hpp>
+#include <boost/thread/mutex.hpp>
+#include <cassert>
+#include <functional>
+#include <memory>
+#include <unordered_map>
+#include <utility>
 
 namespace zencxx {
 /**
@@ -328,4 +327,3 @@ inline void ticker::remove_job(const unsigned job_id)
 }
 
 }                                                           // namespace zencxx
-#endif                                                      // __ZENCXX__TICKER_HH__

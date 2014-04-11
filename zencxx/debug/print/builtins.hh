@@ -25,20 +25,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__BUILTINS_HH__
-# define __ZENCXX__DEBUG__PRINT__BUILTINS_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/details/export.hh>
-# include <zencxx/debug/print/any_fwd.hh>
-# include <zencxx/debug/print/any_manip.hh>
-# include <zencxx/debug/print/any_wrapper.hh>
-# include <zencxx/hex2char_char2hex.hh>
+#include <zencxx/details/export.hh>
+#include <zencxx/debug/print/any_fwd.hh>
+#include <zencxx/debug/print/any_manip.hh>
+#include <zencxx/debug/print/any_wrapper.hh>
+#include <zencxx/hex2char_char2hex.hh>
 
 // Standard includes
-# include <locale>
-# include <ostream>
-# include <type_traits>
+#include <locale>
+#include <ostream>
+#include <type_traits>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
 
@@ -91,4 +90,3 @@ struct any_bool : public any_wrapper<T>
 ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, const any_bool<bool>);
 
 }}}}                                                        // namespace details, print, debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__PRINT__BUILTINS_HH__

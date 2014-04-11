@@ -25,14 +25,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__ANY_FWD_HH__
-# define __ZENCXX__DEBUG__PRINT__ANY_FWD_HH__
+#pragma once
 
 // Project specific includes
 
 // Standard includes
-# include <type_traits>
-# include <utility>
+#include <type_traits>
+#include <utility>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
 template <typename>
@@ -52,4 +51,3 @@ typename std::enable_if<
   >::type any(const T&);
 
 }}}                                                         // namespace print, debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_FWD_HH__

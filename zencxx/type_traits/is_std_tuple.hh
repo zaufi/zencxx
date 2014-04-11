@@ -25,14 +25,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__TYPE_TRAITS__IS_STD_TUPLE_HH__
-# define __ZENCXX__TYPE_TRAITS__IS_STD_TUPLE_HH__
+#pragma once
 
 // Project specific includes
 
 // Standard includes
-# include <tuple>
-# include <type_traits>
+#include <tuple>
+#include <type_traits>
 
 namespace zencxx {
 
@@ -45,4 +44,3 @@ struct is_std_tuple<std::tuple<T...> > : public std::true_type
 {};
 
 }                                                           // namespace zencxx
-#endif                                                      // __ZENCXX__TYPE_TRAITS__IS_STD_TUPLE_HH__

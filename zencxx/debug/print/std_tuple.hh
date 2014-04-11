@@ -25,20 +25,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__STD_TUPLE_HH__
-# define __ZENCXX__DEBUG__PRINT__STD_TUPLE_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/debug/print/any_manip.hh>
-# include <zencxx/debug/print/any_fwd.hh>
-# include <zencxx/type_traits/is_std_tuple.hh>
+#include <zencxx/debug/print/any_manip.hh>
+#include <zencxx/debug/print/any_fwd.hh>
+#include <zencxx/type_traits/is_std_tuple.hh>
 
 // Standard includes
-# include <boost/mpl/plus.hpp>
-# include <boost/mpl/size_t.hpp>
-# include <ostream>
-# include <tuple>
-# include <utility>
+#include <boost/mpl/plus.hpp>
+#include <boost/mpl/size_t.hpp>
+#include <ostream>
+#include <tuple>
+#include <utility>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
 
@@ -105,4 +104,3 @@ inline std::ostream& operator<<(std::ostream& os, const any_tuple<const T&>& wt)
     return os;
 }
 }}}}                                                        // namespace details, print, debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__PRINT__STD_TUPLE_HH__

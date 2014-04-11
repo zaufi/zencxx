@@ -25,14 +25,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__TYPE_TRAITS__IS_STD_BASIC_STRING_HH__
-# define __ZENCXX__TYPE_TRAITS__IS_STD_BASIC_STRING_HH__
+#pragma once
 
 // Project specific includes
 
 // Standard includes
-# include <string>
-# include <type_traits>
+#include <string>
+#include <type_traits>
 
 namespace zencxx {
 
@@ -49,4 +48,3 @@ struct is_std_basic_string<
 {};
 
 }                                                           // namespace zencxx
-#endif                                                      // __ZENCXX__TYPE_TRAITS__IS_STD_BASIC_STRING_HH__

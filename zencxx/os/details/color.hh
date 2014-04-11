@@ -168,7 +168,7 @@ private:
  * \brief Class to produce grayscale ESC sequences supported by 256 color terminals.
  */
 template <typename TypeTag>
-class grayscale 
+class grayscale
   : protected color_enabler_base
   , public color_reset_base
 {

@@ -25,13 +25,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__ANY_STREAMABLE_HH__
-# define __ZENCXX__DEBUG__PRINT__ANY_STREAMABLE_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/debug/print/any_manip.hh>
-# include <zencxx/debug/print/any_wrapper.hh>
-# include <zencxx/type_traits/has_left_shift.hh>
+#include <zencxx/debug/print/any_manip.hh>
+#include <zencxx/debug/print/any_wrapper.hh>
+#include <zencxx/type_traits/has_left_shift.hh>
 
 // Standard includes
 # include <ostream>
@@ -58,4 +57,3 @@ std::ostream& operator<<(std::ostream& os, const any_streamable<T>& aw)
     return os;
 }
 }}}}                                                        // namespace details, print, debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_STREAMABLE_HH__

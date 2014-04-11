@@ -20,13 +20,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__BYTE_UNITS_HH__
-# define __ZENCXX__BYTE_UNITS_HH__
+#pragma once
 
 // Project specific includes
 
 // Standard includes
-# include <cstddef>
+#include <cstddef>
 
 namespace zencxx { namespace details {
 constexpr std::size_t pow_bytes(const std::size_t what, const unsigned d)
@@ -80,5 +79,3 @@ constexpr std::size_t operator"" _YiB(const unsigned long long size)
 {
     return zencxx::details::pow_bytes(size, 8);
 }
-
-#endif                                                      // __ZENCXX__BYTE_UNITS_HH__

@@ -25,17 +25,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__STD_PAIR_HH__
-# define __ZENCXX__DEBUG__PRINT__STD_PAIR_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/debug/print/any_manip.hh>
-# include <zencxx/debug/print/any_fwd.hh>
-# include <zencxx/type_traits/is_std_pair.hh>
+#include <zencxx/debug/print/any_manip.hh>
+#include <zencxx/debug/print/any_fwd.hh>
+#include <zencxx/type_traits/is_std_pair.hh>
 
 // Standard includes
-# include <ostream>
-# include <utility>
+#include <ostream>
+#include <utility>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
 
@@ -63,4 +62,3 @@ inline std::ostream& operator<<(std::ostream& os, const any_pair<T>& pw)
 }
 
 }}}}                                                        // namespace details, print, debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__PRINT__STD_PAIR_HH__

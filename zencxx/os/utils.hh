@@ -20,15 +20,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__OS__UTILS_HH__
-# define __ZENCXX__OS__UTILS_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/os/details/export.hh>
+#include <zencxx/os/details/export.hh>
 
 // Standard includes
-# include <sys/types.h>
-# include <string>                                          /// \todo Use forward declaration instead?
+#include <sys/types.h>
+#include <string>                                           /// \todo Use forward declaration instead?
 
 namespace zencxx { namespace os {
 
@@ -66,4 +65,3 @@ inline uid_t change_effective_user(const std::string& user)
 }
 
 }}                                                          // namespace os, zencxx
-#endif                                                      // __ZENCXX__OS__UTILS_HH__

@@ -25,8 +25,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__TYPE_TRAITS__DETAILS__YES_NO_TYPE_HH__
-# define __ZENCXX__TYPE_TRAITS__DETAILS__YES_NO_TYPE_HH__
+#pragma once
 
 // Project specific includes
 
@@ -41,4 +40,3 @@ struct no_type
 };
 
 }}}                                                         // namespace details, type_traits, zencxx
-#endif                                                      // __ZENCXX__TYPE_TRAITS__DETAILS__YES_NO_TYPE_HH__

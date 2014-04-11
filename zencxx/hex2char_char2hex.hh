@@ -21,13 +21,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__HEX2CHAR_CHAR2HEX_HH__
-# define __ZENCXX__HEX2CHAR_CHAR2HEX_HH__
+#pragma once
 
 // Project specific includes
 
 // Standard includes
-# include <utility>
+#include <utility>
 
 namespace zencxx {
 /**
@@ -74,4 +73,3 @@ constexpr inline std::pair<char, char> char2hex(const char c)
 }
 
 }                                                           // namespace zencxx
-#endif                                                      // __ZENCXX__HEX2CHAR_CHAR2HEX_HH__

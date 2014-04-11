@@ -25,22 +25,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__CONTAINERS_HH__
-# define __ZENCXX__DEBUG__PRINT__CONTAINERS_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/debug/print/any_manip.hh>
-# include <zencxx/debug/print/any_fwd.hh>
-# include <zencxx/debug/print/any_wrapper.hh>
-# include <zencxx/details/export.hh>
-# include <zencxx/type_traits/is_range_iterable.hh>
-# include <zencxx/type_traits/is_std_basic_string.hh>
+#include <zencxx/debug/print/any_manip.hh>
+#include <zencxx/debug/print/any_fwd.hh>
+#include <zencxx/debug/print/any_wrapper.hh>
+#include <zencxx/details/export.hh>
+#include <zencxx/type_traits/is_range_iterable.hh>
+#include <zencxx/type_traits/is_std_basic_string.hh>
 
 // Standard includes
-# include <ostream>
-# include <string>
-# include <type_traits>
-# include <utility>
+#include <ostream>
+#include <string>
+#include <type_traits>
+#include <utility>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
 
@@ -89,4 +88,3 @@ struct any_string : public any_wrapper<T>
 ZENCXX_EXPORT std::ostream& operator<<(std::ostream& os, const any_string<const std::string&>&);
 
 }}}}                                                        // namespace details, print, debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__PRINT__CONTAINERS_HH__

@@ -25,20 +25,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__TYPE_TRAITS__IS_RANGE_ITERABLE_HH__
-# define __ZENCXX__TYPE_TRAITS__IS_RANGE_ITERABLE_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/type_traits/details/result_of_expression.hh>
-# include <zencxx/type_traits/begin_end.hh>
-# include <zencxx/type_traits/is_iterator.hh>
-# include <zencxx/mpl/v_and.hh>
-# include <zencxx/mpl/v_or.hh>
+#include <zencxx/type_traits/details/result_of_expression.hh>
+#include <zencxx/type_traits/begin_end.hh>
+#include <zencxx/type_traits/is_iterator.hh>
+#include <zencxx/mpl/v_and.hh>
+#include <zencxx/mpl/v_or.hh>
 
 // Standard includes
-# include <boost/mpl/eval_if.hpp>
-# include <type_traits>
-# include <utility>
+#include <boost/mpl/eval_if.hpp>
+#include <type_traits>
+#include <utility>
 
 namespace zencxx { namespace details {
 ZENCXX_TT_RESULT_OF_EXPR(result_of_begin_member, (typename T), std::declval<T&>().begin());
@@ -110,4 +109,3 @@ struct is_range_iterable<T[N]> : std::true_type
 {};
 
 }                                                           // namespace zencxx
-#endif                                                      // __ZENCXX__TYPE_TRAITS__IS_RANGE_ITERABLE_HH__

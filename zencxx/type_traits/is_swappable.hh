@@ -25,14 +25,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__TYPE_TRAITS__IS_SWAPPABLE_HH__
-# define __ZENCXX__TYPE_TRAITS__IS_SWAPPABLE_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/type_traits/details/expression_validity_checker.hh>
+#include <zencxx/type_traits/details/expression_validity_checker.hh>
 
 // Standard includes
-# include <utility>
+#include <utility>
 
 namespace zencxx {
 
@@ -91,4 +90,3 @@ template <typename T>
 struct is_swappable<T> : details::is_swappable_impl<T, T> {};
 
 }                                                           // namespace zencxx
-#endif                                                      // __ZENCXX__TYPE_TRAITS__IS_SWAPPABLE_HH__

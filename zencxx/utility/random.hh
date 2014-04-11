@@ -25,19 +25,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__UTILITY__RANDOM_HH__
-# define __ZENCXX__UTILITY__RANDOM_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/details/export.hh>
+#include <zencxx/details/export.hh>
 
 // Standard includes
-# include <boost/range/iterator_range.hpp>
-# include <cassert>
-# include <iterator>
-# include <random>
-# include <string>
-# include <type_traits>
+#include <boost/range/iterator_range.hpp>
+#include <cassert>
+#include <iterator>
+#include <random>
+#include <string>
+#include <type_traits>
 
 namespace zencxx { namespace alphabet { namespace details {
 constexpr std::size_t DIGITS_CNT = 10;
@@ -144,4 +143,3 @@ inline std::string make_random_string(
 }
 
 }                                                           // namespace zencxx
-#endif                                                      // __ZENCXX__UTILITY__RANDOM_HH__

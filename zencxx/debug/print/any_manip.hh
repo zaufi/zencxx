@@ -25,16 +25,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__ANY_MANIP_HH__
-# define __ZENCXX__DEBUG__PRINT__ANY_MANIP_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/details/export.hh>
-# include <zencxx/debug/type_name.hh>
+#include <zencxx/details/export.hh>
+#include <zencxx/debug/type_name.hh>
 
 // Standard includes
-# include <boost/io/ios_state.hpp>
-# include <ostream>
+#include <boost/io/ios_state.hpp>
+#include <ostream>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
 ZENCXX_EXPORT extern const int s_show_type_idx;
@@ -92,4 +91,3 @@ inline std::basic_ostream<CharT, Traits>& no_show_type_info(std::basic_ostream<C
 }
 
 }}}                                                         // namespace print, debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_MANIP_HH__

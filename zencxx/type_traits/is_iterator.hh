@@ -25,23 +25,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__TYPE_TRAITS__IS_ITERATOR_HH__
-# define __ZENCXX__TYPE_TRAITS__IS_ITERATOR_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/type_traits/details/expression_validity_checker.hh>
-# include <zencxx/type_traits/is_dereferenceable.hh>
-# include <zencxx/type_traits/is_incrementable.hh>
-# include <zencxx/type_traits/is_swappable.hh>
-# include <zencxx/mpl/v_and.hh>
+#include <zencxx/type_traits/details/expression_validity_checker.hh>
+#include <zencxx/type_traits/is_dereferenceable.hh>
+#include <zencxx/type_traits/is_incrementable.hh>
+#include <zencxx/type_traits/is_swappable.hh>
+#include <zencxx/mpl/v_and.hh>
 
 // Standard includes
-# include <boost/mpl/apply.hpp>
-# include <boost/mpl/quote.hpp>
-# include <boost/mpl/eval_if.hpp>
-# include <iterator>
-# include <type_traits>
-# include <utility>
+#include <boost/mpl/apply.hpp>
+#include <boost/mpl/quote.hpp>
+#include <boost/mpl/eval_if.hpp>
+#include <iterator>
+#include <type_traits>
+#include <utility>
 
 namespace zencxx {
 
@@ -111,4 +110,3 @@ struct is_iterator : mpl::v_and<
 
 
 }                                                           // namespace zencxx
-#endif                                                      // __ZENCXX__TYPE_TRAITS__IS_ITERATOR_HH__

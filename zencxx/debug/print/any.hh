@@ -28,11 +28,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__ANY_HH__
-# define __ZENCXX__DEBUG__PRINT__ANY_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/debug/print/any_chooser.hh>
+#include <zencxx/debug/print/any_chooser.hh>
 
 // Standard includes
 
@@ -57,4 +56,3 @@ typename std::enable_if<
 }
 
 }}}                                                         // namespace print, debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_HH__

@@ -20,15 +20,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__DETAILS__BACKTRACE_IMPL_DUMMY_HH__
-# define __ZENCXX__DEBUG__DETAILS__BACKTRACE_IMPL_DUMMY_HH__
+#pragma once
 
 // Project specific includes
 
 // Standard includes
-# include <ostream>
-# include <string>
-# include <vector>
+#include <ostream>
+#include <string>
+#include <vector>
 
 namespace zencxx { namespace debug { namespace details { inline namespace linux_impl {
 
@@ -76,4 +75,3 @@ inline std::ostream& operator<<(std::ostream& os, const backtrace&)
 }
 
 }}}}                                                        // namespace linux_impl, details, debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__DETAILS__BACKTRACE_IMPL_DUMMY_HH__

@@ -21,17 +21,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__LOCATION_HH__
-# define __ZENCXX__DEBUG__LOCATION_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/debug/basic_location.hh>
-# include <zencxx/ctstring.hh>
+#include <zencxx/debug/basic_location.hh>
+#include <zencxx/ctstring.hh>
 
 // Standard includes
-# include <boost/current_function.hpp>
-# include <boost/preprocessor/if.hpp>
-# include <boost/preprocessor/stringize.hpp>
+#include <boost/current_function.hpp>
+#include <boost/preprocessor/if.hpp>
+#include <boost/preprocessor/stringize.hpp>
 
 /// \ingroup DEBUG
 //@{
@@ -93,7 +92,7 @@ typedef basic_location<const char*, const char*, const char*> location;
 /// Produce \c basic_location instance initialized with file name and line number
 /// \overload
 template <typename File, typename Line>
-inline basic_location<File, Line> make_location(File file, Line line)
+constexpr inline basic_location<File, Line> make_location(File file, Line line)
 {
     return basic_location<File, Line>(file, line);
 }
@@ -101,11 +100,11 @@ inline basic_location<File, Line> make_location(File file, Line line)
 /// Produce \c basic_location instance initialized with file name, line number and function name
 /// \overload
 template <typename File, typename Line, typename Function>
-inline basic_location<File, Line, Function> make_location(File file, Line line, Function function)
+constexpr inline basic_location<File, Line, Function> make_location(File file, Line line, Function function)
 {
     return basic_location<File, Line, Function>(file, line, function);
 }
 }}                                                          // namespace debug, zencxx
 
 //@}
-#endif                                                      // __ZENCXX__DEBUG__LOCATION_HH__
+

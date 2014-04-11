@@ -25,14 +25,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__SCOPE_EXIT_HH__
-# define __ZENCXX__SCOPE_EXIT_HH__
+#pragma once
 
 // Project specific includes
 
 // Standard includes
-#  include <boost/preprocessor/cat.hpp>
-#  include <functional>
+#include <boost/preprocessor/cat.hpp>
+#include <functional>
 
 /**
  * \brief Macro to use instead of \c BOOST_SCOPE_EXIT in C++0x code :)
@@ -89,4 +88,3 @@ public:
 };
 
 }                                                           // namespace zencxx
-#endif                                                      // __ZENCXX__SCOPE_EXIT_HH__

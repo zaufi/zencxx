@@ -25,38 +25,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__PRINT__ANY_CHOOSER_HH__
-# define __ZENCXX__DEBUG__PRINT__ANY_CHOOSER_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/debug/print/any_convertible_to_string.hh>
-# include <zencxx/debug/print/any_streamable.hh>
-# include <zencxx/debug/print/any_stub.hh>
-# include <zencxx/debug/print/builtins.hh>
-# include <zencxx/debug/print/containers.hh>
-# include <zencxx/debug/print/std_chrono.hh>
-# include <zencxx/debug/print/std_pair.hh>
-# include <zencxx/debug/print/std_tuple.hh>
-# include <zencxx/debug/print/system_error_class.hh>
-# include <zencxx/mpl/seq.hh>
-# include <zencxx/mpl/v_or.hh>
-# include <zencxx/type_traits/has_left_shift.hh>
-# include <zencxx/type_traits/is_range_iterable.hh>
-# include <zencxx/type_traits/is_std_basic_string.hh>
-# include <zencxx/type_traits/is_std_chrono_duration.hh>
-# include <zencxx/type_traits/is_std_chrono_time_point.hh>
-# include <zencxx/type_traits/is_std_pair.hh>
-# include <zencxx/type_traits/is_std_tuple.hh>
-# include <zencxx/type_traits/to_string.hh>
+#include <zencxx/debug/print/any_convertible_to_string.hh>
+#include <zencxx/debug/print/any_streamable.hh>
+#include <zencxx/debug/print/any_stub.hh>
+#include <zencxx/debug/print/builtins.hh>
+#include <zencxx/debug/print/containers.hh>
+#include <zencxx/debug/print/std_chrono.hh>
+#include <zencxx/debug/print/std_pair.hh>
+#include <zencxx/debug/print/std_tuple.hh>
+#include <zencxx/debug/print/system_error_class.hh>
+#include <zencxx/mpl/seq.hh>
+#include <zencxx/mpl/v_or.hh>
+#include <zencxx/type_traits/has_left_shift.hh>
+#include <zencxx/type_traits/is_range_iterable.hh>
+#include <zencxx/type_traits/is_std_basic_string.hh>
+#include <zencxx/type_traits/is_std_chrono_duration.hh>
+#include <zencxx/type_traits/is_std_chrono_time_point.hh>
+#include <zencxx/type_traits/is_std_pair.hh>
+#include <zencxx/type_traits/is_std_tuple.hh>
+#include <zencxx/type_traits/to_string.hh>
 
 // Standard includes
-# include <boost/mpl/apply.hpp>
-# include <boost/mpl/bind.hpp>
-# include <boost/mpl/deref.hpp>
-# include <boost/mpl/find_if.hpp>
-# include <boost/mpl/pair.hpp>
-# include <boost/mpl/quote.hpp>
-# include <ostream>
+#include <boost/mpl/apply.hpp>
+#include <boost/mpl/bind.hpp>
+#include <boost/mpl/deref.hpp>
+#include <boost/mpl/find_if.hpp>
+#include <boost/mpl/pair.hpp>
+#include <boost/mpl/quote.hpp>
+#include <ostream>
 
 namespace zencxx { namespace debug { namespace print { namespace details {
 
@@ -162,4 +161,3 @@ public:
 };
 
 }}}}                                                        // namespace details, print, debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__PRINT__ANY_CHOOSER_HH__

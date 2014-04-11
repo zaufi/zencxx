@@ -20,16 +20,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__DUMP_MEMORY_HH__
-# define __ZENCXX__DEBUG__DUMP_MEMORY_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/details/export.hh>
+#include <zencxx/details/export.hh>
 
 // Standard includes
-# include <iosfwd>
-# include <string>
-# include <vector>
+#include <iosfwd>
+#include <string>
+#include <vector>
 
 namespace zencxx { namespace debug {
 /// \ingroup DEBUG
@@ -96,4 +95,3 @@ private:
 
 //@}
 }}                                                          // namespace debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__DUMP_MEMORY_HH__

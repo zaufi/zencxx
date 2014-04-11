@@ -20,14 +20,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DEBUG__BASIC_LOCATION_HH__
-# define __ZENCXX__DEBUG__BASIC_LOCATION_HH__
+#pragma once
 
 // Project specific includes
 
 // Standard includes
-# include <boost/call_traits.hpp>
-# include <ostream>
+#include <boost/call_traits.hpp>
+#include <ostream>
 
 namespace zencxx { namespace debug {
 /// \ingroup DEBUG
@@ -78,17 +77,17 @@ public:
       , m_line(aline)
     {}
     /// Get source code file
-    typename boost::call_traits<file_type>::param_type file() const noexcept
+    constexpr typename boost::call_traits<file_type>::param_type file() const noexcept
     {
         return m_file;
     }
     /// Get function name
-    typename boost::call_traits<function_type>::param_type function() const noexcept
+    constexpr typename boost::call_traits<function_type>::param_type function() const noexcept
     {
         return m_function;
     }
     /// Get source code line
-    typename boost::call_traits<line_type>::param_type line() const noexcept
+    constexpr typename boost::call_traits<line_type>::param_type line() const noexcept
     {
         return m_line;
     }
@@ -97,7 +96,7 @@ public:
      * \note It seems uninitialized \c m_file is quite
      * enough to detect an empty location.
      */
-    bool empty() const noexcept
+    constexpr bool empty() const noexcept
     {
         return m_file == file_type();
     }
@@ -132,4 +131,3 @@ inline std::ostream& operator<<(std::ostream& os, const basic_location<File, Lin
 
 //@}
 }}                                                          // namespace debug, zencxx
-#endif                                                      // __ZENCXX__DEBUG__BASIC_LOCATION_HH__

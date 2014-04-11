@@ -25,14 +25,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__TYPE_TRAITS__IS_STD_CHRONO_DURATION_HH__
-# define __ZENCXX__TYPE_TRAITS__IS_STD_CHRONO_DURATION_HH__
+#pragma once
 
 // Project specific includes
 
 // Standard includes
-# include <chrono>
-# include <type_traits>
+#include <chrono>
+#include <type_traits>
 
 namespace zencxx {
 
@@ -46,4 +45,3 @@ struct is_std_chrono_duration<std::chrono::duration<Rep, Period>>
 {};
 
 }                                                           // namespace zencxx
-#endif                                                      // __ZENCXX__TYPE_TRAITS__IS_STD_CHRONO_DURATION_HH__
