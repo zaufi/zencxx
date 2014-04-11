@@ -89,9 +89,9 @@ public:
      */
     rgb(const int r, const int g, const int b, const bool reset_required = true)
       : color_reset_base{reset_required}
-      , r_{r < MAX_INDEX ? r : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid indexed RGB color index")}
-      , g_{g < MAX_INDEX ? g : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid indexed RGB color index")}
-      , b_{b < MAX_INDEX ? b : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid indexed RGB color index")}
+      , r_{r < MAX_INDEX ? r : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid RGB color index")}
+      , g_{g < MAX_INDEX ? g : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid RGB color index")}
+      , b_{b < MAX_INDEX ? b : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid RGB color index")}
     {
     }
     /**
