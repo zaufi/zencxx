@@ -46,7 +46,7 @@ ZENCXX_EXPORT const char* try_get_special_char_repr(const char);
 template <typename T>
 struct any_char : public any_wrapper<T>
 {
-    using any_wrapper<T>::any_wrapper;
+    explicit any_char(const T v) : any_wrapper<T>(v) {}
 };
 
 /// \todo Generic implementation needed
@@ -56,7 +56,7 @@ template <typename T>
 struct any_pointer : public any_wrapper<T>
 {
     static_assert(std::is_pointer<T>::value, "T must be a pointer type");
-    using any_wrapper<T>::any_wrapper;
+    explicit any_pointer(const T v) : any_wrapper<T>(v) {}
 };
 
 ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, const any_pointer<const char*>);
@@ -66,7 +66,7 @@ ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, const any_pointer<void*>);
 
 /// Pretty print for raw pointers
 template <typename T>
-inline std::ostream& operator<<(std::ostream& os, const any_pointer<T>& pw)
+inline std::ostream& operator<<(std::ostream& os, const any_pointer<T> pw)
 {
     {
         details::show_type_info_saver s(os);
@@ -84,7 +84,7 @@ inline std::ostream& operator<<(std::ostream& os, const any_pointer<T>& pw)
 template <typename T>
 struct any_bool : public any_wrapper<T>
 {
-    using any_wrapper<T>::any_wrapper;
+    explicit any_bool(const T v) : any_wrapper<T>(v) {}
 };
 
 ZENCXX_EXPORT std::ostream& operator<<(std::ostream&, const any_bool<bool>);

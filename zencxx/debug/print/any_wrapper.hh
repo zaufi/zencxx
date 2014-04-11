@@ -39,7 +39,7 @@ class any_wrapper
 {
 public:
     typedef T wrapped_type;
-    any_wrapper(const wrapped_type value) : m_value(value) {}
+    explicit any_wrapper(const wrapped_type value) : m_value(value) {}
     wrapped_type data() const
     {
         return m_value;
@@ -55,7 +55,7 @@ class any_wrapper<T&>
 {
 public:
     typedef T wrapped_type;
-    any_wrapper(const wrapped_type& value) : m_value(value) {}
+    explicit any_wrapper(const wrapped_type& value) : m_value(value) {}
     const wrapped_type& data() const
     {
         return m_value;
@@ -71,7 +71,7 @@ class any_wrapper<T*>
 {
 public:
     typedef T* wrapped_type;
-    any_wrapper(const wrapped_type value) : m_value(value) {}
+    explicit any_wrapper(const wrapped_type value) : m_value(value) {}
     wrapped_type data() const
     {
         return m_value;

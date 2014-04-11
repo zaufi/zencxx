@@ -28,12 +28,12 @@
 // Project specific includes
 #include <zencxx/debug/print/std_chrono.hh>
 #include <zencxx/debug/print/any_manip.hh>
+#include <zencxx/os/time.hh>
 
 // Standard includes
 #include <boost/io/ios_state.hpp>
 #include <cassert>
 #include <cstring>
-#include <ctime>
 #include <iomanip>
 #include <locale>
 
@@ -52,7 +52,8 @@ typedef std::chrono::duration<int, std::ratio<86400>> days;
  * \throw std::ios_base::failure in case of time conversion error and if
  * exceptions are turned ON for a given stream.
  *
- * \todo Need refactoring when gcc gets support for \c std::put_time
+ * \todo Need refactoring when gcc gets support for \c std::put_time.
+ * \b Update: Really!? \C std::gmtime and \c std::localtime are not MT-safe!
  */
 std::ostream& operator<<(
     std::ostream& os
@@ -68,14 +69,12 @@ std::ostream& operator<<(
         if (std::has_facet<time_facet>(locale))
         {
             const auto seconds_since_epoch = std::chrono::system_clock::to_time_t(tp.data());
-            std::tm tm;
-            std::tm* r;
-            if (os.iword(details::s_print_localtime_idx))
-                r = localtime_r(&seconds_since_epoch, &tm);
-            else
-                r = gmtime_r(&seconds_since_epoch, &tm);
+            auto result = bool(os.iword(details::s_print_localtime_idx))
+              ? os::localtime(seconds_since_epoch)
+              : os::gmtime(seconds_since_epoch)
+              ;
             // Is conversion Ok?
-            if (r)
+            if (result.first)
             {
                 // Get format to use
                 const auto* fmt = static_cast<char*>(os.pword(details::s_time_format_idx));
@@ -85,19 +84,19 @@ std::ostream& operator<<(
                     std::ostreambuf_iterator<char>(os)
                   , os
                   , ' '
-                  , &tm
+                  , &result.second
                   , fmt
                   , fmt + std::strlen(fmt)
                   );
             }
             else
             {
-                err |= std::ios_base::badbit;
+                err = std::ios_base::badbit;
             }
         }
         else
         {
-            err |= std::ios_base::badbit;
+            err = std::ios_base::badbit;
         }
         os.setstate(err);
     }
