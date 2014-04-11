@@ -30,7 +30,13 @@
 #include <string>
 #include <vector>
 
-namespace zencxx { namespace debug { namespace details { inline namespace linux_impl {
+#ifdef BOOST_NO_CXX11_INLINE_NAMESPACES
+# define ZENCXX_INLINE_NAMESPACE
+#else                                                       // BOOST_NO_CXX11_INLINE_NAMESPACES
+# define ZENCXX_INLINE_NAMESPACE inline
+#endif                                                      // !BOOST_NO_CXX11_INLINE_NAMESPACES
+
+namespace zencxx { namespace debug { namespace details { ZENCXX_INLINE_NAMESPACE namespace linux_impl {
 
 /**
  * \brief Dummy implementation of \c backtrace class for platforms
