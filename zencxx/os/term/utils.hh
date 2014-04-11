@@ -24,11 +24,11 @@
 #pragma once
 
 // Project specific includes
-# include <zencxx/os/exception.hh>
-# include <zencxx/os/details/export.hh>
+#include <zencxx/os/exception.hh>
+#include <zencxx/os/details/export.hh>
 
 // Standard includes
-# include <utility>
+#include <utility>
 
 namespace zencxx { namespace os { namespace term {
 

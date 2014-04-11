@@ -29,12 +29,13 @@
 // Project specific includes
 
 // Standard includes
+#include <boost/config.hpp>
 #include <cstddef>
 
 namespace zencxx { namespace ct { namespace details {
 
 /// \internal Collect a given string size
-constexpr inline std::size_t strlen_n(
+BOOST_CONSTEXPR inline std::size_t strlen_n(
     const char* const str
   , const std::size_t current
   )
@@ -42,7 +43,7 @@ constexpr inline std::size_t strlen_n(
     return *str ? strlen_n(str + 1, current + 1) : current;
 }
 /// \internal Find a character whithin a range
-constexpr inline const char* find_forward(
+BOOST_CONSTEXPR inline const char* find_forward(
     const char* const current
   , const char* const last
   , int c
@@ -56,7 +57,7 @@ constexpr inline const char* find_forward(
       ;
 }
 /// \internal Find a character whithin a range in reverse order
-constexpr inline const char* find_backward(
+BOOST_CONSTEXPR inline const char* find_backward(
     const char* const current
   , const char* const last
   , int c
@@ -73,42 +74,42 @@ constexpr inline const char* find_backward(
 
 /// Find a string length
 /// \todo Does it really needed?
-constexpr inline std::size_t strlen(const char* const str)
+BOOST_CONSTEXPR inline std::size_t strlen(const char* const str)
 {
     return str ? details::strlen_n(str, 0) : 0;
 }
 
 /// Find a string length (templated version)
 template <std::size_t N>
-constexpr inline std::size_t strlen(const char* (&)[N])
+BOOST_CONSTEXPR inline std::size_t strlen(const char* (&)[N])
 {
     return N;
 }
 
 /// Find a character within a string
 /// \todo Does it really needed?
-constexpr inline const char* strchr(const char* const str, int c)
+BOOST_CONSTEXPR inline const char* strchr(const char* const str, int c)
 {
     return str ? details::find_forward(str, str + strlen(str), c) : nullptr;
 }
 
 /// Find a character within a string (templated version)
 template <std::size_t N>
-constexpr inline const char* strchr(const char (&str)[N], int c)
+BOOST_CONSTEXPR inline const char* strchr(const char (&str)[N], int c)
 {
     return str ? details::find_forward(str, str + N, c) : nullptr;
 }
 
 /// Find a last occurence of a character within a string
 /// \todo Does it really needed?
-constexpr inline const char* strrchr(const char* const str, int c)
+BOOST_CONSTEXPR inline const char* strrchr(const char* const str, int c)
 {
     return str ? details::find_backward(str + strlen(str), str, c) : nullptr;
 }
 
 /// Find a last occurence of a character within a string (templated version)
 template <std::size_t N>
-constexpr inline const char* strrchr(const char (&str)[N], int c)
+BOOST_CONSTEXPR inline const char* strrchr(const char (&str)[N], int c)
 {
     return str ? details::find_backward(str + N, str, c) : nullptr;
 }

@@ -45,8 +45,8 @@ using namespace zencxx;
 
 namespace {
 
-constexpr std::size_t MAX_SIZE = 300;
-constexpr unsigned MAX_ITERATIONS = 100;
+BOOST_CONSTEXPR auto MAX_SIZE = 300u;
+BOOST_CONSTEXPR auto MAX_ITERATIONS = 100;
 
 template <typename Range>
 void test_alphabet(const Range& range)

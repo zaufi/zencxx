@@ -25,7 +25,12 @@
 // Project specific includes
 
 // Standard includes
+#include <boost/config.hpp>
 #include <cstddef>
+
+#ifdef BOOST_NO_CXX11_USER_DEFINED_LITERALS
+# error Need a compiler with user defined literals support to use this file
+#endif                                                      // BOOST_NO_CXX11_USER_DEFINED_LITERALS
 
 namespace zencxx { namespace details {
 constexpr std::size_t pow_bytes(const std::size_t what, const unsigned d)

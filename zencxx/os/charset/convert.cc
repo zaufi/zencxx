@@ -27,6 +27,7 @@
 
 // Project specific includes
 #include <zencxx/os/charset/convert.hh>
+#include <zencxx/byte_units.hh>
 
 // Standard includes
 
@@ -34,10 +35,10 @@ namespace zencxx { namespace os { namespace charset {
 
 std::string converter::convert(const std::string& str)
 {
-    constexpr std::size_t MAX_BUFFER_SIZE = 4096;
+    constexpr auto MAX_BUFFER_SIZE = 4_KiB;
     /// \warning iconv wants to have `char**` to input buffer -- WHY? Can it be modified?
-    char* in_buffer = const_cast<char*>(str.data());
-    std::size_t in_bytes_left = str.size();
+    auto* in_buffer = const_cast<char*>(str.data());
+    auto in_bytes_left = str.size();
 
     std::string result;
     // reserve space at least how much was in origin string

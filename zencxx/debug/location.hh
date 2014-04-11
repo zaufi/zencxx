@@ -28,6 +28,7 @@
 #include <zencxx/ctstring.hh>
 
 // Standard includes
+#include <boost/config.hpp>
 #include <boost/current_function.hpp>
 #include <boost/preprocessor/if.hpp>
 #include <boost/preprocessor/stringize.hpp>
@@ -72,7 +73,7 @@
 
 namespace zencxx { namespace debug { namespace details {
 /// \internal Function to get file name from full path
-constexpr inline const char* file_basename(const char* const path)
+BOOST_CONSTEXPR inline const char* file_basename(const char* const path)
 {
     return ct::strrchr(path, '/') ? ct::strrchr(path, '/') + 1 : path;
 }
@@ -92,7 +93,7 @@ typedef basic_location<const char*, const char*, const char*> location;
 /// Produce \c basic_location instance initialized with file name and line number
 /// \overload
 template <typename File, typename Line>
-constexpr inline basic_location<File, Line> make_location(File file, Line line)
+BOOST_CONSTEXPR inline basic_location<File, Line> make_location(File file, Line line)
 {
     return basic_location<File, Line>(file, line);
 }
@@ -100,7 +101,7 @@ constexpr inline basic_location<File, Line> make_location(File file, Line line)
 /// Produce \c basic_location instance initialized with file name, line number and function name
 /// \overload
 template <typename File, typename Line, typename Function>
-constexpr inline basic_location<File, Line, Function> make_location(File file, Line line, Function function)
+BOOST_CONSTEXPR inline basic_location<File, Line, Function> make_location(File file, Line line, Function function)
 {
     return basic_location<File, Line, Function>(file, line, function);
 }

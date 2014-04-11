@@ -25,6 +25,7 @@
 // Project specific includes
 
 // Standard includes
+#include <boost/config.hpp>
 #include <boost/call_traits.hpp>
 #include <ostream>
 
@@ -62,32 +63,32 @@ public:
 
     /// \note Uninitialized (default) location will contain default constructed
     /// \c m_file , \c m_function and \c m_line
-    constexpr basic_location() noexcept
+    BOOST_CONSTEXPR basic_location() BOOST_NOEXCEPT
       : m_file(file_type())
       , m_function(function_type())
       , m_line(line_type())
     {}
-    constexpr basic_location(
+    BOOST_CONSTEXPR basic_location(
         typename boost::call_traits<file_type>::param_type afile
       , typename boost::call_traits<line_type>::param_type aline
       , typename boost::call_traits<function_type>::param_type afunction = function_type()
-      ) noexcept
+      ) BOOST_NOEXCEPT
       : m_file(afile)
       , m_function(afunction)
       , m_line(aline)
     {}
     /// Get source code file
-    constexpr typename boost::call_traits<file_type>::param_type file() const noexcept
+    BOOST_CONSTEXPR typename boost::call_traits<file_type>::param_type file() const BOOST_NOEXCEPT
     {
         return m_file;
     }
     /// Get function name
-    constexpr typename boost::call_traits<function_type>::param_type function() const noexcept
+    BOOST_CONSTEXPR typename boost::call_traits<function_type>::param_type function() const BOOST_NOEXCEPT
     {
         return m_function;
     }
     /// Get source code line
-    constexpr typename boost::call_traits<line_type>::param_type line() const noexcept
+    BOOST_CONSTEXPR typename boost::call_traits<line_type>::param_type line() const BOOST_NOEXCEPT
     {
         return m_line;
     }
@@ -96,7 +97,7 @@ public:
      * \note It seems uninitialized \c m_file is quite
      * enough to detect an empty location.
      */
-    constexpr bool empty() const noexcept
+    BOOST_CONSTEXPR bool empty() const BOOST_NOEXCEPT
     {
         return m_file == file_type();
     }

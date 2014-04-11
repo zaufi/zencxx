@@ -29,6 +29,7 @@
 #include <zencxx/details/export.hh>
 
 // Standard includes
+#include <boost/config.hpp>
 #include <boost/exception/diagnostic_information.hpp>
 #include <boost/exception/error_info.hpp>
 #include <boost/exception/exception.hpp>
@@ -184,7 +185,10 @@ public:
     /// Check if nested exception present
     bool has_nested_exception() const;
 
-    /// Rethrow nested exception if any
+    /**
+     * \brief Rethrow nested exception if any
+     * \todo Add <tt>[[notreturn]]</tt>
+     */
     /*[[noreturn]]*/ void rethrow_nested_exception() const;
     //@}
 
@@ -254,7 +258,7 @@ public:
      *  }
      * \endcode
      */
-    virtual const char* what() const throw() override
+    virtual const char* what() const BOOST_NOEXCEPT_OR_NOTHROW override
     {
         return boost::diagnostic_information_what(*this);
     }

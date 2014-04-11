@@ -25,16 +25,22 @@
 #include <zencxx/os/term/utils.hh>
 
 // Standard includes
-#include <sys/ioctl.h>
-#include <term.h>
+#include <boost/config.hpp>
+#ifdef __linux__
+# include <sys/ioctl.h>
+#endif                                                      // __linux__
+#ifdef ZENCXX_USE_CURSES
+# include <term.h>
+#endif                                                      // ZENCXX_USE_CURSES
 #include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
 namespace zencxx { namespace os { namespace term { namespace {
-constexpr auto RGB_COLORS_COUNT = 256 * 256 * 256;
+BOOST_CONSTEXPR auto RGB_COLORS_COUNT = 256 * 256 * 256;
 
+#ifdef ZENCXX_USE_CURSES
 /// \internal Helper function to get number of terminal colors
 int get_supported_colors_count()
 {
@@ -71,6 +77,8 @@ int get_supported_colors_count()
     }
     return result;
 }
+#endif                                                      // ZENCXX_USE_CURSES
+
 /// \internal Helper function to get \c color enum value by number of colors obtained from termcap DB.
 color num_to_color_transform(const int number_of_colors)
 {
@@ -101,10 +109,15 @@ color num_to_color_transform(const int number_of_colors)
  */
 std::pair<unsigned, unsigned> get_term_size()
 {
+#ifdef __linux__
     winsize w;
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w))
         ZENCXX_THROW(os::exception("ioctl")) << zencxx::exception::reason("Unable to get terminal size");
     return std::make_pair(w.ws_col, w.ws_row);
+#else                                                       // __linux__
+    /// \todo Any better idea for non Linux platforms? (Windows?)
+    return std::make_pair(80, 25);
+#endif                                                      // !__linux__
 }
 
 /**
@@ -117,6 +130,8 @@ color get_term_color_capability()
     return color_caps;
 #else
     /// \todo Implementation w/o using \e curses required
+    ///  * iterate over hardcoded list of terminal ID string for linux
+    ///  * smth else for other platforms...
     return color::unknown;
 #endif                                                      // USE_CURSES
 }

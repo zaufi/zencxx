@@ -25,17 +25,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__OS__CHARSET__CONVERT_HH__
-# define __ZENCXX__OS__CHARSET__CONVERT_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/os/exception.hh>
-# include <zencxx/os/details/export.hh>
+#include <zencxx/os/exception.hh>
+#include <zencxx/os/details/export.hh>
 
 // Standard includes
-# include <iconv.h>
-# include <cassert>
-# include <string>
+#include <iconv.h>
+#include <cassert>
+#include <string>
 
 namespace zencxx { namespace os { namespace charset {
 
@@ -105,4 +104,3 @@ public:
 };
 
 }}}                                                         // namespace charset, os, zencxx
-#endif                                                      // __ZENCXX__OS__CHARSET__CONVERT_HH__

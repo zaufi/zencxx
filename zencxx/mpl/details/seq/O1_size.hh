@@ -20,14 +20,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__MPL__DETAILS__SEQ__O1_SIZE_HH__
-# define __ZENCXX__MPL__DETAILS__SEQ__O1_SIZE_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/mpl/details/variadic_sequence_tag.hh>
+#include <zencxx/mpl/details/variadic_sequence_tag.hh>
 
 // Standard includes
-# include <boost/mpl/O1_size_fwd.hpp>
+#include <boost/config.hpp>
+#include <boost/mpl/O1_size_fwd.hpp>
 
 namespace boost { namespace mpl {
 
@@ -40,10 +40,9 @@ struct O1_size_impl<zencxx::mpl::details::variadic_sequence_tag>
     template <typename Seq>
     struct apply
     {
-        constexpr static long value = Seq::size::value;
+        BOOST_STATIC_CONSTEXPR long value = Seq::size::value;
         typedef typename Seq::size type;
     };
 };
 
 }}                                                          // namespace mpl, boost
-#endif                                                      // __ZENCXX__MPL__DETAILS__SEQ__O1_SIZE_HH__
