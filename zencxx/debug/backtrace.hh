@@ -23,13 +23,16 @@
 #pragma once
 
 // Project specific includes
+#include <boost/predef.h>
 #if defined(__linux__)
-#  include <zencxx/debug/details/backtrace_impl_linux.hh>
-#  define ZENCXX_BACKTRACE_IMPL_NS linux_impl
+# include <zencxx/debug/details/backtrace_impl_linux.hh>
+# define ZENCXX_BACKTRACE_IMPL_NS linux_impl
 #else
-#  warning "This platform have no backtrace class implementation yet!"
-#  include <zencxx/debug/details/backtrace_impl_dummy.hh>
-#  define ZENCXX_BACKTRACE_IMPL_NS dummy_impl
+# ifndef BOOST_COMP_MSVC
+#   warning "This platform have no backtrace class implementation yet!"
+# endif
+# include <zencxx/debug/details/backtrace_impl_dummy.hh>
+# define ZENCXX_BACKTRACE_IMPL_NS dummy_impl
 #endif                                                      // defined(__linux__)
 
 // Standard includes
