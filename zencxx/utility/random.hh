@@ -31,6 +31,7 @@
 #include <zencxx/details/export.hh>
 
 // Standard includes
+#include <boost/config.hpp>
 #include <boost/range/iterator_range.hpp>
 #include <cassert>
 #include <iterator>
@@ -39,10 +40,10 @@
 #include <type_traits>
 
 namespace zencxx { namespace alphabet { namespace details {
-constexpr std::size_t DIGITS_CNT = 10;
-constexpr std::size_t XDIGITS_CNT = DIGITS_CNT + 6;
-constexpr std::size_t LETTERS_CNT = 26;
-constexpr std::size_t OTHER_CNT = 33;
+BOOST_CONSTEXPR_OR_CONST std::size_t DIGITS_CNT = 10;
+BOOST_CONSTEXPR_OR_CONST std::size_t XDIGITS_CNT = DIGITS_CNT + 6;
+BOOST_CONSTEXPR_OR_CONST std::size_t LETTERS_CNT = 26;
+BOOST_CONSTEXPR_OR_CONST std::size_t OTHER_CNT = 33;
 /// \internal Array of ASCII letters specially ordered
 ZENCXX_EXPORT extern const char s_letters[DIGITS_CNT + 2 * LETTERS_CNT + OTHER_CNT + 1];
 }                                                           // namespace details
