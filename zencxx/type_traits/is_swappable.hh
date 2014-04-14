@@ -57,10 +57,11 @@ ZENCXX_TT_EXPR_CHECKER_EX(
 
 namespace details {
 template <typename T, typename U>
-using is_swappable_impl = std::integral_constant<
+struct is_swappable_impl : std::integral_constant<
     bool
   , is_swappable_with_std_swap<T, U>::value || is_swappable_adl<T, U>::value
-  >;
+  >
+{};
 }                                                           // namespace details
 
 /**
