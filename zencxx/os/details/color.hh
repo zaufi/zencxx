@@ -100,12 +100,14 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const rgb& c)
     {
         if (color_enabler_base::is_enabled())
-            os << c.reset_if_needed(os)
-            << get_initial_seq<TypeTag, true_color_tag>()
+        {
+            c.reset_if_needed(os);
+            os << get_initial_seq<TypeTag, true_color_tag>()
             << int(c.r_) << ';'
             << int(c.g_) << ';'
             << int(c.b_) << 'm'
             ;
+        }
         return os;
     }
 
@@ -143,11 +145,13 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const indexed_rgb& c)
     {
         if (color_enabler_base::is_enabled())
-            os << c.reset_if_needed(os)
-               << get_initial_seq<TypeTag, rgb_tag>() 
-               << c.components_to_index() 
+        {
+            c.reset_if_needed(os);
+            os << get_initial_seq<TypeTag, rgb_tag>()
+               << c.components_to_index()
                << 'm'
                ;
+        }
         return os;
     }
 
@@ -195,11 +199,13 @@ public:
     friend std::ostream& operator<<(std::ostream& os, const grayscale& c)
     {
         if (color_enabler_base::is_enabled())
-            os << c.reset_if_needed(os)
-               << get_initial_seq<TypeTag, rgb_tag>() 
+        {
+            c.reset_if_needed(os);
+            os << get_initial_seq<TypeTag, rgb_tag>()
                << c.transform_index()
                << 'm'
                ;
+        }
         return os;
     }
 
