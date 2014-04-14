@@ -48,7 +48,7 @@ struct at_impl<zencxx::mpl::details::variadic_sequence_tag>
  * \brief \c boost::mpl::at specialization
  */
 template <>
-template <typename... Types, typename N>
+template <typename N, typename... Types>
 struct at_impl<
     zencxx::mpl::details::variadic_sequence_tag
   >::apply<
