@@ -50,7 +50,7 @@ struct any_container : public any_wrapper<T>
         is_range_iterable<T>::value
       , "Type T must be iterable"
       );
-    using any_wrapper<T>::any_wrapper;
+    explicit any_container(const T& v) : any_wrapper<T>(v) {}
 };
 
 template <typename T>
@@ -82,7 +82,7 @@ struct any_string : public any_wrapper<T>
         is_std_basic_string<typename std::decay<T>::type>::value
       , "Type T must be std::basic_string instance"
       );
-    using any_wrapper<T>::any_wrapper;
+    explicit any_string(const T& v) : any_wrapper<T>(v) {}
 };
 
 ZENCXX_EXPORT std::ostream& operator<<(std::ostream& os, const any_string<const std::string&>&);
