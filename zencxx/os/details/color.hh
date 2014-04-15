@@ -127,7 +127,7 @@ class indexed_rgb
 
 public:
     /**
-     * Construct from indeces of 6x6x6 color cube
+     * Construct from indices of 6x6x6 color cube
      * \todo Wait for C++14 (gcc 4.9), then refactor it!
      */
     BOOST_CONSTEXPR indexed_rgb(const int r, const int g, const int b, const bool reset_required = true)
@@ -144,8 +144,8 @@ public:
     {
         if (color_enabler_base::is_enabled())
             os << c.reset_if_needed(os)
-               << get_initial_seq<TypeTag, rgb_tag>() 
-               << c.components_to_index() 
+               << get_initial_seq<TypeTag, rgb_tag>()
+               << c.components_to_index()
                << 'm'
                ;
         return os;
@@ -167,7 +167,7 @@ private:
 };
 
 /**
- * \brief Class to produce grayscale ESC sequences supported by 256 color terminals.
+ * \brief Class to produce gray scale ESC sequences supported by 256 color terminals.
  */
 template <typename TypeTag>
 class grayscale
@@ -178,14 +178,14 @@ class grayscale
 
 public:
     /**
-     * Construct from grayscale color index, which is a value in the range <tt>[0, 24]</tt>.
+     * Construct from gray scale color index, which is a value in the range <tt>[0, 24]</tt>.
      */
     BOOST_CONSTEXPR explicit grayscale(const int index, const bool reset_required = true)
       : color_reset_base{reset_required}
       , m_index{
             index < MAX_INDEX
           ? index
-          : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid grayscale color index")
+          : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid gray scale color index")
         }
     {
     }
