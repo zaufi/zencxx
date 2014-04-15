@@ -20,17 +20,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__DETAILS__REGISTERED_JOB_HH__
-# define __ZENCXX__DETAILS__REGISTERED_JOB_HH__
+#pragma once
 
 // Project specific includes
 
 // Standard includes
-# include <boost/asio/system_timer.hpp>
-# include <functional>
-# include <memory>
-# include <string>
-# include <utility>
+#include <boost/asio/system_timer.hpp>
+#include <boost/predef.h>
+#include <functional>
+#include <memory>
+#include <string>
+#include <utility>
 
 namespace zencxx { namespace details {
 /**
@@ -90,14 +90,36 @@ struct registered_job
           && bool(m_functor)
           );
     }
+#ifdef BOOST_COMP_MSVC
     /// Default move ctor
-    registered_job(registered_job&&) = default;
+    registered_job(registered_job&& j)
+      : m_timer{std::move(j.m_timer)}
+      , m_interval{j.m_interval}
+      , m_functor{std::move(j.m_functor)}
+      , m_type{j.m_type}
+      , m_state{j.m_state}
+    {
+    }
     /// Default move-assign operator
+    registered_job& operator=(registered_job&& j)
+    {
+        assert("Sanity check" && this != &j);
+        m_timer = std::move(j.m_timer);
+        m_interval = j.m_interval;
+        m_functor = std::move(j.m_functor);
+        m_type = j.m_type;
+        m_state = j.m_state;
+        return *this;
+    }
+#else                                                       // BOOST_COMP_MSVC
+    /// Defaulted move ctor
+    registered_job(registered_job&&) = default;
+    /// Defaulted move-assign operator
     registered_job& operator=(registered_job&&) = default;
+#endif                                                      // BOOST_COMP_MSVC
     /// Delete copy ctor
     registered_job(const registered_job&) = delete;
     /// Delete copy-assign operator
     registered_job& operator=(const registered_job&) = delete;
 };
 }}                                                          // namespace details, zencxx
-#endif                                                      // __ZENCXX__DETAILS__REGISTERED_JOB_HH__

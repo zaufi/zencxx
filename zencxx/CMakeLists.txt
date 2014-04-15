@@ -76,10 +76,12 @@ install(
     FILES_MATCHING PATTERN *.hh
   )
 
-add_subdirectory(mpl)
 add_subdirectory(os)
-add_subdirectory(thread)
 add_subdirectory(type_traits)
+if(CMAKE_COMPILER_IS_GNUCXX)
+    add_subdirectory(mpl)
+    add_subdirectory(thread)
+endif()
 
 # Compile tests only if needed
 if(BUILD_TESTING)

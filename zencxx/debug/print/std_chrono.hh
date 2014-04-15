@@ -70,7 +70,7 @@ struct any_duration : public any_wrapper<T>
         is_std_chrono_duration<typename std::decay<T>::type>::value
       , "Type T must be an instance of std::chrono::duration"
       );
-    using any_wrapper<T>::any_wrapper;
+    explicit any_duration(T v) : any_wrapper<T>(v) {}
 };
 
 /**
@@ -89,7 +89,7 @@ struct any_time_point : public any_wrapper<T>
         is_std_chrono_time_point<typename std::decay<T>::type>::value
       , "Type T must be an instance of std::chrono::time_point"
       );
-    using any_wrapper<T>::any_wrapper;
+    explicit any_time_point(T v) : any_wrapper<T>(v) {}
 };
 
 /**

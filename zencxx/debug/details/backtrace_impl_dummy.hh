@@ -36,7 +36,7 @@
 # define ZENCXX_INLINE_NAMESPACE inline
 #endif                                                      // !BOOST_NO_CXX11_INLINE_NAMESPACES
 
-namespace zencxx { namespace debug { namespace details { ZENCXX_INLINE_NAMESPACE namespace linux_impl {
+namespace zencxx { namespace debug { namespace details { ZENCXX_INLINE_NAMESPACE namespace dummy_impl {
 
 /**
  * \brief Dummy implementation of \c backtrace class for platforms
@@ -81,4 +81,4 @@ inline std::ostream& operator<<(std::ostream& os, const backtrace&)
     return os;
 }
 
-}}}}                                                        // namespace linux_impl, details, debug, zencxx
+}}}}                                                        // namespace dummy_impl, details, debug, zencxx

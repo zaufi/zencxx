@@ -99,7 +99,10 @@ public:
 inline std::ostream& operator<<(std::ostream& os, const color& c)
 {
     if (color::is_enabled())
-        os << c.reset_if_needed(os) << c.get();
+    {
+        c.reset_if_needed(os);
+        os << c.get();
+    }
     return os;
 }
 
