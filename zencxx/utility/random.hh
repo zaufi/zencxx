@@ -79,7 +79,7 @@ const boost::iterator_range<const char*> ALL_PRINTABLE_SYMBOLS = {
   };
 }                                                           // namespace alphabet
 
-/// Get gefault random engine
+/// Get default random engine
 ZENCXX_EXPORT std::default_random_engine& default_random_engine();
 
 /**
@@ -106,6 +106,7 @@ inline auto peek_random_item_from_range(Iterator first, Iterator last) -> declty
     assert("Sanity check" && 0 < size);
     std::advance(
         first
+        /// \todo \c -1? Really?
       , peek_random_number_from_range(static_cast<decltype(size)>(0), size - 1)
       );
     return *first;
