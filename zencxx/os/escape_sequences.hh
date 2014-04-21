@@ -23,7 +23,7 @@
 #pragma once
 
 // Project specific includes
-# include <zencxx/os/details/export.hh>
+#include <zencxx/os/details/export.hh>
 
 // Standard includes
 

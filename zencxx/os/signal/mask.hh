@@ -20,17 +20,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__OS__SIGNAL__MASK_HH__
-# define __ZENCXX__OS__SIGNAL__MASK_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/os/exception.hh>
+#include <zencxx/os/exception.hh>
 
 // Standard includes
-# include <pthread.h>
-# include <ostream>
-# include <cassert>
-# include <csignal>
+#include <pthread.h>
+#include <ostream>
+#include <cassert>
+#include <csignal>
 
 namespace zencxx { namespace os { namespace signal {
 
@@ -116,4 +115,3 @@ public:
 std::ostream& operator<<(std::ostream&, const mask&);
 
 }}}                                                         // namespace signal, os, zencxx
-#endif                                                      // __ZENCXX__OS__SIGNAL__MASK_HH__
