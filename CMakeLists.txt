@@ -92,23 +92,31 @@ include_directories(${Boost_INCLUDE_DIRS})
 # Tell to boost::result_of to use decltype to decay return type of callable.
 # NOTE This would enabel to use C++11 labmda expressions w/ boost::rage adaptors
 add_definitions(-DBOOST_RESULT_OF_USE_DECLTYPE)
-# Force the boost::asio to use std::chrono
+# Force the boost::asio to use std::chrono instead of boost::chrono
 add_definitions(-DBOOST_ASIO_DISABLE_BOOST_CHRONO)
+add_definitions(-DBOOST_ASIO_HAS_STD_CHRONO)
 # Don't want to use any deprecated API
 add_definitions(-DBOOST_SYSTEM_NO_DEPRECATED)
 add_definitions(-DBOOST_FILESYSTEM_NO_DEPRECATED)
 # Use latest available Boost.Thread library
 # (stay as close as possible to the C++11 Standard)
 add_definitions(-DBOOST_THREAD_VERSION=4)
+# TODO Move that defines above to an internal config.h file!
 
 # If CMAKE_BUILD_TYPE is not set, try to guess it now
 include(GuessBuildType)
 
 # Do compiler dependent options tuning
-message(STATUS "Configuring options for C++ compiler: ${CMAKE_CXX_COMPILER_ID}")
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+message(STATUS "Configuring options for C++ compiler: ${CMAKE_CXX_COMPILER_ID} on ${CMAKE_SYSTEM_NAME}")
+if(UNIX AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     # Allow GNU extensions
     add_definitions(-D_GNU_SOURCE)
+
+    # BOOST_PP (boost <= 1.55.0) do not recognize clang as a compiler w/ variadic macros support,
+    # so lets force it!
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+        add_definitions(-DBOOST_PP_VARIADICS=1)
+    endif()
 
     # TODO Add STL debug mode (-D_GLIBCXX_DEBUG) in debug builds, but
     # unfortunately this compiler option must be synchronized with boost
@@ -132,7 +140,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     use_compiler_option(OPTION -Wall LANGUAGE CXX OUTPUT COMPILER_HAS_WALL_OPTION)
     use_compiler_option(OPTION -std=c++11 LANGUAGE CXX OUTPUT CXX_COMPILER_HAS_CPP11_OPTION)
     if(NOT CXX_COMPILER_HAS_CPP11_OPTION)
-        message(FATAL_ERROR "C++11 compatible compiler required to build this project (gcc >= 4.8)")
+        message(FATAL_ERROR "C++11 compatible compiler required to build this project (gcc >= 4.8 or clang >= 3.4)")
     endif()
 
     # Setup compiler options depending on build type
