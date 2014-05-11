@@ -13,7 +13,7 @@ cmake_minimum_required(VERSION 2.8.12)
 cmake_policy(SET CMP0002 OLD)
 cmake_policy(SET CMP0022 NEW)
 
-project(libzencxx CXX)
+project(zencxx CXX)
 
 set(ZENCXX_MAJOR 0)
 set(ZENCXX_MINOR 2)
