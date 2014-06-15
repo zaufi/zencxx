@@ -69,8 +69,8 @@ if(WIN32)
 else()
     set(_ZENCXX_DEFAULT_USE_CURSES ON)
 endif()
-option(USE_CURSES "Use curses library to get some terminal capabilities (like colors)" ${_ZENCXX_DEFAULT_USE_CURSES})
-if(USE_CURSES)
+option(ENABLE_CURSES "Use curses library to get some terminal capabilities (like colors)" ${_ZENCXX_DEFAULT_USE_CURSES})
+if(ENABLE_CURSES)
     find_package(Curses)
 endif()
 
@@ -170,6 +170,9 @@ add_compiler_export_flags()
 # Section: Misc actions
 #---------------------------------------------------------
 
+# Bring add_compile_tests() into a scope
+include(AddCompileTests)
+
 # Set a project-wide name for unit tests executable
 # (a target to be build in every tests/ directories)
 set(UNIT_TESTS unit_tests)
@@ -204,17 +207,17 @@ include(GetDistribInfo)
 # Specifying precise versions of some packages which are distinct
 # in different distributions.
 if(DISTRIB_CODENAME STREQUAL "precise")
-  set(BOOST_DEV_VERSION_PKG_DEP "1.48.0")
+    set(BOOST_DEV_VERSION_PKG_DEP "1.48.0")
 elseif(DISTRIB_CODENAME STREQUAL "quantal")
-  set(BOOST_DEV_VERSION_PKG_DEP "1.50.0")
+    set(BOOST_DEV_VERSION_PKG_DEP "1.50.0")
 elseif(DISTRIB_CODENAME STREQUAL "raring")
-  set(BOOST_DEV_VERSION_PKG_DEP "1.53.0")
+    set(BOOST_DEV_VERSION_PKG_DEP "1.53.0")
 elseif(DISTRIB_CODENAME STREQUAL "saucy")
-  set(BOOST_DEV_VERSION_PKG_DEP "1.54.0")
+    set(BOOST_DEV_VERSION_PKG_DEP "1.54.0")
 elseif(DISTRIB_CODENAME STREQUAL "gentoo")
     # Do nothing
 else()
-  message(STATUS "WARNING: Target distribution codename is unknown! Will not build binary packages!")
+    message(STATUS "WARNING: Target distribution codename is unknown! Will not build binary packages!")
 endif()
 
 if(
@@ -222,10 +225,10 @@ if(
   OR CMAKE_BUILD_TYPE STREQUAL "DebugFull"
   OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo"
   )
-  set(CMAKE_INSTALL_DO_STRIP OFF)
-  set(CPACK_BUILD_FLAVOUR "-dbg")
+    set(CMAKE_INSTALL_DO_STRIP OFF)
+    set(CPACK_BUILD_FLAVOUR "-dbg")
 else()
-  set(CPACK_BUILD_FLAVOUR "")
+    set(CPACK_BUILD_FLAVOUR "")
 endif()
 
 # Include CPack support
@@ -323,11 +326,6 @@ add_subdirectory(zencxx)
 #       To make sure all vars r defined!
 #---------------------------------------------------------
 
-get_directory_property(CHECK_HEADER_DEFINITIONS_LIST COMPILE_DEFINITIONS)
-foreach(_define ${CHECK_HEADER_DEFINITIONS_LIST})
-    set(CHECK_HEADER_DEFINITIONS "-D${_define} ${CHECK_HEADER_DEFINITIONS}")
-endforeach()
-include(DefineCheckHeadersTarget)
 # Setup doxygen
 set(DOXYGEN_PROJECT_BRIEF "\"ZenCXX: C++11 reusable code compilation\"")
 if(EXISTS $ENV{HOME}/.cache/doxygen/libstdc++.tag)

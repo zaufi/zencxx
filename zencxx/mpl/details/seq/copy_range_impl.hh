@@ -25,6 +25,7 @@
 
 // Project specific includes
 # include <zencxx/mpl/copy_range_fwd.hh>
+# include <zencxx/mpl/details/variadic_sequence_tag.hh>
 
 // Standard includes
 # include <boost/mpl/apply.hpp>

@@ -25,6 +25,7 @@
 
 // Project specific includes
 # include <zencxx/mpl/seq_fwd.hh>
+# include <zencxx/mpl/details/variadic_sequence_tag.hh>
 
 // Standard includes
 # include <boost/mpl/back_fwd.hpp>

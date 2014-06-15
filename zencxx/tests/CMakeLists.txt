@@ -1,5 +1,6 @@
 add_boost_tests(
     TARGET ${UNIT_TESTS}
+    DYN_LINK
     SOURCES
         exception_tester.cc
         random_tester.cc

@@ -30,6 +30,7 @@
 // Project specific includes
 #include <zencxx/debug/print/any_manip.hh>
 #include <zencxx/debug/print/any_fwd.hh>
+#include <zencxx/debug/print/any_wrapper.hh>
 #include <zencxx/type_traits/is_std_tuple.hh>
 
 // Standard includes

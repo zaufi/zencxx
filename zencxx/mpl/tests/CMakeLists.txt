@@ -1,5 +1,7 @@
 add_boost_tests(
     TARGET ${UNIT_TESTS}
+    MODULE MPLTests
+    DYN_LINK
     SOURCES
         copy_range_tester.cc
         mpl_logic_tester.cc

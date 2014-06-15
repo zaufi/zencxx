@@ -10,6 +10,7 @@ set(
     utility/random.cc
   )
 
+# TODO It based on GNU libc actually...
 if(CMAKE_SYSTEM_NAME MATCHES "Linux")
     set(ZENCXX_EXTRA_SOURCES debug/details/backtrace_impl_linux.cc)
 endif()
@@ -47,15 +48,15 @@ export(
 install(
     TARGETS zencxx
     EXPORT zencxx-shared
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     COMPONENT ${LIBZENCXX_PACKAGE}
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}
   )
 
 # Install cmake files
 install(
     EXPORT zencxx-shared
     FILE zencxx-shared.cmake
-    DESTINATION ${CMAKE_INSTALL_CMAKE_MODULESDIR}
+    DESTINATION "${CMAKE_INSTALL_CMAKE_MODULESDIR}"
     NAMESPACE zencxx::
     EXPORT_LINK_INTERFACE_LIBRARIES
     COMPONENT ${LIBZENCXX_DEV_PACKAGE}
@@ -65,26 +66,31 @@ install(
 file(GLOB HEADERS *.hh)
 install(
     FILES ${HEADERS}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/zencxx
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/zencxx"
     COMPONENT ${LIBZENCXX_DEV_PACKAGE}
   )
 
 install(
-    DIRECTORY debug details utility ${CMAKE_CURRENT_BINARY_DIR}/details
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/zencxx
+    DIRECTORY debug details utility "${CMAKE_CURRENT_BINARY_DIR}/details"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/zencxx"
     COMPONENT ${LIBZENCXX_DEV_PACKAGE}
     FILES_MATCHING PATTERN *.hh
   )
 
 add_subdirectory(os)
 add_subdirectory(type_traits)
-if(CMAKE_COMPILER_IS_GNUCXX)
-    add_subdirectory(mpl)
-    add_subdirectory(thread)
-endif()
+add_subdirectory(mpl)
+add_subdirectory(thread)
 
 # Compile tests only if needed
 if(BUILD_TESTING)
     add_subdirectory(debug/tests)
     add_subdirectory(tests)
+
+    # Check if headers are self-contained
+    file(GLOB_RECURSE ALL_HEADERS debug/*.hh details/*.hh utility/*.hh)
+    add_compile_tests(
+        STRIP_LEADING_PATH "${CMAKE_SOURCE_DIR}"
+        SOURCES ${HEADERS} ${ALL_HEADERS}
+      )
 endif()

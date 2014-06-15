@@ -1,15 +1,10 @@
-if(CMAKE_SYSTEM_NAME MATCHES "Linux")
-    set(
-        PLATFORM_DEPENDED_SOURCES
-        charset_conversion_tester.cc
-      )
-endif()
-
 add_boost_tests(
     TARGET ${UNIT_TESTS}
+    MODULE OSTests
+    DYN_LINK
     SOURCES
         color_tester.cc
-        ${PLATFORM_DEPENDED_SOURCES}
+        charset_conversion_tester.cc
     NO_CATCH_SYSTEM_ERRORS
   )
 

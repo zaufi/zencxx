@@ -1,5 +1,6 @@
-set(
-    ZENCXX_THREAD_SOURCES
+add_library(
+    zencxxthread
+    ${ZENCXX_LIB_TYPE}
     predefined_lock_types.cc
     et/details/lock_matrix.cc
     et/details/thread_lock_tracker.cc
@@ -8,12 +9,6 @@ set(
     et/parameterized_adaptor.cc
     et/priority_queue_adaptor.cc
     et/unilock.cc
-  )
-
-add_library(
-    zencxxthread
-    ${ZENCXX_LIB_TYPE}
-    ${ZENCXX_THREAD_SOURCES}
   )
 
 target_link_libraries(
@@ -44,21 +39,21 @@ write_export_dependencies(TARGET zencxxthread DEPENDENCIES os)
 install(
     TARGETS zencxxthread
     EXPORT zencxx-thread
-    DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     COMPONENT ${LIBZENCXX_PACKAGE}
   )
 
 # Install cmake files
 install(
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/zencxx-thread-dependencies.cmake
-    DESTINATION ${CMAKE_INSTALL_CMAKE_MODULESDIR}
+    FILES "${CMAKE_CURRENT_BINARY_DIR}/zencxx-thread-dependencies.cmake"
+    DESTINATION "${CMAKE_INSTALL_CMAKE_MODULESDIR}"
     COMPONENT ${LIBZENCXX_DEV_PACKAGE}
   )
 
 install(
     EXPORT zencxx-thread
     FILE zencxx-thread.cmake
-    DESTINATION ${CMAKE_INSTALL_CMAKE_MODULESDIR}
+    DESTINATION "${CMAKE_INSTALL_CMAKE_MODULESDIR}"
     NAMESPACE zencxx::
     EXPORT_LINK_INTERFACE_LIBRARIES
     COMPONENT ${LIBZENCXX_DEV_PACKAGE}
@@ -68,13 +63,13 @@ install(
 file(GLOB HEADERS *.hh)
 install(
     FILES ${HEADERS}
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/zencxx/thread
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/zencxx/thread"
     COMPONENT ${LIBZENCXX_DEV_PACKAGE}
   )
 
 install(
-    DIRECTORY details et ${CMAKE_CURRENT_BINARY_DIR}/details
-    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/zencxx/thread
+    DIRECTORY details et "${CMAKE_CURRENT_BINARY_DIR}/details"
+    DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/zencxx/thread"
     COMPONENT ${LIBZENCXX_DEV_PACKAGE}
     FILES_MATCHING PATTERN "*.hh"
   )

@@ -28,6 +28,7 @@
 #pragma once
 
 // Project specific includes
+#include <zencxx/debug/print/any_manip.hh>
 #include <zencxx/debug/print/any_wrapper.hh>
 #include <zencxx/type_traits/is_system_error_class.hh>
 

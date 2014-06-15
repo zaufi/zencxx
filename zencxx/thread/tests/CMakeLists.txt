@@ -1,5 +1,7 @@
 add_boost_tests(
     TARGET ${UNIT_TESTS}
+    MODULE ThreadTests
+    DYN_LINK
     SOURCES
         has_default_lock_param_tester.cc
         lock_matrix_tester.cc
