@@ -1,7 +1,31 @@
 # - Check if given sources are compilable
-# To do check just `make test`
+# Usage:
+#   add_compile_tests(
+#       SOURCES source1 [source2 ... sourceN]
+#       [LANGUAGE C|CXX]
+#       [STRIP_LEADING_PATH path]
+#       [PREFIX]
+#       [DEBUG]
+#     )
+#   source1-N  -- list of source (most of the time header) files to be tested
+#   path       -- when source files list is a result of file(GLOB...), every file
+#                 will contain leading path. STRIP_LEADING_PATH has a common base
+#                 path to be removed when found file will be `#include`d to test .cc module.
+#
+# This module will register a bunch of tests (integrated w/ CTest)
+# each of which is as simple `#include` corresponding file + dummy `main()`.
+# In case of header files this is a good test to check for self-contained header.
+#
+# Example:
+#     # Check if headers are self-contained
+#     file(GLOB_RECURSE ALL_HEADERS *.hh)
+#     add_compile_tests(
+#         STRIP_LEADING_PATH "${CMAKE_SOURCE_DIR}"
+#         SOURCES ${ALL_HEADERS}
+#       )
 #
 # TODO Handle additional CMAKE_REQUIRED_INCLUDES
+# TODO Handle expected failures
 #
 
 #=============================================================================
@@ -31,6 +55,8 @@ function(add_compile_tests)
     if(NOT add_compile_tests_SOURCES)
         message(FATAL_ERROR "No source files given to `add_compile_tests'")
     endif()
+    # Set default language to CXX
+    # TODO Any better idea?
     if(NOT add_compile_tests_LANGUAGE)
         set(_lang "CXX")
         set(_test_ext "cc")
@@ -47,13 +73,20 @@ function(add_compile_tests)
         # TODO Handle other languages if needed...
         message(FATAL_ERROR "Unsupported language given to `add_compile_tests'")
     endif()
-
+    # Set tests prefix of omitted
     if(NOT add_compile_tests_PREFIX)
         set(add_compile_tests_PREFIX "check_compile")
+    endif()
+    # Set STRIP_LEADING_PATH, if omitted, to top source dir
+    if(NOT add_compile_tests_STRIP_LEADING_PATH)
+        set(add_compile_tests_STRIP_LEADING_PATH ${CMAKE_SOURCE_DIR})
     endif()
 
     # Prepare compiler command
     # 0. Remove compiler executable
+    if(add_compile_tests_DEBUG)
+        message(STATUS "Compiler command tempalte: '${CMAKE_${_lang}_COMPILE_OBJECT}'")
+    endif()
     string(
         REPLACE
             "<CMAKE_${_lang}_COMPILER>"
@@ -65,9 +98,12 @@ function(add_compile_tests)
     get_directory_property(_defines_list COMPILE_DEFINITIONS)
     foreach(_def ${_defines_list})
         # TODO Handle -D option for other compilers
-        set(_defines "${_defines} -D${_def}")
+        # ATTENTION Workaround for old versions of cmake.
+        # (possible due some policies applied for KDE based projects -- it won't
+        # expand #defines collected to some variable... like done for include paths)
+        string(REPLACE "<DEFINES>" "-D${_def} <DEFINES>" _compile_options "${_compile_options}")
     endforeach()
-    string(REPLACE "<DEFINES>" "${_defines}" _compile_options "${_compile_options}")
+    string(REPLACE " <DEFINES>" "" _compile_options "${_compile_options}")
     # 2. Get #include paths
     get_directory_property(_includes_list INCLUDE_DIRECTORIES)
     foreach(_inc ${_includes_list})
@@ -126,6 +162,6 @@ endfunction()
 
 # X-Chewy-RepoBase: https://raw.githubusercontent.com/mutanabbi/chewy-cmake-rep/master/
 # X-Chewy-Path: AddCompileTests.cmake
-# X-Chewy-Version: 1.0
+# X-Chewy-Version: 1.1
 # X-Chewy-Description: Check if source(s) can be compiled well (or not)
-# X-Chewy-AddonFile: check_compile.cmake.in
+# X-Chewy-AddonFile: compile_test.cmake.in
