@@ -17,7 +17,7 @@ project(zencxx CXX)
 
 set(ZENCXX_MAJOR 0)
 set(ZENCXX_MINOR 2)
-set(ZENCXX_PATCH 0)
+set(ZENCXX_PATCH 1)
 # Include build number if specified
 # NOTE This feature used by build server to make a packages that
 # would differ from previous build.
@@ -127,39 +127,69 @@ if(UNIX AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQU
     # TODO Also it would be nice to enable STL profiling mode (-D_GLIBCXX_PROFILE)
     # (read more http://gcc.gnu.org/onlinedocs/libstdc++/manual/profile_mode.html)
 
-    # Do not link w/ libraries which isn't provide undefined symbols.
-    # (they are specified as dependencies for other targets from this
-    # project, but listed as unused by `ldd -u binary`)
-    set(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed ${CMAKE_EXE_LINKER_FLAGS}")
-    set(CMAKE_MODULE_LINKER_FLAGS "-Wl,--as-needed ${CMAKE_MODULE_LINKER_FLAGS}")
-
     # Include declaration of use_compiler_option()
-    include(MacroUseCompilerOption)
+    include(UseCompilerOption)
+
     # Set some compiler options
-    use_compiler_option(OPTION -pipe LANGUAGE CXX OUTPUT COMPILER_HAS_PIPE_OPTION)
-    use_compiler_option(OPTION -Wall LANGUAGE CXX OUTPUT COMPILER_HAS_WALL_OPTION)
-    use_compiler_option(OPTION -std=c++11 LANGUAGE CXX OUTPUT CXX_COMPILER_HAS_CPP11_OPTION)
+    use_compiler_option(-pipe OUTPUT COMPILER_HAS_PIPE_OPTION)
+    use_compiler_option(-Wall OUTPUT COMPILER_HAS_WALL_OPTION)
+    use_compiler_option(-std=c++11 OUTPUT CXX_COMPILER_HAS_CPP11_OPTION)
     if(NOT CXX_COMPILER_HAS_CPP11_OPTION)
         message(FATAL_ERROR "C++11 compatible compiler required to build this project (gcc >= 4.8 or clang >= 3.4)")
     endif()
+
+    if(WITH_SANITIZER)
+        set(_asan_used FALSE)
+        set(_tsan_used FALSE)
+        foreach(_san ${WITH_SANITIZER})
+            string(TOUPPER "${_san}" WITH_SANITIZER_UP)
+            if(_san STREQUAL thread)
+                if(_asan_used)
+                    message(FATAL_ERROR "Thread and address sanitizers couldn't be used both at the same time")
+                endif()
+                if(NOT ZENCXX_BUILD_SHARED_LIBS)
+                    use_compiler_option(-pie OUTPUT CXX_COMPILER_HAS_PIE_OPTION)
+                    if(NOT CXX_COMPILER_HAS_PIE_OPTION)
+                        message(FATAL_ERROR "Thread sanitizer require -pie option for static libraries variant")
+                    endif()
+                endif()
+                set(_tsan_used TRUE)
+            elseif(_san STREQUAL address)
+                if(_tsan_used)
+                    message(FATAL_ERROR "Thread and address sanitizers couldn't be used both at the same time")
+                endif()
+                set(_asan_used TRUE)
+            endif()
+            use_compiler_option(
+                -fsanitize=${_san}
+                OUTPUT CXX_COMPILER_HAS_FSANITIZE_${WITH_SANITIZER_UP}_OPTION
+                ALSO_PASS_TO_LINKER
+            )
+        endforeach()
+    endif()
+
+    # Do not link w/ libraries which isn't provide undefined symbols.
+    # (they are specified as dependencies for other targets from this
+    # project, but listed as unused by `ldd -u binary`)
+    use_compiler_option("-Wl,--as-needed" OUTPUT LINKER_HAS_AS_NEEDED)
+    use_compiler_option("-Wl,--no-undefined" OUTPUT LINKER_HAS_NO_UNDEFINED)
 
     # Setup compiler options depending on build type
     message(STATUS "Setting options for ${CMAKE_BUILD_TYPE} build type")
     if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "DebugFull")
         # Show even more warnings in debug mode
-        use_compiler_option(OPTION -Wextra LANGUAGE CXX OUTPUT COMPILER_HAS_WALL_OPTION)
-        use_compiler_option(OPTION -ggdb3 LANGUAGE CXX OUTPUT COMPILER_HAS_GGDB3_OPTION)
+        use_compiler_option(-Wextra OUTPUT COMPILER_HAS_WALL_OPTION)
+        use_compiler_option(-ggdb3 OUTPUT COMPILER_HAS_GGDB3_OPTION)
         if(NOT COMPILER_HAS_GGDB3_OPTION)
-            use_compiler_option(OPTION -g3 LANGUAGE CXX OUTPUT COMPILER_HAS_G3_OPTION)
+            use_compiler_option(-g3 OUTPUT COMPILER_HAS_G3_OPTION)
         endif()
     else()
         # More linker optimizations in release mode
-        set(CMAKE_EXE_LINKER_FLAGS_RELEASE
-            "-Wl,-O1 -Wl,--sort-common ${CMAKE_EXE_LINKER_FLAGS_RELEASE}"
-          )
-        set(CMAKE_MODULE_LINKER_FLAGS_RELEASE
-            "-Wl,-O1 -Wl,--sort-common ${CMAKE_MODULE_LINKER_FLAGS_RELEASE}"
-          )
+        use_compiler_option(-g3 OUTPUT COMPILER_HAS_G3_OPTION)
+        use_compiler_option("-Wl,-O1" OUTPUT LINKER_HAS_O1)
+        use_compiler_option("-Wl,--sort-common" OUTPUT LINKER_HAS_SORT_COMMON)
+        # TODO Provide more compiler options (like -march or -ftree-vectorize)
+        # TODO Use LTO
     endif()
 endif()
 
