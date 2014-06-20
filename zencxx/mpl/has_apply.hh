@@ -48,7 +48,7 @@ BOOST_MPL_HAS_XXX_TRAIT_NAMED_DEF(has_apply, apply, false)
  * \attention Nowadays (boost <= 1.50) \c has_apply metafunction placed in the
  * \c boost::mpl::aux, so we can't use it here (yep, it's undocumented
  * implementation details)... And, anyways, it really suxx! It's unable to
- * detect templated \c apply :( So we it would be better to rewrite it!
+ * detect templated \c apply :( So it would be better to rewrite it!
  */
 template <typename T, typename... Args>
 class has_apply

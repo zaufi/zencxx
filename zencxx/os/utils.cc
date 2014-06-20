@@ -26,6 +26,7 @@
 // Project specific includes
 #include <zencxx/os/utils.hh>
 #include <zencxx/os/exception.hh>
+#include <zencxx/byte_units.hh>
 
 // Standard includes
 #include <pwd.h>
@@ -37,9 +38,9 @@ namespace zencxx { namespace os { namespace {
  * \brief Buffer size for \c getpwnam_r
  *
  * Buffer with this size will be used by \c getpwnam_r
- * is case if \c sysconf call failed.
+ * in case if \c sysconf call failed.
  */
-const size_t GET_USER_INFO_EMERGENCY_BUFFER_SIZE = 1024;
+const size_t GET_USER_INFO_EMERGENCY_BUFFER_SIZE = 1_KiB;
 }                                                           // anonymous namespace
 
 /**
@@ -58,7 +59,7 @@ uid_t ZENCXXOS_EXPORT get_user_uid(const std::string& user)
         bufsize = GET_USER_INFO_EMERGENCY_BUFFER_SIZE;  // should be more than enough
 
     std::unique_ptr<char[]> buf(new char[bufsize]);
-    int rc = getpwnam_r(user.c_str(), &user_info, buf.get(), bufsize, &result);
+    const auto rc = getpwnam_r(user.c_str(), &user_info, buf.get(), bufsize, &result);
     if (0 == rc)
     {
         if (result)

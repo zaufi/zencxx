@@ -20,8 +20,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__OS__DAEMON_APPLICATION_HH__
-# define __ZENCXX__OS__DAEMON_APPLICATION_HH__
+#pragma once
 
 // Project specific includes
 # include <zencxx/os/exception.hh>
@@ -61,4 +60,3 @@ struct ZENCXXOS_EXPORT daemon_application::exception::daemionization_failure
 };
 
 }}                                                          // namespace os, zencxx
-#endif                                                      // __ZENCXX__OS__DAEMON_APPLICATION_HH__

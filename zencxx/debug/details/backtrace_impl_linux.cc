@@ -40,7 +40,7 @@ namespace zencxx { namespace debug { namespace details { namespace linux_impl {
  * \brief Collect back traces information
  *
  * Remember first \c depth frames from current program's stack
- * excluding first \c exclude_cnt frames. Excelude is useful to drop
+ * excluding first \c exclude_cnt frames. Exclude is useful to drop
  * obvious locations. For example first frame is always points to
  * this constructor, so it mostly useless anyway. Being attached
  * to some exception 2nd frame is always an exception's constructor,
