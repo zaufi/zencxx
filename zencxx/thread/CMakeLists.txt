@@ -74,7 +74,14 @@ install(
     FILES_MATCHING PATTERN "*.hh"
   )
 
-# Compile tests only if needed
+# Build test if requested
 if(BUILD_TESTING)
     add_subdirectory(tests)
+
+    # Check if headers are self-contained
+    file(GLOB_RECURSE ALL_HEADERS *.hh)
+    add_compile_tests(
+        STRIP_LEADING_PATH "${CMAKE_SOURCE_DIR}"
+        SOURCES ${ALL_HEADERS}
+      )
 endif()
