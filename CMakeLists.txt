@@ -378,6 +378,14 @@ define_skeleton_generation_targets(
     USE_PRAGMA_ONCE
   )
 
+include(AddOpenTarget)
+add_open_target(
+    show-api-documentation
+    ${CMAKE_BINARY_DIR}/doc/html/index.html
+    DEPENDS doxygen
+    COMMENT "Open API documentation"
+  )
+
 include(UsePCHFile)
 use_pch_file(
     PCH_FILE ${PROJECT_BINARY_DIR}/zencxx-pch.hh
