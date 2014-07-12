@@ -245,7 +245,7 @@ elseif(DISTRIB_CODENAME STREQUAL "saucy")
 elseif(DISTRIB_CODENAME STREQUAL "gentoo")
     # Do nothing
 else()
-    message(STATUS "WARNING: Target distribution codename is unknown! Will not build binary packages!")
+    message(STATUS "WARNING: Target distribution is unknown! Will not build binary packages!")
 endif()
 
 if(
