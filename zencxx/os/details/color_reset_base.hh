@@ -32,7 +32,6 @@
 #include <zencxx/os/escape_sequences.hh>
 
 // Standard includes
-#include <boost/config.hpp>
 #include <ostream>
 
 namespace zencxx { namespace os { namespace details {
@@ -46,7 +45,7 @@ class ZENCXXOS_EXPORT color_reset_base
 
 public:
     /// Remember a given requirement
-    BOOST_CONSTEXPR explicit color_reset_base(const bool reset_required)
+    constexpr explicit color_reset_base(const bool reset_required)
       : m_reset_required(reset_required)
     {}
     /// Issue \e reset ESC sequence if required

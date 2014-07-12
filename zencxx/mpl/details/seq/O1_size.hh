@@ -26,7 +26,6 @@
 #include <zencxx/mpl/details/variadic_sequence_tag.hh>
 
 // Standard includes
-#include <boost/config.hpp>
 #include <boost/mpl/O1_size_fwd.hpp>
 
 namespace boost { namespace mpl {
@@ -40,7 +39,7 @@ struct O1_size_impl<zencxx::mpl::details::variadic_sequence_tag>
     template <typename Seq>
     struct apply
     {
-        BOOST_STATIC_CONSTEXPR long value = Seq::size::value;
+        static constexpr long value = Seq::size::value;
         typedef typename Seq::size type;
     };
 };

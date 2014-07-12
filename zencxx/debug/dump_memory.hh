@@ -26,7 +26,6 @@
 #include <zencxx/details/export.hh>
 
 // Standard includes
-#include <boost/config.hpp>
 #include <iosfwd>
 #include <string>
 #include <vector>
@@ -68,19 +67,19 @@ class ZENCXX_EXPORT dump_memory
 {
 public:
     /// General constructor
-    BOOST_CONSTEXPR dump_memory(const void* ptr, size_t sz) BOOST_NOEXCEPT
+    constexpr dump_memory(const void* ptr, size_t sz) noexcept
       : m_ptr(ptr), m_size(sz)
     {}
     /// Accept \c std::string to dump contents
-    explicit dump_memory(const std::string& s) BOOST_NOEXCEPT
+    explicit dump_memory(const std::string& s) noexcept
       : m_ptr(s.data()), m_size(s.size()) {}
     /// Accept \c std::vector to dump contents
     template <typename T, typename Alloc>
-    explicit dump_memory(const std::vector<T, Alloc>& v) BOOST_NOEXCEPT
+    explicit dump_memory(const std::vector<T, Alloc>& v) noexcept
       : m_ptr(v.data()), m_size(v.size()) {}
     /// Constructor to dump any object
     template <typename T>
-    explicit dump_memory(const T* ptr) BOOST_NOEXCEPT
+    explicit dump_memory(const T* ptr) noexcept
       : m_ptr(ptr), m_size(sizeof(T)) {}
     /**
      * \brief Make \c dump_memory looks like a stream's manipulator

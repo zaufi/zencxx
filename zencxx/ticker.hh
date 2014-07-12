@@ -32,7 +32,6 @@
 
 // Standard includes
 #include <boost/asio/io_service.hpp>
-#include <boost/config.hpp>
 #include <boost/thread/lock_types.hpp>
 #include <boost/thread/mutex.hpp>
 #include <cassert>
@@ -86,8 +85,8 @@ public:
         job() : m_job_id(0) {}
         job(const job&) = default;                          ///< Default copy ctor
         job& operator=(const job&) = default;               ///< Default copy-assign operator
-        job(job&&) BOOST_NOEXCEPT;                          ///< Move ctor
-        job& operator=(job&&) BOOST_NOEXCEPT;               ///< Move-assign operator
+        job(job&&) noexcept;                          ///< Move ctor
+        job& operator=(job&&) noexcept;               ///< Move-assign operator
 
         enum struct start_type : unsigned
         {
@@ -205,13 +204,13 @@ inline ticker::job::job(
 {
 }
 
-inline ticker::job::job(job&& other) BOOST_NOEXCEPT
+inline ticker::job::job(job&& other) noexcept
   : m_ticker_wptr(std::move(other.m_ticker_wptr))
   , m_job_id(other.m_job_id)
 {
 }
 
-inline ticker::job& ticker::job::operator=(job&& other) BOOST_NOEXCEPT
+inline ticker::job& ticker::job::operator=(job&& other) noexcept
 {
     if (this != &other)
     {

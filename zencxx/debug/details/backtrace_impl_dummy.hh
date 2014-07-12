@@ -25,7 +25,6 @@
 // Project specific includes
 
 // Standard includes
-#include <boost/config.hpp>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -46,8 +45,8 @@ class backtrace
 {
 public:
   public:
-    BOOST_STATIC_CONSTEXPR auto DEFAULT_STACK_DEPTH = 100u;
-    BOOST_STATIC_CONSTEXPR auto DEFAULT_EXCLUDE_FIRST_FRAMES_COUNT = 1u;
+    static constexpr auto DEFAULT_STACK_DEPTH = 100u;
+    static constexpr auto DEFAULT_EXCLUDE_FIRST_FRAMES_COUNT = 1u;
 
     typedef size_t size_type;                               ///< Type for size of collected trace
     typedef std::vector<std::string> stack_type;            ///< Result type for \c stack() method
@@ -58,11 +57,11 @@ public:
       )
     {}
 
-    bool empty() const BOOST_NOEXCEPT
+    bool empty() const noexcept
     {
         return true;
     }
-    size_type size() const BOOST_NOEXCEPT
+    size_type size() const noexcept
     {
         return 0;
     }

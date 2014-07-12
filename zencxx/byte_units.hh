@@ -25,7 +25,6 @@
 // Project specific includes
 
 // Standard includes
-#include <boost/config.hpp>
 #include <cstddef>
 
 #ifdef BOOST_NO_CXX11_USER_DEFINED_LITERALS

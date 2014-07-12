@@ -33,7 +33,6 @@
 #include <zencxx/exception.hh>
 
 // Standard includes
-#include <boost/config.hpp>
 #include <cstdint>
 #include <ostream>
 
@@ -46,28 +45,28 @@ struct rgb_tag;
 struct true_color_tag;
 
 template <typename TypeTag, typename ColorSpaceTag>
-inline BOOST_CONSTEXPR const char* get_initial_seq();
+inline constexpr const char* get_initial_seq();
 
 template <>
-inline BOOST_CONSTEXPR const char* get_initial_seq<foreground_tag, rgb_tag>()
+inline constexpr const char* get_initial_seq<foreground_tag, rgb_tag>()
 {
     return "\033[38;5;";
 }
 
 template <>
-inline BOOST_CONSTEXPR const char* get_initial_seq<foreground_tag, true_color_tag>()
+inline constexpr const char* get_initial_seq<foreground_tag, true_color_tag>()
 {
     return "\033[38;2;";
 }
 
 template <>
-inline BOOST_CONSTEXPR const char* get_initial_seq<background_tag, rgb_tag>()
+inline constexpr const char* get_initial_seq<background_tag, rgb_tag>()
 {
     return "\033[48;5;";
 }
 
 template <>
-inline BOOST_CONSTEXPR const char* get_initial_seq<background_tag, true_color_tag>()
+inline constexpr const char* get_initial_seq<background_tag, true_color_tag>()
 {
     return "\033[48;2;";
 }
@@ -80,7 +79,7 @@ class rgb
   : protected color_enabler_base
   , public color_reset_base
 {
-    BOOST_STATIC_CONSTEXPR auto MAX_INDEX = 256;
+    static constexpr auto MAX_INDEX = 256;
 
 public:
     /**
@@ -125,14 +124,14 @@ class indexed_rgb
   : protected color_enabler_base
   , public color_reset_base
 {
-    BOOST_STATIC_CONSTEXPR auto MAX_INDEX = 6;
+    static constexpr auto MAX_INDEX = 6;
 
 public:
     /**
      * Construct from indices of 6x6x6 color cube
      * \todo Wait for C++14 (gcc 4.9), then refactor it!
      */
-    BOOST_CONSTEXPR indexed_rgb(const int r, const int g, const int b, const bool reset_required = true)
+    constexpr indexed_rgb(const int r, const int g, const int b, const bool reset_required = true)
       : color_reset_base{reset_required}
       , r_{r < MAX_INDEX ? r : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid indexed RGB color index")}
       , g_{g < MAX_INDEX ? g : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid indexed RGB color index")}
@@ -160,7 +159,7 @@ private:
      * \internal Get RGB index from components according formula
      * \todo Provide refs to docs
      */
-    BOOST_CONSTEXPR int components_to_index() const
+    constexpr int components_to_index() const
     {
         return r_ * 36 + g_ * 6 + b_ + 16;
     }
@@ -178,13 +177,13 @@ class grayscale
   : protected color_enabler_base
   , public color_reset_base
 {
-    BOOST_STATIC_CONSTEXPR auto MAX_INDEX = 24;
+    static constexpr auto MAX_INDEX = 24;
 
 public:
     /**
      * Construct from gray scale color index, which is a value in the range <tt>[0, 24]</tt>.
      */
-    BOOST_CONSTEXPR explicit grayscale(const int index, const bool reset_required = true)
+    constexpr explicit grayscale(const int index, const bool reset_required = true)
       : color_reset_base{reset_required}
       , m_index{
             index < MAX_INDEX
@@ -214,7 +213,7 @@ private:
      * \internal Get color index according formula
      * \todo Provide refs to docs
      */
-    BOOST_CONSTEXPR int transform_index() const
+    constexpr int transform_index() const
     {
         return 232 + m_index;
     }

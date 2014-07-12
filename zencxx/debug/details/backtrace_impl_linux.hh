@@ -26,7 +26,6 @@
 #include <zencxx/details/export.hh>
 
 // Standard includes
-#include <boost/config.hpp>
 #include <iosfwd>
 #include <string>
 #include <vector>
@@ -50,8 +49,8 @@ namespace zencxx { namespace debug { namespace details { inline namespace linux_
 class ZENCXX_EXPORT backtrace
 {
 public:
-    BOOST_STATIC_CONSTEXPR auto DEFAULT_STACK_DEPTH = 100u;
-    BOOST_STATIC_CONSTEXPR auto DEFAULT_EXCLUDE_FIRST_FRAMES_COUNT = 1u;
+    static constexpr auto DEFAULT_STACK_DEPTH = 100u;
+    static constexpr auto DEFAULT_EXCLUDE_FIRST_FRAMES_COUNT = 1u;
 
     typedef std::vector<std::string> stack_type;            ///< Result type for \c stack() method
     typedef stack_type::size_type size_type;                ///< Type for size of collected trace
@@ -72,12 +71,12 @@ public:
     backtrace& operator=(backtrace&&) = default;
 
     /// Check if instnance is empty
-    bool empty() const BOOST_NOEXCEPT
+    bool empty() const noexcept
     {
         return m_backtrace.empty();
     }
     /// Get size of collected trace info
-    size_type size() const BOOST_NOEXCEPT
+    size_type size() const noexcept
     {
         return m_backtrace.size();
     }

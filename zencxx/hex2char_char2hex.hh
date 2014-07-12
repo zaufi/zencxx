@@ -26,7 +26,6 @@
 // Project specific includes
 
 // Standard includes
-#include <boost/config.hpp>
 #include <utility>
 
 namespace zencxx {
@@ -38,7 +37,7 @@ namespace zencxx {
  *
  * \todo How to prevent invalid chars? What to produce? Nulls??
  */
-BOOST_CONSTEXPR inline char hex2char(const char c)
+constexpr inline char hex2char(const char c)
 {
     return c >= 'A' ? (c & 0xdf) - 'A' + 10 : c - '0';
 }
@@ -50,17 +49,17 @@ BOOST_CONSTEXPR inline char hex2char(const char c)
  *
  * \todo How to prevent invalid chars? What to produce? Nulls??
  */
-BOOST_CONSTEXPR inline char hex2char(const char high, const char low)
+constexpr inline char hex2char(const char high, const char low)
 {
     return (hex2char(high) << 4) + hex2char(low);
 }
 /// Return hex encoded low tetrade of char
-BOOST_CONSTEXPR inline char char2hex_l(const char c)
+constexpr inline char char2hex_l(const char c)
 {
     return (c & 0x0f) > 9 ? (c & 0x0f) - 10 + 'A' : (c & 0x0f) + '0';
 }
 /// Return hex encoded high tetrade of char
-BOOST_CONSTEXPR inline char char2hex_h(const char c)
+constexpr inline char char2hex_h(const char c)
 {
     return char2hex_l(c >> 4);
 }
@@ -68,7 +67,7 @@ BOOST_CONSTEXPR inline char char2hex_h(const char c)
 /// Convert \c char to pair of hex chars
 /// \attention GCC < 4.7 has not a \c constexpr \c std::pair constructors,
 /// so better to avoid to use this function...
-BOOST_CONSTEXPR inline std::pair<char, char> char2hex(const char c)
+constexpr inline std::pair<char, char> char2hex(const char c)
 {
     return std::make_pair(char2hex_h(c), char2hex_l(c));
 }

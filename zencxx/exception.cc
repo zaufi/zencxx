@@ -27,7 +27,7 @@
 #include <boost/format.hpp>
 
 namespace zencxx { namespace {
-BOOST_CONSTEXPR auto EMPTY = debug::location{};
+constexpr auto EMPTY = debug::location{};
 }                                                           // anonymous namespace
 
 /**

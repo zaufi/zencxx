@@ -25,7 +25,6 @@
 #include <zencxx/os/term/utils.hh>
 
 // Standard includes
-#include <boost/config.hpp>
 #ifdef __linux__
 # include <sys/ioctl.h>
 #endif                                                      // __linux__
@@ -38,7 +37,7 @@
 #include <cstring>
 
 namespace zencxx { namespace os { namespace term { namespace {
-BOOST_CONSTEXPR auto RGB_COLORS_COUNT = 256 * 256 * 256;
+constexpr auto RGB_COLORS_COUNT = 256 * 256 * 256;
 
 #ifdef ZENCXX_USE_CURSES
 /// \internal Helper function to get number of terminal colors

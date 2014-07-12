@@ -64,12 +64,7 @@ find_package(
     unit_test_framework
   )
 
-if(WIN32)
-    set(_ZENCXX_DEFAULT_USE_CURSES OFF)
-else()
-    set(_ZENCXX_DEFAULT_USE_CURSES ON)
-endif()
-option(ENABLE_CURSES "Use curses library to get some terminal capabilities (like colors)" ${_ZENCXX_DEFAULT_USE_CURSES})
+option(ENABLE_CURSES "Use curses library to get some terminal capabilities (like colors)" ON)
 if(ENABLE_CURSES)
     find_package(Curses)
 endif()
@@ -192,6 +187,8 @@ if(UNIX AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQU
         # TODO Provide more compiler options (like -march or -ftree-vectorize)
         # TODO Use LTO
     endif()
+else()
+    message(FATAL_ERROR "This platform/compiler is not supported (yet ;-)")
 endif()
 
 # Add -fvisibility option if needed

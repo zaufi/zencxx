@@ -29,7 +29,6 @@
 #include <zencxx/details/export.hh>
 
 // Standard includes
-#include <boost/config.hpp>
 #include <boost/exception/diagnostic_information.hpp>
 #include <boost/exception/error_info.hpp>
 #include <boost/exception/exception.hpp>
@@ -258,7 +257,7 @@ public:
      *  }
      * \endcode
      */
-    virtual const char* what() const BOOST_NOEXCEPT_OR_NOTHROW override
+    virtual const char* what() const noexcept override
     {
         return boost::diagnostic_information_what(*this);
     }

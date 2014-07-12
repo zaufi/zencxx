@@ -34,7 +34,6 @@
 #include <zencxx/os/details/color.hh>
 
 // Standard includes
-#include <boost/config.hpp>
 #include <ostream>
 
 namespace zencxx { namespace os {
@@ -68,13 +67,13 @@ public:
      * \param reset_required whether terminal reset required before
      * output of the given color
      */
-    BOOST_CONSTEXPR explicit color(const char* const c, const bool reset_required = true)
+    constexpr explicit color(const char* const c, const bool reset_required = true)
       : details::color_reset_base{reset_required}
       , m_color{c}
     {
     }
     /// Get stored color ESC sequence
-    BOOST_CONSTEXPR const char* get() const
+    constexpr const char* get() const
     {
         return m_color;
     }
