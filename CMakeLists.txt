@@ -53,6 +53,15 @@ include(CMakePackageConfigHelpers)
 include(WriteExportDependencies)
 
 #---------------------------------------------------------
+# Section: Declare configurable options
+#---------------------------------------------------------
+option(ENABLE_CURSES "Use curses library to get some terminal capabilities (like colors)" ON)
+set(WITH_SANITIZERS "" CACHE STRING "Instrument code with sanitizer(s) (comma separated list)")
+option(ENABLE_SHARED "Build shared libraries" OFF)
+string(REPLACE "," ";" WITH_SANITIZERS "${WITH_SANITIZERS}")
+list(FIND "${WITH_SANITIZERS}" "thread" WANT_DYNAMIC_LIBS)
+
+#---------------------------------------------------------
 # Section: Find used stuff
 #---------------------------------------------------------
 set(Boost_USE_MULTITHREADED ON)
@@ -64,7 +73,6 @@ find_package(
     unit_test_framework
   )
 
-option(ENABLE_CURSES "Use curses library to get some terminal capabilities (like colors)" ON)
 if(ENABLE_CURSES)
     find_package(Curses)
 endif()
@@ -73,8 +81,7 @@ endif()
 # Section: Configure builing process
 #---------------------------------------------------------
 
-option(ZENCXX_BUILD_SHARED_LIBS "Build shared libraries" OFF)
-if(ZENCXX_BUILD_SHARED_LIBS)
+if(ENABLE_SHARED)
     set(ZENCXX_LIB_TYPE SHARED)
     message(STATUS "Build shared libraries: enabled")
 endif()
@@ -133,36 +140,9 @@ if(UNIX AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQU
         message(FATAL_ERROR "C++11 compatible compiler required to build this project (gcc >= 4.8 or clang >= 3.4)")
     endif()
 
-    if(WITH_SANITIZER)
-        set(_asan_used FALSE)
-        set(_tsan_used FALSE)
-        foreach(_san ${WITH_SANITIZER})
-            string(TOUPPER "${_san}" WITH_SANITIZER_UP)
-            if(_san STREQUAL thread)
-                if(_asan_used)
-                    message(FATAL_ERROR "Thread and address sanitizers couldn't be used both at the same time")
-                endif()
-                if(NOT ZENCXX_BUILD_SHARED_LIBS)
-                    use_compiler_option(-fPIC OUTPUT COMPILER_HAS_FPIC_OPTION)
-                    use_compiler_option(-pie OUTPUT CXX_COMPILER_HAS_PIE_OPTION)
-                    if(NOT (CXX_COMPILER_HAS_PIE_OPTION AND COMPILER_HAS_FPIC_OPTION))
-                        message(FATAL_ERROR "Thread sanitizer require -pie and -fPIC options for static libraries variant")
-                    endif()
-                endif()
-                set(_tsan_used TRUE)
-            elseif(_san STREQUAL address)
-                if(_tsan_used)
-                    message(FATAL_ERROR "Thread and address sanitizers couldn't be used both at the same time")
-                endif()
-                set(_asan_used TRUE)
-            endif()
-            use_compiler_option(
-                -fsanitize=${_san}
-                OUTPUT CXX_COMPILER_HAS_FSANITIZE_${WITH_SANITIZER_UP}_OPTION
-                ALSO_PASS_TO_LINKER
-            )
-        endforeach()
-    endif()
+    # Try to handle possible sanitizer options
+    include(MacroEnableSanitizers)
+    enable_sanitizers(${WITH_SANITIZERS})
 
     # Do not link w/ libraries which isn't provide undefined symbols.
     # (they are specified as dependencies for other targets from this

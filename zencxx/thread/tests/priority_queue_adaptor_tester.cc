@@ -65,30 +65,30 @@ struct fixture_1
     // try to acquire a lock w/ priority 10 (winner)
     void lock_requester_1()
     {
-        std::cout << "L1: Entering..." << std::endl;
+        BOOST_TEST_CHECKPOINT("L1: Entering...");
         m_ready_count++;
         m_lock.lock(HIGH_PRIORITY);
         m_promise.set_value(true);
-        std::cout << "L1: Exiting..." << std::endl;
+        BOOST_TEST_CHECKPOINT("L1: Exiting...");
         // NOTE This method will not release the lock!
     }
 
     // try to acquire a lock w/ priority 5 (looser)
     void lock_requester_2()
     {
-        std::cout << "L2: Entering..." << std::endl;
+        BOOST_TEST_CHECKPOINT("L2: Entering...");
         m_ready_count++;
         try
         {
             m_lock.lock(LOW_PRIORITY);
             m_promise.set_value(false);
             m_exit_promise.set_value(false);
-            std::cout << "L2: Exiting..." << std::endl;
+            BOOST_TEST_CHECKPOINT("L2: Exiting...");
         }
         catch (const boost::thread_interrupted&)
         {
             m_exit_promise.set_value(true);
-            std::cout << "L2: Interrupted... (as expected)" << std::endl;
+            BOOST_TEST_CHECKPOINT("L2: Interrupted... (as expected)");
         }
     }
 

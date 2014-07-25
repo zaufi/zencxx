@@ -82,12 +82,12 @@ struct fixture_1
 {
     void locker(const int id)
     {
-        std::cout << id << ") Going to lock..." << std::endl;
+        BOOST_TEST_CHECKPOINT(id << ") Going to lock...");
         m_lock.lock(exclusive_lock::lock);
-        std::cout << id << ") Locked! Going to sleep..." << std::endl;
+        BOOST_TEST_CHECKPOINT(id << ") Locked! Going to sleep...");
         boost::this_thread::sleep_for(boost::chrono::milliseconds(500));
         m_lock.unlock(exclusive_lock::lock);
-        std::cout << id << ") Unlocked! Exiting..." << std::endl;
+        BOOST_TEST_CHECKPOINT(id << ") Unlocked! Exiting...");
         m_count++;
         if (m_count == MAX_THREADS)
             m_promise.set_value(true);
@@ -154,85 +154,85 @@ struct fixture_2
     }
     void read_lock_holder_1()
     {
-        std::cout << "RL1: Entering..." << std::endl;
+        BOOST_TEST_CHECKPOINT("RL1: Entering...");
         BOOST_CHECK(m_status == status::initial);
         m_lock.lock(rw_lock::read);
         m_status = status::read_acquired_1;
-        std::cout << "RL1: Locked..." << std::endl;
+        BOOST_TEST_CHECKPOINT("RL1: Locked...");
         while (m_status != status::ready_to_write_lock)
         {
-            std::cout << "RL1: Waiting WL ready..." << std::endl;
+            BOOST_TEST_CHECKPOINT("RL1: Waiting WL ready...");
             sleep_a_little();
         }
         m_lock.unlock(rw_lock::read);
         m_status = status::read_released_1;
-        std::cout << "RL1: Lock released..." << std::endl;
+        BOOST_TEST_CHECKPOINT("RL1: Lock released...");
         while (m_status != status::write_acquired)
         {
-            std::cout << "RL1: Waiting WL acquire..." << std::endl;
+            BOOST_TEST_CHECKPOINT("RL1: Waiting WL acquire...");
             sleep_a_little();
         }
-        std::cout << "RL1: Trying read lock..." << std::endl;
+        BOOST_TEST_CHECKPOINT("RL1: Trying read lock...");
         BOOST_CHECK(!m_lock.try_lock(rw_lock::read));
         m_status = status::tried_read_lock_1;
-        std::cout << "RL1: Done! Exiting" << std::endl;
+        BOOST_TEST_CHECKPOINT("RL1: Done! Exiting");
     }
 
     void read_lock_holder_2()
     {
-        std::cout << "RL2: Entering..." << std::endl;
+        BOOST_TEST_CHECKPOINT("RL2: Entering...");
         while (m_status != status::read_acquired_1)
         {
-            std::cout << "RL2: Waiting RL1 ready..." << std::endl;
+            BOOST_TEST_CHECKPOINT("RL2: Waiting RL1 ready...");
             sleep_a_little();
         }
-        std::cout << "RL2: Read locking 2..." << std::endl;
+        BOOST_TEST_CHECKPOINT("RL2: Read locking 2...");
         m_lock.lock(rw_lock::read);
         m_status = status::read_acquired_2;
-        std::cout << "RL2: Locked..." << std::endl;
+        BOOST_TEST_CHECKPOINT("RL2: Locked...");
         while (m_status != status::read_released_1)
         {
-            std::cout << "RL2: Waiting RL1 release..." << std::endl;
+            BOOST_TEST_CHECKPOINT("RL2: Waiting RL1 release...");
             sleep_a_little();
         }
         m_lock.unlock(rw_lock::read);
         m_status = status::read_released_2;
-        std::cout << "RL2: Lock released..." << std::endl;
+        BOOST_TEST_CHECKPOINT("RL2: Lock released...");
         while (m_status != status::tried_read_lock_1)
         {
-            std::cout << "RL2: Waiting RL1 finished..." << std::endl;
+            BOOST_TEST_CHECKPOINT("RL2: Waiting RL1 finished...");
             sleep_a_little();
         }
-        std::cout << "RL2: Trying read lock..." << std::endl;
+        BOOST_TEST_CHECKPOINT("RL2: Trying read lock...");
         BOOST_CHECK(!m_lock.try_lock(rw_lock::read));
         m_status = status::tried_read_lock_2;
-        std::cout << "RL2: Done! Exiting" << std::endl;
+        BOOST_TEST_CHECKPOINT("RL2: Done! Exiting");
     }
 
     void write_locker()
     {
-        std::cout << "WL: Entering..." << std::endl;
+        BOOST_TEST_CHECKPOINT("WL: Entering...");
         while (m_status != status::read_acquired_2)
         {
-            std::cout << "WL: Waiting RL2 gets locked..." << std::endl;
+            BOOST_TEST_CHECKPOINT("WL: Waiting RL2 gets locked...");
             sleep_a_little();
         }
-        std::cout << "WL: Trying write lock..." << std::endl;
+        BOOST_TEST_CHECKPOINT("WL: Trying write lock...");
         BOOST_CHECK(!m_lock.try_lock(rw_lock::write));
         m_status = status::ready_to_write_lock;
-        std::cout << "WL: Write locking..." << std::endl;
+        BOOST_TEST_CHECKPOINT("WL: Write locking...");
         m_lock.lock(rw_lock::write);
         m_status = status::write_acquired;
-        std::cout << "WL: Locked..." << std::endl;
+        BOOST_TEST_CHECKPOINT("WL: Locked...");
         while (m_status != status::tried_read_lock_2)
         {
-            std::cout << "WL: Waiting RL2 gets released..." << std::endl;
+            BOOST_TEST_CHECKPOINT("WL: Waiting RL2 gets released...");
             sleep_a_little();
         }
-        std::cout << "WL: Write unlocking..." << std::endl;
+        BOOST_TEST_CHECKPOINT("WL: Write unlocking...");
         m_lock.unlock(rw_lock::write);
         m_status = status::write_released;
-        std::cout << "WL: Done! Exiting..." << std::endl;
+        BOOST_TEST_CHECKPOINT("WL: Done! Exiting...");
         m_promise.set_value(true);
     }
 
