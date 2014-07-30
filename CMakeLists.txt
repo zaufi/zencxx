@@ -55,7 +55,10 @@ include(WriteExportDependencies)
 #---------------------------------------------------------
 # Section: Declare configurable options
 #---------------------------------------------------------
-option(ENABLE_CURSES "Use curses library to get some terminal capabilities (like colors)" ON)
+option(ENABLE_CURSES "Use curses library to get some terminal capabilities (like colors)" OFF)
+if(UNIX)
+    set(ENABLE_CURSES ON)
+endif()
 set(WITH_SANITIZERS "" CACHE STRING "Instrument code with sanitizer(s) (comma separated list)")
 option(ENABLE_SHARED "Build shared libraries" OFF)
 string(REPLACE "," ";" WITH_SANITIZERS "${WITH_SANITIZERS}")

@@ -79,18 +79,30 @@ class rgb
   : protected color_enabler_base
   , public color_reset_base
 {
-    static constexpr auto MAX_INDEX = 256;
-
 public:
+    static constexpr auto END_INDEX = 256;
+
     /**
      * Construct from indeces of 256x256x256 color cube
      * \todo Wait for C++14 (gcc 4.9), then refactor it!
      */
     rgb(const int r, const int g, const int b, const bool reset_required = true)
       : color_reset_base{reset_required}
-      , r_{r < MAX_INDEX ? r : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid RGB color index")}
-      , g_{g < MAX_INDEX ? g : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid RGB color index")}
-      , b_{b < MAX_INDEX ? b : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid RGB color index")}
+      , r_{
+            r < END_INDEX
+          ? r
+          : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid RGB color index")
+        }
+      , g_{
+            g < END_INDEX
+          ? g
+          : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid RGB color index")
+          }
+      , b_{
+            b < END_INDEX
+          ? b
+          : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid RGB color index")
+        }
     {
     }
     /**
@@ -124,18 +136,30 @@ class indexed_rgb
   : protected color_enabler_base
   , public color_reset_base
 {
-    static constexpr auto MAX_INDEX = 6;
-
 public:
+    static constexpr auto END_INDEX = 6;
+
     /**
      * Construct from indices of 6x6x6 color cube
      * \todo Wait for C++14 (gcc 4.9), then refactor it!
      */
     constexpr indexed_rgb(const int r, const int g, const int b, const bool reset_required = true)
       : color_reset_base{reset_required}
-      , r_{r < MAX_INDEX ? r : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid indexed RGB color index")}
-      , g_{g < MAX_INDEX ? g : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid indexed RGB color index")}
-      , b_{b < MAX_INDEX ? b : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid indexed RGB color index")}
+      , r_{
+            r < END_INDEX
+          ? r
+          : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid indexed RGB color index")
+        }
+      , g_{
+            g < END_INDEX
+          ? g
+          : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid indexed RGB color index")
+        }
+      , b_{
+            b < END_INDEX
+          ? b
+          : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid indexed RGB color index")
+        }
     {
     }
     /**
@@ -177,16 +201,16 @@ class grayscale
   : protected color_enabler_base
   , public color_reset_base
 {
-    static constexpr auto MAX_INDEX = 24;
-
 public:
+    static constexpr auto END_INDEX = 24;
+
     /**
      * Construct from gray scale color index, which is a value in the range <tt>[0, 24]</tt>.
      */
     constexpr explicit grayscale(const int index, const bool reset_required = true)
       : color_reset_base{reset_required}
       , m_index{
-            index < MAX_INDEX
+            index < END_INDEX
           ? index
           : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid gray scale color index")
         }

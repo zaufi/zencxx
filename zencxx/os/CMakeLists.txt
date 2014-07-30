@@ -1,5 +1,5 @@
 # Tell to terminal related functions to use curses library
-if(USE_CURSES AND CURSES_FOUND)
+if(ENABLE_CURSES AND CURSES_FOUND)
     add_definitions(-DZENCXX_USE_CURSES)
     set(
         ZENCXX_OS_EXTRA_LIBRARIES

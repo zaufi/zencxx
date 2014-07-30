@@ -44,17 +44,23 @@ using namespace zencxx::os;
 
 BOOST_AUTO_TEST_CASE(color_test)
 {
-    for (auto i = 0; i < 25; ++i)
+#ifdef ZENCXX_USE_CURSES
+    for (auto i = 0; i < color::fg::grayscale::END_INDEX; ++i)
     {
-#if 1
-        std::cout << color::fg::grayscale(i)
-          << color::bg::grayscale(24 - i) << 'O';
-#else
+# if 1
+        std::cout << color::bg::grayscale(color::fg::grayscale::END_INDEX - 1 - i) << color::fg::grayscale(i) << 'O';
+# else
         std::stringstream ss;
         const auto c = color::fg::grayscale(i);
         ss << c;
         std::cout << zencxx::debug::dump_memory(ss.str()) << std::endl;
-#endif
+# endif
     }
     std::cout << color(esc::reset) << std::endl;
+#else                                                       // !ZENCXX_USE_CURSES
+    /// \note This test is useless w/o color support
+    boost::unit_test::unit_test_log.test_unit_skipped(
+        boost::unit_test_framework::framework::current_test_case()
+      );
+#endif                                                      // !ZENCXX_USE_CURSES
 }

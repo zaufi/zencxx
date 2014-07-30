@@ -25,9 +25,9 @@
 #include <zencxx/os/term/utils.hh>
 
 // Standard includes
-#ifdef __linux__
+#ifdef __unix__
 # include <sys/ioctl.h>
-#endif                                                      // __linux__
+#endif                                                      // __unix__
 #ifdef ZENCXX_USE_CURSES
 # include <term.h>
 #endif                                                      // ZENCXX_USE_CURSES
@@ -108,15 +108,15 @@ color num_to_color_transform(const int number_of_colors)
  */
 std::pair<unsigned, unsigned> get_term_size()
 {
-#ifdef __linux__
+#ifdef __unix__
     winsize w;
     if (ioctl(STDOUT_FILENO, TIOCGWINSZ, &w))
         ZENCXX_THROW(os::exception("ioctl")) << zencxx::exception::reason("Unable to get terminal size");
     return std::make_pair(w.ws_col, w.ws_row);
-#else                                                       // __linux__
+#else                                                       // __unix__
     /// \todo Any better idea for non Linux platforms? (Windows?)
     return std::make_pair(80, 25);
-#endif                                                      // !__linux__
+#endif                                                      // !__unix__
 }
 
 /**
@@ -128,7 +128,8 @@ color get_term_color_capability()
     static const auto color_caps = num_to_color_transform(get_supported_colors_count());
     return color_caps;
 #else
-    /// \todo Implementation w/o using \e curses required
+# warning "ANSI colors are not enabled"
+    /// \todo Implementation w/o using \e curses require:
     ///  * iterate over hardcoded list of terminal ID string for linux
     ///  * smth else for other platforms...
     return color::unknown;
@@ -141,6 +142,7 @@ color get_term_color_capability()
 bool is_color_term()
 {
     const auto color_caps = get_term_color_capability();
+    std::cout << "color_caps=" << int(color_caps) << std::endl;
     return color_caps != color::unknown && color_caps != color::none;
 }
 
