@@ -44,11 +44,17 @@ using namespace zencxx::os;
 
 BOOST_AUTO_TEST_CASE(color_test)
 {
+    std::stringstream ss;
+    ss << color::bg::grayscale(10) << color::fg::grayscale(15, false) << "Fucking shit!";
+    ss << color::reset << std::endl;
+    const auto s = ss.str();
+    std::cout << zencxx::debug::dump_memory(s) << std::endl;
+#if 0
 #ifdef ZENCXX_USE_CURSES
     for (auto i = 0; i < color::fg::grayscale::END_INDEX; ++i)
     {
 # if 1
-        std::cout << color::bg::grayscale(color::fg::grayscale::END_INDEX - 1 - i) << color::fg::grayscale(i) << 'O';
+        std::cout << color::bg::grayscale(color::fg::grayscale::END_INDEX - 1 - i) << 'O';
 # else
         std::stringstream ss;
         const auto c = color::fg::grayscale(i);
@@ -63,4 +69,5 @@ BOOST_AUTO_TEST_CASE(color_test)
         boost::unit_test_framework::framework::current_test_case()
       );
 #endif                                                      // !ZENCXX_USE_CURSES
+#endif
 }

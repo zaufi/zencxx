@@ -41,30 +41,36 @@ namespace zencxx { namespace os { namespace details {
 struct foreground_tag;
 struct background_tag;
 
-struct rgb_tag;
+struct indexed_rgb_tag;
 struct true_color_tag;
 
+/// \internal Generic template is undefined.
+/// Only specializations have meaning.
 template <typename TypeTag, typename ColorSpaceTag>
-inline constexpr const char* get_initial_seq();
+constexpr const char* get_initial_seq();
 
+/// \internal Returns initial ESC sequence for foreground RGB color space
 template <>
-inline constexpr const char* get_initial_seq<foreground_tag, rgb_tag>()
+inline constexpr const char* get_initial_seq<foreground_tag, indexed_rgb_tag>()
 {
     return "\033[38;5;";
 }
 
+/// \internal Returns initial ESC sequence for foreground 16M color space
 template <>
 inline constexpr const char* get_initial_seq<foreground_tag, true_color_tag>()
 {
     return "\033[38;2;";
 }
 
+/// \internal Returns initial ESC sequence for background RGB color space
 template <>
-inline constexpr const char* get_initial_seq<background_tag, rgb_tag>()
+inline constexpr const char* get_initial_seq<background_tag, indexed_rgb_tag>()
 {
     return "\033[48;5;";
 }
 
+/// \internal Returns initial ESC sequence for background 16M color space
 template <>
 inline constexpr const char* get_initial_seq<background_tag, true_color_tag>()
 {
@@ -83,26 +89,13 @@ public:
     static constexpr auto END_INDEX = 256;
 
     /**
-     * Construct from indeces of 256x256x256 color cube
-     * \todo Wait for C++14 (gcc 4.9), then refactor it!
+     * Construct from indices of 256x256x256 color cube
      */
     rgb(const int r, const int g, const int b, const bool reset_required = true)
       : color_reset_base{reset_required}
-      , r_{
-            r < END_INDEX
-          ? r
-          : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid RGB color index")
-        }
-      , g_{
-            g < END_INDEX
-          ? g
-          : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid RGB color index")
-          }
-      , b_{
-            b < END_INDEX
-          ? b
-          : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid RGB color index")
-        }
+      , r_{validate_component_index(r)}
+      , g_{validate_component_index(g)}
+      , b_{validate_component_index(b)}
     {
     }
     /**
@@ -123,6 +116,14 @@ public:
     }
 
 private:
+    static constexpr std::uint8_t validate_component_index(const int idx)
+    {
+        return idx < END_INDEX
+          ? idx
+          : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid RGB color index")
+          ;
+    }
+
     const std::uint8_t r_;
     const std::uint8_t g_;
     const std::uint8_t b_;
@@ -141,25 +142,12 @@ public:
 
     /**
      * Construct from indices of 6x6x6 color cube
-     * \todo Wait for C++14 (gcc 4.9), then refactor it!
      */
     constexpr indexed_rgb(const int r, const int g, const int b, const bool reset_required = true)
       : color_reset_base{reset_required}
-      , r_{
-            r < END_INDEX
-          ? r
-          : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid indexed RGB color index")
-        }
-      , g_{
-            g < END_INDEX
-          ? g
-          : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid indexed RGB color index")
-        }
-      , b_{
-            b < END_INDEX
-          ? b
-          : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid indexed RGB color index")
-        }
+      , r_{validate_component_index(r)}
+      , g_{validate_component_index(g)}
+      , b_{validate_component_index(b)}
     {
     }
     /**
@@ -170,7 +158,7 @@ public:
         if (color_enabler_base::is_enabled())
         {
             c.reset_if_needed(os);
-            os << get_initial_seq<TypeTag, rgb_tag>()
+            os << get_initial_seq<TypeTag, indexed_rgb_tag>()
                << c.components_to_index()
                << 'm'
                ;
@@ -179,6 +167,13 @@ public:
     }
 
 private:
+    static constexpr std::uint8_t validate_component_index(const int idx)
+    {
+        return idx < END_INDEX
+          ? idx
+          : ZENCXX_THROW(zencxx::exception()) << exception::reason("Invalid indexed RGB color index")
+          ;
+    }
     /**
      * \internal Get RGB index from components according formula
      * \todo Provide refs to docs
@@ -205,7 +200,7 @@ public:
     static constexpr auto END_INDEX = 24;
 
     /**
-     * Construct from gray scale color index, which is a value in the range <tt>[0, 24]</tt>.
+     * Construct from gray scale color index, which is a value in the range <tt>[0, 23]</tt>.
      */
     constexpr explicit grayscale(const int index, const bool reset_required = true)
       : color_reset_base{reset_required}
@@ -224,7 +219,7 @@ public:
         if (color_enabler_base::is_enabled())
         {
             c.reset_if_needed(os);
-            os << get_initial_seq<TypeTag, rgb_tag>()
+            os << get_initial_seq<TypeTag, indexed_rgb_tag>()
                << c.transform_index()
                << 'm'
                ;

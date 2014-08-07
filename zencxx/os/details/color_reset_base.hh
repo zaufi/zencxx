@@ -46,7 +46,7 @@ class ZENCXXOS_EXPORT color_reset_base
 public:
     /// Remember a given requirement
     constexpr explicit color_reset_base(const bool reset_required)
-      : m_reset_required(reset_required)
+      : m_reset_required{reset_required}
     {}
     /// Issue \e reset ESC sequence if required
     std::ostream& reset_if_needed(std::ostream& os) const
