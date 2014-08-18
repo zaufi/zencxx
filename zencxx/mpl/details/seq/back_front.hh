@@ -29,7 +29,7 @@
 
 // Project specific includes
 #include <zencxx/mpl/seq_fwd.hh>
-#include <zencxx/mpl/details/variadic_sequence_tag.hh>
+#include <zencxx/mpl/v_at.hh>
 
 // Standard includes
 #include <boost/mpl/back_fwd.hpp>
@@ -50,12 +50,14 @@ struct back_impl<zencxx::mpl::details::variadic_sequence_tag>
 
 /**
  * \brief \c boost::mpl::back specialization for \c zencxx::mpl::seq
+ *
+ * Use \c zencxx::mpl::v_at_c<> and \c sizeof...() to get the last item from a variadic sequence.
  */
 template <>
-template <typename... Types, typename T>
-struct back_impl<zencxx::mpl::details::variadic_sequence_tag>::apply<zencxx::mpl::seq<Types..., T>>
+template <typename... Types>
+struct back_impl<zencxx::mpl::details::variadic_sequence_tag>::apply<zencxx::mpl::seq<Types...>>
 {
-    typedef T type;
+    typedef typename zencxx::mpl::v_at_c<sizeof...(Types) - 1, Types...>::type type;
 };
 
 /**

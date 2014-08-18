@@ -38,7 +38,7 @@ namespace zencxx { namespace mpl {
 /**
  * \brief Variadic version of \c at
  *
- * Metafunction to get item at given index \c N from variadic sequence.
+ * Metafunction to get an item at given index \c N from variadic sequence.
  *
  * \tparam N item index to get
  * \tparam Seq variadic sequence of elements
@@ -51,7 +51,7 @@ struct v_at : details::v_at_impl<N, boost::mpl::long_<0>, Seq...>
 /**
  * \brief Variadic version of \c at_c
  *
- * Metafunction to get item at given index \c N from variadic sequence.
+ * Metafunction to get an item at given index \c N from variadic sequence.
  *
  * \tparam N item index to get
  * \tparam Seq variadic sequence of elements

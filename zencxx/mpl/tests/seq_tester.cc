@@ -251,22 +251,25 @@ BOOST_AUTO_TEST_CASE(two_items_seq_test)
       , "2 expected"
       );
 }
+
 namespace {
 
 template <typename Next = void, typename T = void>
 struct fold_visitor
 {
-    static void spam()
+    static unsigned spam(const unsigned i)
     {
-        Next::spam();
+        const auto nested_i = Next::spam(i);
         std::cout << "Current type: " << dbg::type_name(T()) << std::endl;
+        return nested_i + 1;
     }
 };
 template <>
 struct fold_visitor<void, void>
 {
-    static void spam()
+    static unsigned spam(const unsigned)
     {
+        return 0;
     }
 };
 
@@ -275,21 +278,23 @@ struct fold_visitor<void, void>
 BOOST_AUTO_TEST_CASE(seq_fold_test)
 {
     typedef mpl::seq<char, short, int, long, long long, float, double, long double> seq_t;
-    boost::mpl::fold<
+    const auto count = boost::mpl::fold<
         seq_t
       , fold_visitor<>
       , fold_visitor<boost::mpl::_, boost::mpl::_>
-      >::type::spam();
+      >::type::spam(0);
+    BOOST_CHECK_EQUAL(count, boost::mpl::size<seq_t>::type::value);
 }
 
 BOOST_AUTO_TEST_CASE(seq_iter_fold_test)
 {
     typedef mpl::seq<char, short, int, long, long long, float, double, long double> seq_t;
-    boost::mpl::iter_fold<
+    const auto count = boost::mpl::iter_fold<
         seq_t
       , fold_visitor<>
       , fold_visitor<boost::mpl::_, boost::mpl::_>
-      >::type::spam();
+      >::type::spam(0);
+    BOOST_CHECK_EQUAL(count, boost::mpl::size<seq_t>::type::value);
 }
 
 BOOST_AUTO_TEST_CASE(seq_inserter_test)
