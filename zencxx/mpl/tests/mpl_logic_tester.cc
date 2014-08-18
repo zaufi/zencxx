@@ -55,11 +55,39 @@ struct not_for_integrals
 };
 }                                                           // anonymous namespace
 
-BOOST_AUTO_TEST_CASE(mpl_logic_test)
+BOOST_AUTO_TEST_CASE(mpl_logic_and_test)
 {
+    {
+        using result = mpl::v_and<boost::mpl::false_>;
+        static_assert(!result::type::value, "false expected");
+    }
+    {
+        using result = mpl::v_and<boost::mpl::true_>;
+        static_assert(result::type::value, "true expected");
+    }
+    {
+        using result = mpl::v_and<boost::mpl::false_, boost::mpl::true_>;
+        static_assert(!result::type::value, "false expected");
+    }
     {
         using result = mpl::v_and<boost::mpl::true_, boost::mpl::false_, incomplete, not_for_integrals<int>>;
         static_assert(!result::type::value, "false expected");
+    }
+}
+
+BOOST_AUTO_TEST_CASE(mpl_logic_or_test)
+{
+    {
+        using result = mpl::v_or<boost::mpl::false_>;
+        static_assert(!result::type::value, "false expected");
+    }
+    {
+        using result = mpl::v_or<boost::mpl::false_, boost::mpl::false_>;
+        static_assert(!result::type::value, "false expected");
+    }
+    {
+        using result = mpl::v_or<boost::mpl::false_, boost::mpl::false_, boost::mpl::true_>;
+        static_assert(result::type::value, "true expected");
     }
     {
         using result = mpl::v_or<boost::mpl::false_, boost::mpl::true_, incomplete, not_for_integrals<int>>;

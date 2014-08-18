@@ -48,12 +48,12 @@ struct v_or;
  *
  * Specialization to accept at least two parameters
  */
-template <typename T1, typename T2, typename... Tail>
-struct v_or<T1, T2, Tail...>
+template <typename T, typename... Tail>
+struct v_or<T, Tail...>
   : boost::mpl::eval_if<
-      T1
+      T
     , std::true_type
-    , v_or<T2, Tail...>
+    , v_or<Tail...>
     >::type
 {
 };

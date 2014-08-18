@@ -48,11 +48,11 @@ struct v_and;
  *
  * Specialization to accept at least two parameters
  */
-template <typename T1, typename T2, typename... Tail>
-struct v_and<T1, T2, Tail...>
+template <typename T, typename... Tail>
+struct v_and<T, Tail...>
   : boost::mpl::eval_if<
-      T1
-    , v_and<T2, Tail...>
+      T
+    , v_and<Tail...>
     , std::false_type
     >::type
 {
