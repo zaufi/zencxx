@@ -6,6 +6,11 @@
  * \date Tue Jul  3 21:47:38 MSK 2012 -- Initial design
  */
 /*
+ * Copyright (C) 2012-2014 Alex Turbov and contributors, all rights reserved.
+ * This is free software. It is licensed for use, modification and
+ * redistribution under the terms of the GNU Lesser General Public License,
+ * version 3 or later <http://gnu.org/licenses/lgpl.html>
+ *
  * ZenCxx is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
@@ -20,21 +25,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__MPL__DETAILS__SEQ__COPY_RANGE_IMPL_HH__
-# define __ZENCXX__MPL__DETAILS__SEQ__COPY_RANGE_IMPL_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/mpl/copy_range_fwd.hh>
-# include <zencxx/mpl/details/variadic_sequence_tag.hh>
+#include <zencxx/mpl/copy_range_fwd.hh>
+#include <zencxx/mpl/details/variadic_sequence_tag.hh>
 
 // Standard includes
-# include <boost/mpl/apply.hpp>
-# include <boost/mpl/less.hpp>
-# include <boost/mpl/less_equal.hpp>
-# include <boost/mpl/eval_if.hpp>
-# include <boost/mpl/next.hpp>
-# include <boost/mpl/push_back.hpp>
-# include <boost/mpl/unpack_args.hpp>
+#include <boost/mpl/apply.hpp>
+#include <boost/mpl/less.hpp>
+#include <boost/mpl/less_equal.hpp>
+#include <boost/mpl/eval_if.hpp>
+#include <boost/mpl/next.hpp>
+#include <boost/mpl/push_back.hpp>
+#include <boost/mpl/unpack_args.hpp>
 
 namespace zencxx { namespace mpl { namespace details {
 
@@ -222,4 +226,3 @@ struct copy_range_impl<
 };
 
 }}                                                          // namespace mpl, zencxx
-#endif                                                      // __ZENCXX__MPL__DETAILS__SEQ__COPY_RANGE_IMPL_HH__

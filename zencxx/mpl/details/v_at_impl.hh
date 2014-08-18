@@ -6,6 +6,11 @@
  * \date Sat Jun 30 22:27:47 MSK 2012 -- Initial design
  */
 /*
+ * Copyright (C) 2012-2014 Alex Turbov and contributors, all rights reserved.
+ * This is free software. It is licensed for use, modification and
+ * redistribution under the terms of the GNU Lesser General Public License,
+ * version 3 or later <http://gnu.org/licenses/lgpl.html>
+ *
  * ZenCxx is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
@@ -20,13 +25,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__MPL__DETAILS__V_AT_IMPL_HH__
-# define __ZENCXX__MPL__DETAILS__V_AT_IMPL_HH__
+#pragma once
 
 // Project specific includes
 
 // Standard includes
-# include <boost/mpl/next.hpp>
+#include <boost/mpl/next.hpp>
 
 namespace zencxx { namespace mpl { namespace details {
 
@@ -71,4 +75,3 @@ struct v_at_impl<
 };
 
 }}}                                                         // namespace details, mpl, zencxx
-#endif                                                      // __ZENCXX__MPL__DETAILS__V_AT_IMPL_HH__

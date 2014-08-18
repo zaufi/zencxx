@@ -6,6 +6,11 @@
  * \date Mon Jul  2 13:45:22 MSK 2012 -- Initial design
  */
 /*
+ * Copyright (C) 2012-2014 Alex Turbov and contributors, all rights reserved.
+ * This is free software. It is licensed for use, modification and
+ * redistribution under the terms of the GNU Lesser General Public License,
+ * version 3 or later <http://gnu.org/licenses/lgpl.html>
+ *
  * ZenCxx is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
@@ -20,17 +25,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__MPL__DETAILS__SEQ_ITER_HH__
-# define __ZENCXX__MPL__DETAILS__SEQ_ITER_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/mpl/is_seq.hh>
-# include <zencxx/mpl/v_at.hh>
+#include <zencxx/mpl/is_seq.hh>
+#include <zencxx/mpl/v_at.hh>
 
 // Standard includes
-# include <boost/mpl/iterator_tags.hpp>
-# include <boost/mpl/next.hpp>
-# include <boost/mpl/prior.hpp>
+#include <boost/mpl/iterator_tags.hpp>
+#include <boost/mpl/next.hpp>
+#include <boost/mpl/prior.hpp>
 
 namespace zencxx { namespace mpl { namespace details {
 
@@ -130,4 +134,3 @@ struct seq_iter<boost::mpl::long_<0>, seq<>>
 };
 
 }}}                                                         // namespace details, mpl, zencxx
-#endif                                                      // __ZENCXX__MPL__DETAILS__SEQ_ITER_HH__

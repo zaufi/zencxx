@@ -6,6 +6,11 @@
  * \date Sun Jul  8 20:43:05 MSK 2012 -- Initial design
  */
 /*
+ * Copyright (C) 2012-2014 Alex Turbov and contributors, all rights reserved.
+ * This is free software. It is licensed for use, modification and
+ * redistribution under the terms of the GNU Lesser General Public License,
+ * version 3 or later <http://gnu.org/licenses/lgpl.html>
+ *
  * ZenCxx is free software: you can redistribute it and/or modify it
  * under the terms of the GNU Lesser General Public License as published
  * by the Free Software Foundation, either version 3 of the License, or
@@ -20,14 +25,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__MPL__PAIR_HH__
-# define __ZENCXX__MPL__PAIR_HH__
+#pragma once
 
 // Project specific includes
 
 // Standard includes
-# include <boost/mpl/pair.hpp>
-# include <boost/mpl/quote.hpp>
+#include <boost/mpl/pair.hpp>
+#include <boost/mpl/quote.hpp>
 
 namespace zencxx { namespace mpl {
 
@@ -50,4 +54,3 @@ typedef boost::mpl::quote1<boost::mpl::first> first;
 typedef boost::mpl::quote1<boost::mpl::second> second;
 
 }}                                                          // namespace mpl, zencxx
-#endif                                                      // __ZENCXX__MPL__PAIR_HH__
