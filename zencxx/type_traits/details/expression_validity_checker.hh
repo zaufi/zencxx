@@ -98,6 +98,9 @@
  *
  * note that last two parameters is C++ expressions to be validated for given type \c T and
  * a fake parameter \c t, which is of <tt>const T&</tt> type.
+ *
+ * \todo Rewrite using _Template Aliases_ (\c using keyword and separate type for
+ * \c decltype expressions).
  */
 #define ZENCXX_TT_EXPR_CHECKER_EX(                                \
     Name                                                          \

@@ -1,7 +1,7 @@
 /**
  * \file
  *
- * \brief Class tester for \c mpl_logic
+ * \brief Class tester for MPL variadic logic expressions
  *
  * \date Wed Jul 11 07:58:13 MSK 2012 -- Initial design
  */
