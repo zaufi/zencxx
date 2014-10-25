@@ -51,6 +51,8 @@ enable_testing()
 include(GenerateExportHeader)
 include(CMakePackageConfigHelpers)
 include(WriteExportDependencies)
+# Needed for doxygen version checking and declare dox generation targets
+include(GenerateDoxygenDocumentation)
 
 #---------------------------------------------------------
 # Section: Declare configurable options
@@ -338,14 +340,53 @@ add_subdirectory(zencxx)
 #---------------------------------------------------------
 
 # Setup doxygen
-set(DOXYGEN_PROJECT_BRIEF "\"ZenCXX: C++11 reusable code compilation\"")
-if(EXISTS $ENV{HOME}/.cache/doxygen/libstdc++.tag)
-    set(DOXYGEN_TAGFILES "$ENV{HOME}/.cache/doxygen/libstdc++.tag=http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/")
+if(DOXYGEN_VERSION VERSION_GREATER 1.8)
+    # Setup doxygen generator
+    if(UNIX AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND EXISTS $ENV{HOME}/.cache/doxygen/libstdc++.tag)
+        # TODO Download libstdc++ tag file
+        set(
+            DOXYGEN_TAGFILES
+                "$ENV{HOME}/.cache/doxygen/libstdc++.tag=http://gcc.gnu.org/onlinedocs/libstdc++/latest-doxygen/"
+          )
+    endif()
+    set(DOXYGEN_PROJECT_BRIEF "\"ZenCXX: C++11 reusable code compilation\"")
+    set(DOXYGEN_PROJECT_NUMBER ${ONIXS_VERSION})
+    set(DOXYGEN_PREDEFINED "DOXYGEN_RUNNING ZENCXX_EXPORT ZENCXX_NO_EXPORT ZENCXXOS_EXPORT ZENCXXOS_NO_EXPORT")
+    set(DOXYGEN_PROJECT_NUMBER ${ZENCXX_VERSION})
+    set(DOXYGEN_EXCLUDE_PATTERNS zencxx-pch.hh)
+    set(DOXYGEN_BUILTIN_STL_SUPPORT YES)
+    set(DOXYGEN_FULL_PATH_NAMES YES)
+    set(DOXYGEN_FULL_PATH_NAMES YES)
+    set(DOXYGEN_SOURCE_BROWSER YES)
+    set(DOXYGEN_STRIP_CODE_COMMENTS NO)
+    set(DOXYGEN_GENERATE_LATEX NO)
+    set(DOXYGEN_DOT_CLEANUP NO)
+    set(DOXYGEN_EXTRACT_ALL YES)
+    set(DOXYGEN_EXTRACT_PRIVATE YES)
+    set(DOXYGEN_EXTRACT_STATIC YES)
+    set(DOXYGEN_EXTRACT_LOCAL_METHODS YES)
+    set(DOXYGEN_INTERNAL_DOCS YES)
+    set(DOXYGEN_SORT_BRIEF_DOCS YES)
+    set(DOXYGEN_SORT_MEMBERS_CTORS_1ST YES)
+    set(DOXYGEN_SORT_GROUP_NAMES YES)
+    set(DOXYGEN_SORT_BY_SCOPE_NAME YES)
+
+    generate_doxygen_documentation(doxygen)
+
+    # Declare target to open generated API documentation
+    include(AddOpenTarget)
+    add_open_target(
+        show-api-dox
+        "${PROJECT_BINARY_DIR}/doc/html/index.html"
+        DEPENDS doxygen
+      )
+else()
+    message(
+        STATUS
+            "WARNING: Doxygen too old! 1.8.7 needed, but found ${DOXYGEN_VERSION}."
+            "Please get a copy from http://www.doxygen.org."
+      )
 endif()
-set(DOXYGEN_PREDEFINED "DOXYGEN_RUNNING ZENCXX_EXPORT ZENCXX_NO_EXPORT ZENCXXOS_EXPORT ZENCXXOS_NO_EXPORT")
-set(DOXYGEN_PROJECT_NUMBER ${ZENCXX_VERSION})
-set(DOXYGEN_EXCLUDE_PATTERNS zencxx-pch.hh)
-include(DefineDoxyDocsTargetIfPossible)
 
 include(DefineSkeletonGenerationTargetsIfPossible)
 define_skeleton_generation_targets(
@@ -356,14 +397,6 @@ define_skeleton_generation_targets(
     PROJECT_YEARS "2010-2014"
     ENABLE_TESTS
     USE_PRAGMA_ONCE
-  )
-
-include(AddOpenTarget)
-add_open_target(
-    show-api-documentation
-    ${CMAKE_BINARY_DIR}/doc/html/index.html
-    DEPENDS doxygen
-    COMMENT "Open API documentation"
   )
 
 include(UsePCHFile)
@@ -377,11 +410,15 @@ use_pch_file(
 # Section: Top level installs
 #---------------------------------------------------------
 
-if(NOT NO_DOXY_DOCS OR NOT NO_DOXY_DOCS STREQUAL "ON")
+if(NOT NO_DOXY_DOCS AND (DOXYGEN_VERSION VERSION_GREATER 1.8))
+    install(CODE "
+        execute_process(
+            COMMAND \"${CMAKE_COMMAND}\" --build \"${CMAKE_BINARY_DIR}\" --target doxygen
+          )
+      ")
     install(
-        DIRECTORY ${DOXYGEN_OUTPUT_DIRECTORY}/html
+        DIRECTORY ${PROJECT_BINARY_DIR}/doc/html
         DESTINATION ${CMAKE_INSTALL_DOCDIR}
-        COMPONENT ${LIBZENCXX_DOC_PACKAGE}
         PATTERN "*.html"
         PATTERN "*.svg"
         PATTERN "*.ttf"
@@ -391,6 +428,8 @@ if(NOT NO_DOXY_DOCS OR NOT NO_DOXY_DOCS STREQUAL "ON")
         PATTERN "*.md5" EXCLUDE
         PATTERN "*.dot" EXCLUDE
       )
+else()
+    message(STATUS "NOTE Doxygened documentation will not be installed!")
 endif()
 
 install(

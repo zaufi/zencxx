@@ -142,7 +142,6 @@ color get_term_color_capability()
 bool is_color_term()
 {
     const auto color_caps = get_term_color_capability();
-    std::cout << "color_caps=" << int(color_caps) << std::endl;
     return color_caps != color::unknown && color_caps != color::none;
 }
 
