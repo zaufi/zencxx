@@ -140,9 +140,9 @@ if(UNIX AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQU
     # Set some compiler options
     use_compiler_option(-pipe OUTPUT COMPILER_HAS_PIPE_OPTION)
     use_compiler_option(-Wall OUTPUT COMPILER_HAS_WALL_OPTION)
-    use_compiler_option(-std=c++11 OUTPUT CXX_COMPILER_HAS_CPP11_OPTION)
+    use_compiler_option(-std=c++1y OUTPUT CXX_COMPILER_HAS_CPP1Y_OPTION)
     if(NOT CXX_COMPILER_HAS_CPP11_OPTION)
-        message(FATAL_ERROR "C++11 compatible compiler required to build this project (gcc >= 4.8 or clang >= 3.4)")
+        message(FATAL_ERROR "C++14 compatible compiler required to build this project (gcc >= 4.9 or clang >= 3.5)")
     endif()
 
     # Try to handle possible sanitizer options

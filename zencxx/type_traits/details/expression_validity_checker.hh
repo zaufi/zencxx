@@ -48,8 +48,7 @@
  *
  *      template <TplParamsT>
  *      static UNSPECIFIED_TYPE test(TestTplArgsT, decltype(EXPRESSION-TO-CHECK, ... unspecified ...));
- *      };
- *  }
+ *  };
  *  template <>
  *  struct checker-name : std::is_same<
  *      decltype(UNSPECIFIED_STRUCT::template test<TestInstParamsT>(TestInstArgsT, ... unspecified ... ) )
@@ -80,7 +79,7 @@
  * \endcode
  * and we want to write a type-checker which will test arbirtary type \c T for some requirements:
  * - is it constructible from \c int
- * - is instance of \c T has a public member-function <tt>bar(const std::string&)</tt>
+ * - is instance of \c T has a public member-function `bar(const std::string&)`
  *
  * to do so we can use \c ZENCXX_TT_EXPR_CHECKER_EX as the following:
  * \code

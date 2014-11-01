@@ -1,12 +1,12 @@
 /**
  * \file
  *
- * \brief Metafunction to check if expression \c *var is valid
+ * \brief Class \c zencxx::details::is_valid (interface)
  *
- * \date Tue Jul 23 08:58:06 MSK 2013 -- Initial design
+ * \date Sun Nov  2 00:34:45 MSK 2014 -- Initial design
  */
 /*
- * Copyright (C) 2013 Alex Turbov and contributors, all rights reserved.
+ * Copyright (C) 2010-2014 Alex Turbov and contributors, all rights reserved.
  * This is free software. It is licensed for use, modification and
  * redistribution under the terms of the GNU Lesser General Public License,
  * version 3 or later <http://gnu.org/licenses/lgpl.html>
@@ -28,19 +28,34 @@
 #pragma once
 
 // Project specific includes
-#include <zencxx/type_traits/details/is_valid.hh>
+#include <zencxx/type_traits/details/void_t.hh>
 
 // Standard includes
 #include <type_traits>
 
 namespace zencxx { namespace details {
-template <typename T>
-using dereference_t = decltype(*std::declval<T>());
-}                                                           // namespace details
-/**
- * \brief Check if variables of type \c T can be dereferenced
- */
-template <typename T>
-using is_dereferenceable = details::is_valid<T, details::dereference_t>;
 
-}                                                           // namespace zencxx
+/**
+ * \brief Helper class for type_traits library
+ *
+ * \sa "Modern Template Metaprogramming - A Compendium" presentation from CppCon2014
+ *
+ */
+template <
+    typename T
+  , template <typename...>
+    class Op
+  , typename = void
+  >
+struct is_valid : public std::false_type
+{};
+
+template <
+    typename T
+  , template <typename>
+    class Op
+  >
+struct is_valid<T, Op, void_t<Op<T>>> : public std::true_type
+{};
+
+}}                                                          // namespace details, zencxx

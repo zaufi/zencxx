@@ -28,27 +28,17 @@
 #pragma once
 
 // Project specific includes
-#include <zencxx/type_traits/details/expression_validity_checker.hh>
+#include <zencxx/type_traits/details/is_valid.hh>
 
 // Standard includes
+#include <type_traits>
 
-namespace zencxx {
-
-/**
- * Generate \c is_pre_incrementable metafunction
- *
- * \note To make sure that \c ++ is not applicable to \c const and literal types
- * \c std::declval used w/ \c T&.
- */
-ZENCXX_TT_EXPR_CHECKER(
-    is_incrementable
-  , (typename T)
-  , (T)
-  , (++std::declval<T&>())
-  );
+namespace zencxx { namespace details {
+template <typename T>
+using preincrement_t = decltype(++std::declval<T&>());
+}                                                           // namespace details
 
 /**
- * \struct is_incrementable
  * \brief Check if variables of type \c T can be (prefix) incremented
  *
  * According Standard, section 5.3.2:
@@ -71,5 +61,7 @@ ZENCXX_TT_EXPR_CHECKER(
  * work as expected and I see no reason to make smth more complicated... until some unexpected
  * failure has happened.
  */
+template <typename T>
+using is_incrementable = details::is_valid<T, details::preincrement_t>;
 
 }                                                           // namespace zencxx
