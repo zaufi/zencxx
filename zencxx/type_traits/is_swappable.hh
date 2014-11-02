@@ -28,66 +28,45 @@
 #pragma once
 
 // Project specific includes
-#include <zencxx/type_traits/details/expression_validity_checker.hh>
+#include <zencxx/type_traits/details/is_valid.hh>
 
 // Standard includes
 #include <utility>
 
-namespace zencxx {
+namespace zencxx { namespace details {
 
-// Generate \c is_swappable_adl metafunction
-ZENCXX_TT_EXPR_CHECKER_EX(
-    is_swappable_adl
-  , (typename T, typename U)
-  , (T& t, U& u)
-  , (T, U)
-  , (std::declval<T&>(), std::declval<U&>())
-  , swap(t, u)
-  );
+template <typename T>
+using swap_with_adl_t = decltype(swap(std::declval<T&>(), std::declval<T&>()));
 
-// Generate \c is_swappable_with_std_swap metafunction
-ZENCXX_TT_EXPR_CHECKER_EX(
-    is_swappable_with_std_swap
-  , (typename T, typename U)
-  , (T& t, U& u)
-  , (T, U)
-  , (std::declval<T&>(), std::declval<U&>())
-  , std::swap(t, u)
-  );
-
-namespace details {
-template <typename T, typename U>
-struct is_swappable_impl : std::integral_constant<
-    bool
-  , is_swappable_with_std_swap<T, U>::value || is_swappable_adl<T, U>::value
-  >
-{};
 }                                                           // namespace details
 
 /**
- * \brief Metafunction to check is given types \c T and \c U conform to \e Swappable concept
+ * \brief Metafunction to check is given type \c T conform to \e Swappable concept
  *
  * According 17.6.3.2: An object \c t is swappable with an object \c u if and only if:
- * - the expressions <tt>swap(t, u)</tt> and <tt>swap(u, t)</tt> are valid when evaluated
+ * - the expressions `swap(t, u)` and `swap(u, t)` are valid when evaluated
  * in the context described below, and ...
  *
- * The context in which <tt>swap(t, u)</tt> and <tt>swap(u, t)</tt> are evaluated shall
+ * The context in which `swap(t, u)` and `swap(u, t)` are evaluated shall
  * ensure that a binary non-member function named \c swap is selected via overload
  * resolution (13.3) on a candidate set that includes:
- * - the two swap function templates defined in <utility> (20.2) and
+ * - the two swap function templates defined in `<utility>` (20.2) and
  * - the lookup set produced by argument-dependent lookup (3.4.2).
- */
-template <typename... T>
-struct is_swappable;
-
-template <typename T, typename U>
-struct is_swappable<T, U> : details::is_swappable_impl<T, U> {};
-
-/**
- * \brief Metafunction to check if instances of \c T can be swapped with each other
- * according \e Swappable concept as defined in The Standard.
+ *
+ * \attention It is not possible to check if `std::swap(t, u)` valid for a particular
+ * type using \c decltype, as it done for ADL based call. The reason of that is a
+ * \c swap declaration! It is a \b template function, so always be valid! Due
+ * \c decltype will not check the body, it would check only a function signature:
+ * i.e. function is found via resolution, so call is possible. It wouldn't instantiate
+ * the function body, so no further checks (if type is move constructible/assignable)
+ * would take place.
  */
 template <typename T>
-struct is_swappable<T> : details::is_swappable_impl<T, T> {};
+struct is_swappable : std::integral_constant<
+    bool
+  , std::is_move_constructible<T>::value && std::is_move_assignable<T>::value
+      || details::is_valid<details::swap_with_adl_t, T>::value
+  >
+{};
 
 }                                                           // namespace zencxx

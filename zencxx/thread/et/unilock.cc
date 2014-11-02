@@ -38,7 +38,7 @@ template bool unilock<
     priority_queue_adaptor<
         default_scheduler<exclusive_lock>
       >
-  >::lock_decorator<int>(
+  >::template lock_decorator<int>(
         bool(unilock<priority_queue_adaptor<default_scheduler<exclusive_lock>>>::*)(
             boost::unique_lock<boost::mutex>&
           , int
@@ -54,7 +54,7 @@ template bool unilock<
     priority_queue_adaptor<
         default_scheduler<rw_lock>
       >
-  >::lock_decorator<int, rw_lock::type>(
+  >::template lock_decorator<int, rw_lock::type>(
         bool(unilock<priority_queue_adaptor<default_scheduler<rw_lock>>>::*)(
             boost::unique_lock<boost::mutex>&
           , int

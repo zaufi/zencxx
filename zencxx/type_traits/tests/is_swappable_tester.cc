@@ -27,8 +27,10 @@
 
 // Project specific includes
 #include <zencxx/type_traits/is_swappable.hh>
+#include <zencxx/debug/type_name.hh>
 
 // Standard includes
+#include <boost/noncopyable.hpp>
 #include <boost/test/auto_unit_test.hpp>
 // Include the following file if u need to validate some text results
 // #include <boost/test/output_test_stream.hpp>
@@ -40,38 +42,50 @@
 // using boost::test_tools::output_test_stream;
 
 namespace test {
-struct not_swappable {};
+struct not_swappable
+{
+    /// Delete copy ctor
+    not_swappable(const not_swappable&) = delete;
+    /// Delete copy-assign operator
+    not_swappable& operator=(const not_swappable&) = delete;
+    /// Delete move ctor
+    not_swappable(not_swappable&&) = delete;
+    /// Delete move-assign operator
+    not_swappable& operator=(not_swappable&&) = delete;
+};
+
 struct foo {};
+void swap(foo&, foo&) {}
+
 struct bar {};
-void swap(foo&, bar&) {}
-void swap(bar&, foo&) {}
 }                                                           // namespace test
 
 namespace {
-struct foo {};
+struct foo
+{
+    boost::noncopyable m_member;
+};
 struct bar {};
-void swap(foo&, bar&) {}
+void swap(bar&, bar&) {}
 }                                                           // anonymous namespace
 
 
-BOOST_AUTO_TEST_CASE(is_swappable_adl_test)
-{
-    BOOST_CHECK_EQUAL((zencxx::is_swappable_adl<test::foo, test::bar>::value), true);
-    BOOST_CHECK_EQUAL((zencxx::is_swappable_adl<foo, bar>::value), true);
-}
-
 BOOST_AUTO_TEST_CASE(is_swappable_test)
 {
-    BOOST_CHECK_EQUAL((zencxx::is_swappable<int, char*>::value), false);
-    BOOST_CHECK_EQUAL((zencxx::is_swappable<test::not_swappable, test::foo>::value), false);
+    // Trivial types should be swappable w/ std::swap
+    BOOST_CHECK_EQUAL((zencxx::is_swappable<int>::value), true);
+    BOOST_CHECK_EQUAL((zencxx::is_swappable<char*>::value), true);
 
-    // Should be swappable w/ std::swap
-    BOOST_CHECK_EQUAL((zencxx::is_swappable<int, int>::value), true);
-    BOOST_CHECK_EQUAL((zencxx::is_swappable<char*, char*>::value), true);
+    // No corresponsing swap()! But move constructible/assignable by default.
+    BOOST_CHECK_EQUAL((zencxx::is_swappable<test::bar>::value), true);
+
+    // Not a move constructible/assignable, so can't be swapped
+    BOOST_CHECK_EQUAL((zencxx::is_swappable<test::not_swappable>::value), false);
 
     // Swappable due ADL
-    BOOST_CHECK_EQUAL((zencxx::is_swappable<test::foo, test::bar>::value), true);
-    BOOST_CHECK_EQUAL((zencxx::is_swappable<foo, bar>::value), true);
-    // NOTE No corresponsing swap()!
-    BOOST_CHECK_EQUAL((zencxx::is_swappable<bar, foo>::value), false);
+    BOOST_CHECK_EQUAL((zencxx::is_swappable<test::foo>::value), true);
+    BOOST_CHECK_EQUAL((zencxx::is_swappable<bar>::value), true);
+
+    // Not swappable due a "bad" member
+    BOOST_CHECK_EQUAL((zencxx::is_swappable<foo>::value), false);
 }
