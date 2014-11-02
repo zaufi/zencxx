@@ -42,20 +42,30 @@ namespace zencxx { namespace details {
  *
  */
 template <
-    typename T
-  , template <typename...>
+    template <typename...>
     class Op
+  , typename T1
+  , typename T2 = T1
   , typename = void
   >
 struct is_valid : public std::false_type
 {};
 
 template <
-    typename T
-  , template <typename>
+    template <typename>
     class Op
+  , typename T
   >
-struct is_valid<T, Op, void_t<Op<T>>> : public std::true_type
+struct is_valid<Op, T, T, void_t<Op<T>>> : public std::true_type
+{};
+
+template <
+    template <typename, typename>
+    class Op
+  , typename T1
+  , typename T2
+  >
+struct is_valid<Op, T1, T2, void_t<Op<T1, T2>>> : public std::true_type
 {};
 
 }}                                                          // namespace details, zencxx

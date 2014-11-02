@@ -23,17 +23,21 @@
 #pragma once
 
 // Project specific includes
-#include <zencxx/type_traits/details/expression_validity_checker.hh>
+#include <zencxx/type_traits/details/is_valid.hh>
 
 // Standard includes
+#include <utility>
 
-namespace zencxx {
-/// Generate \c has_left_shift metafunction
-ZENCXX_TT_EXPR_CHECKER(has_left_shift, (typename L, typename R), (L, R), (std::declval<L>() << std::declval<R>()));
+namespace zencxx {namespace details {
+
+template <typename L, typename R>
+using left_shift_t = decltype(std::declval<L>() << std::declval<R>());
+
+}                                                           // namespace details
 
 /**
  * \struct has_left_shift
- * \brief Metafunction to check if expression <tt>l << r</tt> is valid
+ * \brief Metafunction to check if expression `l << r` is valid
  *
  * ... where \c l is a variable of type \c L and \c r has type of \c R.
  *
@@ -50,4 +54,8 @@ ZENCXX_TT_EXPR_CHECKER(has_left_shift, (typename L, typename R), (L, R), (std::d
  *  static_assert(has_left_shift<int, std::string>::value, "int can't be shifted by std::string");
  * \endcode
  */
+template <typename L, typename R>
+struct has_left_shift : details::is_valid<details::left_shift_t, L, R>
+{};
+
 }                                                           // namespace zencxx

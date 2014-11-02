@@ -31,11 +31,13 @@
 #include <zencxx/type_traits/details/is_valid.hh>
 
 // Standard includes
-#include <type_traits>
+#include <utility>
 
 namespace zencxx { namespace details {
+
 template <typename T>
 using preincrement_t = decltype(++std::declval<T&>());
+
 }                                                           // namespace details
 
 /**
@@ -62,6 +64,7 @@ using preincrement_t = decltype(++std::declval<T&>());
  * failure has happened.
  */
 template <typename T>
-using is_incrementable = details::is_valid<T, details::preincrement_t>;
+struct is_incrementable : details::is_valid<details::preincrement_t, T>
+{};
 
 }                                                           // namespace zencxx

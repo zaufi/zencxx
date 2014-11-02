@@ -49,7 +49,7 @@ template <typename T>
 using copy_assignable_t = decltype(std::declval<T&>() = std::declval<const T&>());
 
 template <typename T>
-using is_copy_assignable = zencxx::details::is_valid<T, copy_assignable_t>;
+using is_copy_assignable = zencxx::details::is_valid<copy_assignable_t, T>;
 
 struct almost_test
 {
@@ -70,8 +70,8 @@ using has_foo_string_method_t = decltype(std::declval<T>().foo(std::declval<cons
 
 template <typename T>
 using is_looks_like_test = zencxx::mpl::v_and<
-    zencxx::details::is_valid<T, construct_from_int_t>
-  , zencxx::details::is_valid<T, has_foo_string_method_t>
+    zencxx::details::is_valid<construct_from_int_t, T>
+  , zencxx::details::is_valid<has_foo_string_method_t, T>
   >;
 }                                                           // anonymous namespace
 

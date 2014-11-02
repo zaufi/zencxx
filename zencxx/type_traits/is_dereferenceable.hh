@@ -31,16 +31,19 @@
 #include <zencxx/type_traits/details/is_valid.hh>
 
 // Standard includes
-#include <type_traits>
+#include <utility>
 
 namespace zencxx { namespace details {
+
 template <typename T>
 using dereference_t = decltype(*std::declval<T>());
+
 }                                                           // namespace details
 /**
  * \brief Check if variables of type \c T can be dereferenced
  */
 template <typename T>
-using is_dereferenceable = details::is_valid<T, details::dereference_t>;
+struct is_dereferenceable : details::is_valid<details::dereference_t, T>
+{};
 
 }                                                           // namespace zencxx
