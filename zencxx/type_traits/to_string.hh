@@ -28,31 +28,34 @@
 #pragma once
 
 // Project specific includes
-#include <zencxx/type_traits/details/expression_validity_checker.hh>
+#include <zencxx/type_traits/details/is_valid.hh>
 
 // Standard includes
 #include <string>
+#include <utility>
 
-namespace zencxx {
+namespace zencxx { namespace details {
 
-/// Generate \c has_to_string_member metafunction
-ZENCXX_TT_EXPR_CHECKER_EX(
-    has_to_string_member
-  , (typename T)
-  , (std::string& out_str)
-  , (T)
-  , (std::declval<std::string&>())
-  , out_str = std::declval<const T&>().to_string()
-  );
+template <typename T>
+using call_to_string_member_t = decltype(std::declval<const T&>().to_string());
 
-/// Generate \c has_to_string_adl metafunction
-ZENCXX_TT_EXPR_CHECKER_EX(
-    has_to_string_adl
-  , (typename T)
-  , (std::string& out_str)
-  , (T)
-  , (std::declval<std::string&>())
-  , out_str = to_string(std::declval<const T&>())
-  );
+template <typename T>
+using call_to_string_adl_t = decltype(to_string(std::declval<const T&>()));
+
+}                                                           // namespace details
+
+/**
+ * \brief Metafunciton to check if given type \c T has \c to_string member function.
+ */
+template <typename T>
+struct has_to_string_member : public details::is_valid<details::call_to_string_member_t, T>
+{};
+
+/**
+ * \brief Metafunciton to check if given type \c T has \c to_string as a free function.
+ */
+template <typename T>
+struct has_to_string_adl : public details::is_valid<details::call_to_string_adl_t, T>
+{};
 
 }                                                           // namespace zencxx
