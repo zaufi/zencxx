@@ -1,3 +1,9 @@
+if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    set(
+        ZENCXX_THREAD_EXTRA_SOURCES
+        et/unilock.cc
+      )
+endif()
 add_library(
     zencxxthread
     ${ZENCXX_LIB_TYPE}
@@ -8,7 +14,7 @@ add_library(
     et/fifo_adaptor.cc
     et/parameterized_adaptor.cc
     et/priority_queue_adaptor.cc
-    et/unilock.cc
+    ${ZENCXX_THREAD_EXTRA_SOURCES}
   )
 
 target_link_libraries(
