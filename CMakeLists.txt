@@ -12,21 +12,21 @@ cmake_minimum_required(VERSION 2.8.12)
 # (used for unit tests)
 cmake_policy(SET CMP0002 OLD)
 cmake_policy(SET CMP0022 NEW)
+cmake_policy(SET CMP0048 NEW)
 
-project(zencxx CXX)
-
-set(ZENCXX_MAJOR 0)
-set(ZENCXX_MINOR 2)
-set(ZENCXX_PATCH 1)
 # Include build number if specified
 # NOTE This feature used by build server to make a packages that
 # would differ from previous build.
-if (ZENCXX_BUILD_NUMBER)
-    set(ZENCXX_VERSION ${ZENCXX_MAJOR}.${ZENCXX_MINOR}.${ZENCXX_PATCH}.${ZENCXX_BUILD_NUMBER})
-else()
-    set(ZENCXX_VERSION ${ZENCXX_MAJOR}.${ZENCXX_MINOR}.${ZENCXX_PATCH})
+# NOTE BUILD_NUMBER environment variable will be set by TeamCity at build time
+if(ZENCXX_BUILD_NUMBER)
+    set(_TWEAK_VERSION_TAIL ".${ZENCXX_BUILD_NUMBER}")
+elseif ($ENV{BUILD_NUMBER})
+    set(_TWEAK_VERSION_TAIL ".$ENV{BUILD_NUMBER}")
 endif()
-message(STATUS "Configuring ${PROJECT_NAME} ${ZENCXX_VERSION}")
+
+project(zencxx VERSION 0.2.2${_TWEAK_VERSION_TAIL} LANGUAGES CXX)
+
+message(STATUS "Configuring ${PROJECT_NAME} ${PROJECT_VERSION}")
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 
@@ -38,10 +38,10 @@ include(CTest)
 # Define install destination dirs
 include(GNUInstallDirs)
 # Fix some paths to allow this package to be multislotted (in terms of Gentoo)
-set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/zencxx-${ZENCXX_VERSION})
-set(CMAKE_INSTALL_PKGLIBDIR ${CMAKE_INSTALL_LIBDIR}/zencxx-${ZENCXX_VERSION})
-set(CMAKE_INSTALL_DOCDIR ${CMAKE_INSTALL_DOCDIR}-${ZENCXX_VERSION})
-set(CMAKE_INSTALL_CMAKE_MODULESDIR ${CMAKE_INSTALL_LIBDIR}/zencxx-${ZENCXX_VERSION}/cmake)
+set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/zencxx-${PROJECT_VERSION})
+set(CMAKE_INSTALL_PKGLIBDIR ${CMAKE_INSTALL_LIBDIR}/zencxx-${PROJECT_VERSION})
+set(CMAKE_INSTALL_DOCDIR ${CMAKE_INSTALL_DOCDIR}-${PROJECT_VERSION})
+set(CMAKE_INSTALL_CMAKE_MODULESDIR ${CMAKE_INSTALL_LIBDIR}/zencxx-${PROJECT_VERSION}/cmake)
 
 # Custom (from package's cmake/modules/ directory)
 include(AddBoostTests)
@@ -140,8 +140,8 @@ if(UNIX AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQU
     # Set some compiler options
     use_compiler_option(-pipe OUTPUT COMPILER_HAS_PIPE_OPTION)
     use_compiler_option(-Wall OUTPUT COMPILER_HAS_WALL_OPTION)
-    use_compiler_option(-std=c++1y OUTPUT CXX_COMPILER_HAS_CPP1Y_OPTION)
-    if(NOT CXX_COMPILER_HAS_CPP11_OPTION)
+    use_compiler_option(-std=c++14 OUTPUT CXX_COMPILER_HAS_CPP14_OPTION)
+    if(NOT CXX_COMPILER_HAS_CPP14_OPTION)
         message(FATAL_ERROR "C++14 compatible compiler required to build this project (gcc >= 4.9 or clang >= 3.5)")
     endif()
 
@@ -204,7 +204,7 @@ configure_package_config_file(
   )
 write_basic_package_version_file(
     zencxx-config-version.cmake
-    VERSION ${ZENCXX_VERSION}
+    VERSION ${PROJECT_VERSION}
     COMPATIBILITY AnyNewerVersion
   )
 
@@ -271,7 +271,7 @@ if(DISTRIB_PKG_FMT STREQUAL "DEB")
       )
 
     set_common_package_options(
-        PROJECT_VERSION "${ZENCXX_VERSION}"
+        PROJECT_VERSION "${PROJECT_VERSION}"
         VENDOR_NAME "Alex Turbov"
         VENDOR_CONTACT "Alex Turbov <i.zaufi@gmail.com>"
         BUILD_FLAVOUR "${CPACK_BUILD_FLAVOUR}"
@@ -284,7 +284,7 @@ if(DISTRIB_PKG_FMT STREQUAL "DEB")
         DEPLOY_TO ${ZENCXX_DEB_REPOSITORY}
       )
 
-    set(PKG_VERSION "${ZENCXX_VERSION}-0ubuntu2")
+    set(PKG_VERSION "${PROJECT_VERSION}-0ubuntu2")
 
     add_package(
         NAME libzencxx
@@ -352,7 +352,7 @@ if(DOXYGEN_VERSION VERSION_GREATER 1.8)
     set(DOXYGEN_PROJECT_BRIEF "\"ZenCXX: C++11 reusable code compilation\"")
     set(DOXYGEN_PROJECT_NUMBER ${ONIXS_VERSION})
     set(DOXYGEN_PREDEFINED "DOXYGEN_RUNNING ZENCXX_EXPORT ZENCXX_NO_EXPORT ZENCXXOS_EXPORT ZENCXXOS_NO_EXPORT")
-    set(DOXYGEN_PROJECT_NUMBER ${ZENCXX_VERSION})
+    set(DOXYGEN_PROJECT_NUMBER ${PROJECT_VERSION})
     set(DOXYGEN_EXCLUDE_PATTERNS zencxx-pch.hh)
     set(DOXYGEN_BUILTIN_STL_SUPPORT YES)
     set(DOXYGEN_FULL_PATH_NAMES YES)

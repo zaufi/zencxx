@@ -5,9 +5,10 @@
 # (as recommended by CMake finder module guidelines):
 #   ZENCXX_FOUND          - is package found
 #   ZENCXX_INSTALL_PREFIX - install prefix used at configuration time
-#   ZENCXX_VERSION_STRING - found package version
-#   ZENCXX_INCLUDE_DIRS   - dir w/ header files
+#   ZENCXX_VERSION        - found package version
 #   ZENCXX_DEFINITIONS    - other than `-I' compiler flags
+#   ZENCXX_INCLUDE_DIRS   - dir w/ header files
+#   ZENCXX_LIBRARY_DIRS   - dir w/ compiled libraries
 #
 # Some other variables might be useful as well:
 #   ZENCXX_VERSION_MAJOR
@@ -51,13 +52,14 @@ if(NOT ZENCXX_CMAKE_MODULESDIR)
 endif()
 
 # Setup some version strings as recommended by CMake guidelines
-set(ZENCXX_VERSION_STRING "@ZENCXX_VERSION@")
-set(ZENCXX_VERSION_MAJOR "@ZENCXX_MAJOR@")
-set(ZENCXX_VERSION_MINOR "@ZENCXX_MINOR@")
-set(ZENCXX_VERSION_PATCH "@ZENCXX_PATCH@")
+set(ZENCXX_VERSION "@PROJECT_VERSION@")
+set(ZENCXX_VERSION_MAJOR "@PROJECT_VERSION_MAJOR@")
+set(ZENCXX_VERSION_MINOR "@PROJECT_VERSION_MINOR@")
+set(ZENCXX_VERSION_PATCH "@PROJECT_VERSION_PATCH@")
 
 # Setup "global" #include paths
 set(ZENCXX_INCLUDE_DIRS @PACKAGE_CMAKE_INSTALL_INCLUDEDIR@ @Boost_INCLUDE_DIRS@)
+set(ZENCXX_LIBRARY_DIRS @PACKAGE_CMAKE_INSTALL_LIBDIR@ @Boost_LIBRARY_DIRS@)
 
 # Find components if requested
 set(_ZENCXX_NOTFOUND_MESSAGE)
