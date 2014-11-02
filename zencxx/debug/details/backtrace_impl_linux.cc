@@ -35,7 +35,7 @@
 #include <iterator>
 #include <memory>
 
-namespace zencxx { namespace debug { namespace details { namespace linux_impl {
+namespace zencxx { namespace debug { namespace details { inline namespace linux_impl {
 /**
  * \brief Collect back traces information
  *

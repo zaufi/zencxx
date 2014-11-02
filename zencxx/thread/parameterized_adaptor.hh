@@ -35,7 +35,7 @@
 #include <cassert>
 #include <map>
 
-namespace zencxx { namespace thread {
+namespace zencxx { inline namespace thread {
 
 /**
  * \brief Parameterized scheduler adds additional parameter to lock and unlock.
