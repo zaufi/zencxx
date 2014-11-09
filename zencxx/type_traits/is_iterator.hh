@@ -112,7 +112,7 @@ struct check_preincrement_type : boost::mpl::eval_if<
  * The Standard require that \e Iterator concept must have the following
  * semantic:
  *  - \c T satisfies the \e CopyConstructible, \e CopyAssignable, and \e Destructible
- * requirements (17.6.3.1) and lvalues of type \c T are swappable (17.6.3.2), and
+ * requirements (17.6.3.1) and \e lvalues of type \c T are swappable (17.6.3.2), and
  *  - the expressions in Table 106 are valid and have the indicated semantics.
  *
  * The valid expressions are:

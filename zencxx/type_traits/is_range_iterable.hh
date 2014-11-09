@@ -28,16 +28,14 @@
 #pragma once
 
 // Project specific includes
-#include <zencxx/type_traits/details/result_of_expression.hh>
-#include <zencxx/type_traits/begin_end.hh>
+#include <zencxx/type_traits/details/is_valid.hh>
 #include <zencxx/type_traits/is_iterator.hh>
 #include <zencxx/mpl/v_and.hh>
 #include <zencxx/mpl/v_or.hh>
 
 // Standard includes
-#include <boost/mpl/eval_if.hpp>
-#include <type_traits>
-#include <utility>
+#include <cstddef>                                          // for std::size_t
+#include <utility>                                          // for std::declval
 
 namespace zencxx { namespace details {
 
@@ -53,32 +51,6 @@ using call_end_member_t = decltype(std::declval<T&>().end());
 template <typename T>
 using call_end_adl_t = decltype(end(std::declval<T&>()));
 
-ZENCXX_TT_RESULT_OF_EXPR(result_of_begin_member, (typename T), std::declval<T&>().begin());
-ZENCXX_TT_RESULT_OF_EXPR(result_of_begin_adl, (typename T), begin(std::declval<T&>()));
-ZENCXX_TT_RESULT_OF_EXPR(result_of_end_member, (typename T), std::declval<T&>().end());
-ZENCXX_TT_RESULT_OF_EXPR(result_of_end_adl, (typename T), end(std::declval<T&>()));
-
-/// \todo Replace w/ \c boost::mpl
-template <typename T, template <typename> class ResultGetter>
-struct is_result_type_is_iterator
-{
-    typedef typename is_iterator<
-        typename ResultGetter<T>::type
-      >::type type;
-};
-
-template <
-    typename T
-  , template <typename> class Checker
-  , template <typename> class ResultGetter
-  >
-struct ri_validate_part
-  : boost::mpl::eval_if<
-      Checker<T>
-    , is_result_type_is_iterator<T, ResultGetter>
-    , std::false_type
-    >::type
-{};
 }                                                           // namespace details
 
 /**
@@ -94,19 +66,23 @@ struct ri_validate_part
  * \c __range.end(), respectively;
  * - otherwise, \e begin-expr and \e end-expr are \c begin(__range) and \c end(__range),
  * respectively, where \c begin and \c end are looked up with argument-dependent lookup (3.4.2).
- * For the purposes of this name lookup, namespace std is an associated namespace.
+ * For the purposes of this name lookup, namespace \c std is an associated namespace.
  *
  */
 template <typename T>
 struct is_range_iterable
   : mpl::v_or<
       mpl::v_and<
-          details::ri_validate_part<T, has_begin_member, details::result_of_begin_member>
-        , details::ri_validate_part<T, has_end_member, details::result_of_end_member>
+          details::is_valid<details::call_begin_member_t, T>
+        , details::is_valid<details::call_end_member_t, T>
+        , is_iterator<typename details::is_valid<details::call_begin_member_t, T>::expression_type>
+        , is_iterator<typename details::is_valid<details::call_end_member_t, T>::expression_type>
         >
     , mpl::v_and<
-          details::ri_validate_part<T, has_begin_adl, details::result_of_begin_adl>
-        , details::ri_validate_part<T, has_end_adl, details::result_of_end_adl>
+          details::is_valid<details::call_begin_adl_t, T>
+        , details::is_valid<details::call_end_adl_t, T>
+        , is_iterator<typename details::is_valid<details::call_begin_adl_t, T>::expression_type>
+        , is_iterator<typename details::is_valid<details::call_end_adl_t, T>::expression_type>
         >
     >::type
 {};
