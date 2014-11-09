@@ -73,12 +73,12 @@ struct has_reference_type : is_valid<iterator_reference_type_t, T>
 
 /**
  * \internal Metafunction to make sure \c std::iterator_traits<T>::reference is a valid
- * and same as dereference type of lvalue of type \c T.
+ * and same as dereference type of \e lvalue of type \c T.
  */
 template <typename T>
 struct check_dereference_type : boost::mpl::eval_if<
     mpl::v_and<
-        has_reference_type<T>                               // Make sure iterator_traits nows
+        has_reference_type<T>
       , is_dereferenceable<T>
       >
   , std::is_same<
@@ -91,7 +91,7 @@ struct check_dereference_type : boost::mpl::eval_if<
 
 /**
  * \internal Metafunction to make sure the result of prefix increment
- * of lvalue of type \c T is the reference to \c T.
+ * of \e lvalue of type \c T is the reference to \c T.
  */
 template <typename T>
 struct check_preincrement_type : boost::mpl::eval_if<
@@ -110,7 +110,7 @@ struct check_preincrement_type : boost::mpl::eval_if<
  * \brief Metafunction to check is given type \c T conforms to \e Iterator concept
  *
  * The Standard require that \e Iterator concept must have the following
- * sementic:
+ * semantic:
  *  - \c T satisfies the \e CopyConstructible, \e CopyAssignable, and \e Destructible
  * requirements (17.6.3.1) and lvalues of type \c T are swappable (17.6.3.2), and
  *  - the expressions in Table 106 are valid and have the indicated semantics.
