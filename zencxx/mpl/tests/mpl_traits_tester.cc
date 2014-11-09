@@ -52,18 +52,21 @@ namespace mpl = zencxx::mpl;
 
 namespace {
 struct empty {};
+
 struct has_type
 {
     typedef void type;
 };
-struct has_apply0
+
+struct nulary
 {
     struct apply
     {
-        typedef int type;
+        typedef void type;
     };
 };
-struct has_apply1
+
+struct unary
 {
     template <typename T>
     struct apply
@@ -71,6 +74,16 @@ struct has_apply1
         typedef T type;
     };
 };
+
+struct binary
+{
+    template <typename T1, typename T2>
+    struct apply
+    {
+        typedef std::pair<T1, T2> type;
+    };
+};
+
 }                                                           // anonymous namespace
 
 BOOST_AUTO_TEST_CASE(has_type_test)
@@ -93,10 +106,16 @@ BOOST_AUTO_TEST_CASE(has_apply_test)
     static_assert(mpl::has_apply<int>::value == false, "no apply expected");
     static_assert(mpl::has_apply<empty>::value == false, "no apply expected");
 
-    static_assert(mpl::has_apply<has_apply0>::value == true, "apply expected");
-    static_assert(mpl::has_apply<has_apply1, int>::value == true, "apply expected");
+    static_assert(mpl::has_apply<nulary>::value == true, "apply expected");
+    static_assert(mpl::has_apply<unary, int>::value == true, "apply expected");
+    static_assert(mpl::has_apply<binary, int, long>::value == true, "apply expected");
 
-    // Make and check a metafunction class
+    // Make and check a real metafunction class
     using pb = boost::mpl::quote2<boost::mpl::push_back>;
     static_assert(mpl::has_apply<pb, mpl::seq<>, int>::value == true, "apply expected");
+}
+
+BOOST_AUTO_TEST_CASE(another_has_apply_test)
+{
+    BOOST_CHECK(!zencxx::mpl::has_apply<empty>::value);
 }
