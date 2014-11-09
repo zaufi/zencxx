@@ -54,10 +54,15 @@ struct almost_iterator
     typedef int value_type;
     typedef int difference_type;
     typedef int iterator_category;
+    typedef int* pointer;
+    typedef int& reference;
+
     int operator*()
     {
         return int();
     }
+    // NOTE There is no operator++, so it doesn't
+    // conforms Iterator concept
 };
 
 struct looks_like_iterator
@@ -86,6 +91,7 @@ BOOST_AUTO_TEST_CASE(is_iterator_test)
 
     BOOST_CHECK_EQUAL(is_iterator<int>::value, false);
     BOOST_CHECK_EQUAL(is_iterator<not_an_iterator>::value, false);
+    BOOST_CHECK_EQUAL(is_iterator<almost_iterator>::value, false);
     BOOST_CHECK_EQUAL(is_iterator<type_with_value_type>::value, false);
 
     BOOST_CHECK_EQUAL(is_iterator<int*>::value, true);

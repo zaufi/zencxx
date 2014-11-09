@@ -36,7 +36,7 @@
 namespace zencxx { namespace details {
 
 template <typename T>
-using preincrement_t = decltype(++std::declval<T&>());
+using prefix_increment_t = decltype(++std::declval<T&>());
 
 }                                                           // namespace details
 
@@ -64,7 +64,7 @@ using preincrement_t = decltype(++std::declval<T&>());
  * failure has happened.
  */
 template <typename T>
-struct is_incrementable : details::is_valid<details::preincrement_t, T>
+struct is_incrementable : details::is_valid<details::prefix_increment_t, T>
 {};
 
 }                                                           // namespace zencxx

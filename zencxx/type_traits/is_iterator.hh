@@ -77,10 +77,31 @@ struct has_reference_type : is_valid<iterator_reference_type_t, T>
  */
 template <typename T>
 struct check_dereference_type : boost::mpl::eval_if<
-    has_reference_type<T>
-  , std::is_same<iterator_reference_type_t<T>, dereference_t<T>>
+    mpl::v_and<
+        has_reference_type<T>                               // Make sure iterator_traits nows
+      , is_dereferenceable<T>
+      >
+  , std::is_same<
+        typename has_reference_type<T>::expression_type
+      , typename is_dereferenceable<T>::expression_type
+      >
   , std::false_type
-  >
+  >::type
+{};
+
+/**
+ * \internal Metafunction to make sure the result of prefix increment
+ * of lvalue of type \c T is the reference to \c T.
+ */
+template <typename T>
+struct check_preincrement_type : boost::mpl::eval_if<
+    is_incrementable<T>
+  , std::is_same<
+        typename std::add_lvalue_reference<T>::type
+      , typename is_incrementable<T>::expression_type
+      >
+  , std::false_type
+  >::type
 {};
 
 }                                                           // namespace details
@@ -108,9 +129,8 @@ struct is_iterator : mpl::v_and<
   , std::is_copy_assignable<T>
   , std::is_destructible<T>
   , is_swappable<T>
-  , is_dereferenceable<T>
-  , is_incrementable<T>
   , details::check_dereference_type<T>
+  , details::check_preincrement_type<T>
   >::type
 {};
 
