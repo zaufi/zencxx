@@ -40,6 +40,19 @@
 #include <utility>
 
 namespace zencxx { namespace details {
+
+template <typename T>
+using call_begin_member_t = decltype(std::declval<T&>().begin());
+
+template <typename T>
+using call_begin_adl_t = decltype(begin(std::declval<T&>()));
+
+template <typename T>
+using call_end_member_t = decltype(std::declval<T&>().end());
+
+template <typename T>
+using call_end_adl_t = decltype(end(std::declval<T&>()));
+
 ZENCXX_TT_RESULT_OF_EXPR(result_of_begin_member, (typename T), std::declval<T&>().begin());
 ZENCXX_TT_RESULT_OF_EXPR(result_of_begin_adl, (typename T), begin(std::declval<T&>()));
 ZENCXX_TT_RESULT_OF_EXPR(result_of_end_member, (typename T), std::declval<T&>().end());
@@ -73,7 +86,7 @@ struct ri_validate_part
  *
  * The Standard require the following constraints for \e range-based \e for expression:
  * - if \c _RangeT is an array type, \e begin-expr and \e end-expr are \c __range and
- * <tt>__range + __bound></tt>, respectively, where \c __bound is the array bound.
+ * `__range + __bound>`, respectively, where \c __bound is the array bound.
  * If \c _RangeT is an array of unknown size or an array of incomplete type, the program is ill-formed;
  * - if \c _RangeT is a class type, the \e unqualified-ids \c begin and \c end are looked up in the
  * scope of class \c _RangeT as if by class member access lookup (3.4.5), and if either (or both)
@@ -82,7 +95,6 @@ struct ri_validate_part
  * - otherwise, \e begin-expr and \e end-expr are \c begin(__range) and \c end(__range),
  * respectively, where \c begin and \c end are looked up with argument-dependent lookup (3.4.2).
  * For the purposes of this name lookup, namespace std is an associated namespace.
- *
  *
  */
 template <typename T>

@@ -51,6 +51,7 @@ template <
 struct is_valid : public std::false_type
 {};
 
+/// Specialize \c is_valid for unary \c Op
 template <
     template <typename>
     class Op
@@ -59,6 +60,7 @@ template <
 struct is_valid<Op, T, T, void_t<Op<T>>> : public std::true_type
 {};
 
+/// Specialize \c is_valid for binary \c Op
 template <
     template <typename, typename>
     class Op

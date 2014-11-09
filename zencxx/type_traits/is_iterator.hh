@@ -28,59 +28,64 @@
 #pragma once
 
 // Project specific includes
-#include <zencxx/type_traits/details/expression_validity_checker.hh>
+#include <zencxx/type_traits/details/is_valid.hh>
 #include <zencxx/type_traits/is_dereferenceable.hh>
 #include <zencxx/type_traits/is_incrementable.hh>
 #include <zencxx/type_traits/is_swappable.hh>
 #include <zencxx/mpl/v_and.hh>
 
 // Standard includes
-#include <boost/mpl/apply.hpp>
-#include <boost/mpl/quote.hpp>
 #include <boost/mpl/eval_if.hpp>
 #include <iterator>
 #include <type_traits>
-#include <utility>
 
-namespace zencxx {
+namespace zencxx { namespace details {
 
-ZENCXX_TT_EXPR_CHECKER(
-    has_value_type
-  , (typename T)
-  , (T)
-  , (std::declval<typename std::iterator_traits<T>::value_type>())
-  );
+/// \name Helper to get iterator nested types via traits
+//@{
+template <typename T>
+using iterator_value_type_t =
+    decltype(std::declval<typename std::iterator_traits<T>::value_type>());
 
-ZENCXX_TT_EXPR_CHECKER(
-    has_difference_type
-  , (typename T)
-  , (T)
-  , (std::declval<typename std::iterator_traits<T>::difference_type>())
-  );
+template <typename T>
+using iterator_difference_type_t =
+    decltype(std::declval<typename std::iterator_traits<T>::difference_type>());
 
-ZENCXX_TT_EXPR_CHECKER(
-    has_iterator_category_type
-  , (typename T)
-  , (T)
-  , (std::declval<typename std::iterator_traits<T>::iterator_category>())
-  );
+template <typename T>
+using iterator_iterator_category_type_t =
+    decltype(std::declval<typename std::iterator_traits<T>::iterator_category>());
 
-ZENCXX_TT_EXPR_CHECKER(
-    has_pointer_type
-  , (typename T)
-  , (T)
-  , (std::declval<typename std::iterator_traits<T>::pointer>())
-  );
+template <typename T>
+using iterator_pointer_type_t =
+    decltype(std::declval<typename std::iterator_traits<T>::pointer>());
 
-ZENCXX_TT_EXPR_CHECKER(
-    has_reference_type
-  , (typename T)
-  , (T)
-  , (std::declval<typename std::iterator_traits<T>::reference>())
-  );
+template <typename T>
+using iterator_reference_type_t =
+    decltype(std::declval<typename std::iterator_traits<T>::reference>());
+//@}
 
 /**
- * \struct is_iterator
+ * \internal Check if \c std::iterator_traits<T> has nested type \c reference
+ */
+template <typename T>
+struct has_reference_type : is_valid<iterator_reference_type_t, T>
+{};
+
+/**
+ * \internal Metafunction to make sure \c std::iterator_traits<T>::reference is a valid
+ * and same as dereference type of lvalue of type \c T.
+ */
+template <typename T>
+struct check_dereference_type : boost::mpl::eval_if<
+    has_reference_type<T>
+  , std::is_same<iterator_reference_type_t<T>, dereference_t<T>>
+  , std::false_type
+  >
+{};
+
+}                                                           // namespace details
+
+/**
  * \brief Metafunction to check is given type \c T conforms to \e Iterator concept
  *
  * The Standard require that \e Iterator concept must have the following
@@ -105,8 +110,8 @@ struct is_iterator : mpl::v_and<
   , is_swappable<T>
   , is_dereferenceable<T>
   , is_incrementable<T>
+  , details::check_dereference_type<T>
   >::type
 {};
-
 
 }                                                           // namespace zencxx

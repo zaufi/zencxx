@@ -27,6 +27,7 @@
 
 // Project specific includes
 #include <zencxx/type_traits/is_iterator.hh>
+#include <zencxx/debug/type_name.hh>
 
 // Standard includes
 #include <boost/test/auto_unit_test.hpp>
@@ -67,9 +68,10 @@ struct looks_like_iterator
     typedef int* pointer;
     typedef int& reference;
 
-    int operator*()
+    reference operator*()
     {
-        return int();
+        static auto value = 123;
+        return value;
     }
     looks_like_iterator& operator++()
     {
@@ -80,12 +82,14 @@ struct looks_like_iterator
 
 BOOST_AUTO_TEST_CASE(is_iterator_test)
 {
-    BOOST_CHECK_EQUAL(zencxx::is_iterator<int>::value, false);
-    BOOST_CHECK_EQUAL(zencxx::is_iterator<not_an_iterator>::value, false);
-    BOOST_CHECK_EQUAL(zencxx::is_iterator<type_with_value_type>::value, false);
+    using namespace zencxx;
 
-    BOOST_CHECK_EQUAL(zencxx::is_iterator<int*>::value, true);
-    BOOST_CHECK_EQUAL(zencxx::is_iterator<looks_like_iterator>::value, true);
-    BOOST_CHECK_EQUAL(zencxx::is_iterator<decltype(std::declval<std::list<int>>().begin())>::value, true);
-    BOOST_CHECK_EQUAL(zencxx::is_iterator<decltype(std::declval<std::string>().cbegin())>::value, true);
+    BOOST_CHECK_EQUAL(is_iterator<int>::value, false);
+    BOOST_CHECK_EQUAL(is_iterator<not_an_iterator>::value, false);
+    BOOST_CHECK_EQUAL(is_iterator<type_with_value_type>::value, false);
+
+    BOOST_CHECK_EQUAL(is_iterator<int*>::value, true);
+    BOOST_CHECK_EQUAL(is_iterator<looks_like_iterator>::value, true);
+    BOOST_CHECK_EQUAL(is_iterator<decltype(std::declval<std::list<int>>().begin())>::value, true);
+    BOOST_CHECK_EQUAL(is_iterator<decltype(std::declval<std::string>().cbegin())>::value, true);
 }

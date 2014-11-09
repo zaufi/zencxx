@@ -39,6 +39,7 @@ template <typename T>
 using dereference_t = decltype(*std::declval<T>());
 
 }                                                           // namespace details
+
 /**
  * \brief Check if variables of type \c T can be dereferenced
  */
