@@ -3,7 +3,6 @@ add_boost_tests(
     MODULE TypeTraitsTests
     DYN_LINK
     SOURCES
-        arbitrary_checker_tester.cc
         has_left_shift_tester.cc
         has_begin_end_tester.cc
         is_dereferenceable_tester.cc

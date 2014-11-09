@@ -32,7 +32,7 @@
 
 // Standard includes
 
-namespace zencxx { inline namespace thread {
+namespace zencxx { namespace thread {
 /**
  * \brief A matrix specification for exclusive lock.
  *

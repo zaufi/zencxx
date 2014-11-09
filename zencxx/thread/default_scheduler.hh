@@ -35,7 +35,7 @@
 
 // Standard includes
 
-namespace zencxx { inline namespace thread { namespace details {
+namespace zencxx { namespace thread { namespace details {
 /**
  * \brief Default scheduler implementation
  *

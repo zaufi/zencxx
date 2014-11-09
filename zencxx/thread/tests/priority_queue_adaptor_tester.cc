@@ -43,7 +43,7 @@
 // BOOST_CHECK(out_stream.is_equal("Test text"))
 // using boost::test_tools::output_test_stream;
 
-using namespace zencxx;
+using namespace zencxx::thread;
 
 // Single thread, priority exclusive scheduler test
 BOOST_AUTO_TEST_CASE(st_ps_unilock_test)

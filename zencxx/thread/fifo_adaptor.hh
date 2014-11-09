@@ -35,7 +35,7 @@
 #include <cassert>
 #include <vector>
 
-namespace zencxx { inline namespace thread {
+namespace zencxx { namespace thread {
 
 /**
  * \brief Simple FIFO locking policy (adaptor)

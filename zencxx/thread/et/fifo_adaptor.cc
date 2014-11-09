@@ -30,7 +30,7 @@
 
 // Standard includes
 
-namespace zencxx { inline namespace thread {
+namespace zencxx { namespace thread {
 
 template class fifo_adaptor<default_scheduler<exclusive_lock>>;
 template class fifo_adaptor<default_scheduler<rw_lock>>;

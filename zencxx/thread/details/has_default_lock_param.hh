@@ -28,21 +28,11 @@
 #pragma once
 
 // Project specific includes
-#include <zencxx/type_traits/details/expression_validity_checker.hh>
+#include <zencxx/type_traits/details/is_valid.hh>
 
 // Standard includes
 
-namespace zencxx { inline namespace thread { namespace details {
-
-/**
- * Generate \c has_default_lock_param metafunction
- */
-ZENCXX_TT_EXPR_CHECKER(
-    has_default_lock_param
-  , (typename T)
-  , (T)
-  , (T::default_lock)
-  );
+namespace zencxx { namespace thread { namespace details {
 
 /**
  * \struct has_default_lock_param
@@ -50,5 +40,16 @@ ZENCXX_TT_EXPR_CHECKER(
  *
  * \tparam T type to check
  */
+template <typename T>
+using default_lock_param_t = decltype(T::default_lock);
+
+/**
+ * \brief Metafunction to check if given type \c T has \c default_lock member
+ *
+ * \tparam T type to check
+ */
+template <typename T>
+struct has_default_lock_param : zencxx::details::is_valid<default_lock_param_t, T>
+{};
 
 }}}                                                         // namespace details, thread, zencxx

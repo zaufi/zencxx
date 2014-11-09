@@ -34,7 +34,7 @@
 #include <functional>
 #include <tuple>
 
-namespace zencxx { inline namespace thread { namespace details {
+namespace zencxx { namespace thread { namespace details {
 /// \internal Class to hold a bunch of non-type (\c std::size_t) template params
 /// used as indices to "expand" a \c tuple elements
 template <std::size_t... Indices>

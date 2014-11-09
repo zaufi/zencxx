@@ -4,6 +4,7 @@
  * \brief \c zencxx::mpl::has_type metafunction
  *
  * \date Wed Jul  4 05:07:08 MSK 2012 -- Initial design
+ * \date Sun Nov  9 08:18:01 MSK 2014 -- Migrate to improved expression checker
  */
 /*
  * Copyright (C) 2012-2014 Alex Turbov and contributors, all rights reserved.
@@ -28,17 +29,26 @@
 #pragma once
 
 // Project specific includes
-#include <zencxx/type_traits/details/expression_validity_checker.hh>
+#include <zencxx/type_traits/details/is_valid.hh>
 
 // Standard includes
-#include <utility>
+#include <utility>                                          // for std::declval
 
-namespace zencxx { namespace mpl {
+namespace zencxx { namespace mpl { namespace details {
+
+template <typename T>
+using has_type_t = decltype(std::declval<typename T::type>());
+
+}                                                           // namespace details
+
 /**
  * \attention Nowadays (boost <= 1.50) \c has_type metafunction placed in the
  * \c boost::mpl::aux, so we can't use it here (yep, it's undocumented
  * implementation details), so we have to define our own... and better one
  * because of new features of C++11 :))
  */
-ZENCXX_TT_EXPR_CHECKER(has_type, (typename T), (T), std::declval<typename T::type>());
+template <typename T>
+struct has_type : ::zencxx::details::is_valid<details::has_type_t, T>
+{};
+
 }}                                                          // namespace mpl, zencxx

@@ -33,7 +33,7 @@
 
 // Standard includes
 
-namespace zencxx { inline namespace thread { namespace details {
+namespace zencxx { namespace thread { namespace details {
 
 extern template class default_scheduler_impl<exclusive_lock, true>;
 extern template class default_scheduler_impl<exclusive_lock, false>;

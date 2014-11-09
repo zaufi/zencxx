@@ -36,6 +36,6 @@
 BOOST_AUTO_TEST_CASE(has_default_lock_param_test)
 {
     BOOST_CHECK(!zencxx::thread::details::has_default_lock_param<int>::value);
-    BOOST_CHECK(!zencxx::thread::details::has_default_lock_param<zencxx::rw_lock>::value);
-    BOOST_CHECK(zencxx::thread::details::has_default_lock_param<zencxx::exclusive_lock>::value);
+    BOOST_CHECK(!zencxx::thread::details::has_default_lock_param<zencxx::thread::rw_lock>::value);
+    BOOST_CHECK(zencxx::thread::details::has_default_lock_param<zencxx::thread::exclusive_lock>::value);
 }

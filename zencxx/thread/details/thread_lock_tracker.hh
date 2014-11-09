@@ -38,7 +38,7 @@
 #include <array>
 #include <vector>
 
-namespace zencxx { inline namespace thread { namespace details {
+namespace zencxx { namespace thread { namespace details {
 
 /**
  * \brief Class to track thread IDs and corresponding lock state

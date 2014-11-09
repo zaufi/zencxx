@@ -30,70 +30,61 @@
 #pragma once
 
 // Project specific includes
-#include <zencxx/type_traits/details/expression_validity_checker.hh>
+#include <zencxx/type_traits/details/is_valid.hh>
 
 // Standard includes
+#include <utility>                                          // for std::declval
 
-namespace zencxx {
+namespace zencxx { namespace details {
 
-/// Generate \c has_begin_member metafunction
-ZENCXX_TT_EXPR_CHECKER(
-    has_begin_member
-  , (typename T)
-  , (T)
-  , std::declval<T&>().begin()
-  );
+template <typename T>
+using call_begin_member_t = decltype(std::declval<T&>().begin());
 
-/// Generate \c has_begin_adl metafunction
-ZENCXX_TT_EXPR_CHECKER(
-    has_begin_adl
-  , (typename T)
-  , (T)
-  , begin(std::declval<T&>())
-  );
+template <typename T>
+using call_begin_adl_t = decltype(begin(std::declval<T&>()));
 
-/// Generate \c has_end_member metafunction
-ZENCXX_TT_EXPR_CHECKER(
-    has_end_member
-  , (typename T)
-  , (T)
-  , std::declval<T&>().end()
-  );
+template <typename T>
+using call_end_member_t = decltype(std::declval<T&>().end());
 
-/// Generate \c has_end_adl metafunction
-ZENCXX_TT_EXPR_CHECKER(
-    has_end_adl
-  , (typename T)
-  , (T)
-  , end(std::declval<T&>())
-  );
+template <typename T>
+using call_end_adl_t = decltype(end(std::declval<T&>()));
+
+}                                                           // namespace details
 
 /**
- * \struct has_begin_member
  * \brief Metafunction to check if given type \c T has member-function \c begin()
  *
  * \tparam T type to check
  */
+template <typename T>
+struct has_begin_member : details::is_valid<details::call_begin_member_t, T>
+{};
 
 /**
- * \struct has_end_member
  * \brief Metafunction to check if given type \c T has member-function \c end()
  *
  * \tparam T type to check
  */
+template <typename T>
+struct has_end_member : details::is_valid<details::call_end_member_t, T>
+{};
 
 /**
- * \struct has_begin_adl
  * \brief Metafunction to check if there is a free function \c begin(T&) exists
  *
  * \tparam T type to check
  */
+template <typename T>
+struct has_begin_adl : details::is_valid<details::call_begin_adl_t, T>
+{};
 
 /**
- * \struct has_end_adl
  * \brief Metafunction to check if there is a free function \c end(T&) exists
  *
  * \tparam T type to check
  */
+template <typename T>
+struct has_end_adl : details::is_valid<details::call_end_adl_t, T>
+{};
 
 }                                                           // namespace zencxx

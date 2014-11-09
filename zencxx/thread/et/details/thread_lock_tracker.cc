@@ -30,7 +30,7 @@
 
 // Standard includes
 
-namespace zencxx { inline namespace thread { namespace details {
+namespace zencxx { namespace thread { namespace details {
 
 template class thread_lock_tracker<exclusive_lock, 1ul>;
 template class thread_lock_tracker<rw_lock, 2ul>;

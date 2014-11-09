@@ -40,7 +40,7 @@
 # include <cxxabi.h>
 #endif
 
-namespace zencxx { inline namespace thread {
+namespace zencxx { namespace thread {
 /**
  * \brief Unilock - a universal lock.
  *

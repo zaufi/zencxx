@@ -30,7 +30,7 @@
 
 // Standard includes
 
-namespace zencxx { inline namespace thread {
+namespace zencxx { namespace thread {
 constexpr bool exclusive_lock::matrix[1][1];
 constexpr bool rw_lock::matrix[2][2];
 }}                                                          // namespace thread, zencxx

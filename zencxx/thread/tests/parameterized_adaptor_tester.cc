@@ -44,7 +44,7 @@
 // BOOST_CHECK(out_stream.is_equal("Test text"))
 // using boost::test_tools::output_test_stream;
 
-using namespace zencxx;
+using namespace zencxx::thread;
 
 namespace {
 constexpr auto RESOURCE_1 = 123;

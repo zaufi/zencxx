@@ -44,7 +44,7 @@
 // using boost::test_tools::output_test_stream;
 
 
-using namespace zencxx;
+using namespace zencxx::thread;
 
 BOOST_AUTO_TEST_CASE(st_fs_fifo_adaptor_test)
 {

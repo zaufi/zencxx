@@ -34,6 +34,6 @@
 
 // Standard includes
 
-namespace zencxx { inline namespace thread {
+namespace zencxx { namespace thread {
 
 }}                                                          // namespace thread, zencxx

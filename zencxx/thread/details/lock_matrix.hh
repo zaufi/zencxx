@@ -35,7 +35,7 @@
 #include <cassert>
 #include <type_traits>
 
-namespace zencxx { inline namespace thread { namespace details {
+namespace zencxx { namespace thread { namespace details {
 
 /**
  * \brief Lock compatibility matrix

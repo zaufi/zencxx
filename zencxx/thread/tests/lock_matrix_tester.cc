@@ -35,51 +35,53 @@
 // #include <boost/test/output_test_stream.hpp>
 #include <iostream>
 
+using namespace zencxx::thread;
+
 BOOST_AUTO_TEST_CASE(exclusive_lock_matrix_test)
 {
-    zencxx::thread::details::lock_matrix<zencxx::exclusive_lock> l;
+    details::lock_matrix<exclusive_lock> l;
     BOOST_CHECK_EQUAL(l.is_locked(), false);
-    BOOST_CHECK_EQUAL(l.can_lock(zencxx::exclusive_lock::lock), true);
+    BOOST_CHECK_EQUAL(l.can_lock(exclusive_lock::lock), true);
 
-    l.lock(zencxx::exclusive_lock::lock);
+    l.lock(exclusive_lock::lock);
     BOOST_CHECK_EQUAL(l.is_locked(), true);
-    BOOST_CHECK_EQUAL(l.can_lock(zencxx::exclusive_lock::lock), false);
+    BOOST_CHECK_EQUAL(l.can_lock(exclusive_lock::lock), false);
 
-    l.unlock(zencxx::exclusive_lock::lock);
+    l.unlock(exclusive_lock::lock);
     BOOST_CHECK_EQUAL(l.is_locked(), false);
-    BOOST_CHECK_EQUAL(l.can_lock(zencxx::exclusive_lock::lock), true);
+    BOOST_CHECK_EQUAL(l.can_lock(exclusive_lock::lock), true);
 }
 
 BOOST_AUTO_TEST_CASE(rw_lock_matrix_test)
 {
-    zencxx::thread::details::lock_matrix<zencxx::rw_lock> l;
+    details::lock_matrix<rw_lock> l;
     BOOST_CHECK_EQUAL(l.is_locked(), false);
-    BOOST_CHECK_EQUAL(l.can_lock(zencxx::rw_lock::read), true);
-    BOOST_CHECK_EQUAL(l.can_lock(zencxx::rw_lock::write), true);
+    BOOST_CHECK_EQUAL(l.can_lock(rw_lock::read), true);
+    BOOST_CHECK_EQUAL(l.can_lock(rw_lock::write), true);
 
-    l.lock(zencxx::rw_lock::read);
+    l.lock(rw_lock::read);
     BOOST_CHECK_EQUAL(l.is_locked(), true);
-    BOOST_CHECK_EQUAL(l.is_locked(zencxx::rw_lock::read), true);
-    BOOST_CHECK_EQUAL(l.is_locked(zencxx::rw_lock::write), false);
-    BOOST_CHECK_EQUAL(l.can_lock(zencxx::rw_lock::read), true);
-    BOOST_CHECK_EQUAL(l.can_lock(zencxx::rw_lock::write), false);
+    BOOST_CHECK_EQUAL(l.is_locked(rw_lock::read), true);
+    BOOST_CHECK_EQUAL(l.is_locked(rw_lock::write), false);
+    BOOST_CHECK_EQUAL(l.can_lock(rw_lock::read), true);
+    BOOST_CHECK_EQUAL(l.can_lock(rw_lock::write), false);
 
-    l.unlock(zencxx::rw_lock::read);
+    l.unlock(rw_lock::read);
     BOOST_CHECK_EQUAL(l.is_locked(), false);
-    BOOST_CHECK_EQUAL(l.can_lock(zencxx::rw_lock::read), true);
-    BOOST_CHECK_EQUAL(l.can_lock(zencxx::rw_lock::write), true);
+    BOOST_CHECK_EQUAL(l.can_lock(rw_lock::read), true);
+    BOOST_CHECK_EQUAL(l.can_lock(rw_lock::write), true);
 
-    l.lock(zencxx::rw_lock::write);
+    l.lock(rw_lock::write);
     BOOST_CHECK_EQUAL(l.is_locked(), true);
-    BOOST_CHECK_EQUAL(l.is_locked(zencxx::rw_lock::read), false);
-    BOOST_CHECK_EQUAL(l.is_locked(zencxx::rw_lock::write), true);
-    BOOST_CHECK_EQUAL(l.can_lock(zencxx::rw_lock::read), false);
-    BOOST_CHECK_EQUAL(l.can_lock(zencxx::rw_lock::write), false);
+    BOOST_CHECK_EQUAL(l.is_locked(rw_lock::read), false);
+    BOOST_CHECK_EQUAL(l.is_locked(rw_lock::write), true);
+    BOOST_CHECK_EQUAL(l.can_lock(rw_lock::read), false);
+    BOOST_CHECK_EQUAL(l.can_lock(rw_lock::write), false);
 
-    l.unlock(zencxx::rw_lock::write);
+    l.unlock(rw_lock::write);
     BOOST_CHECK_EQUAL(l.is_locked(), false);
-    BOOST_CHECK_EQUAL(l.can_lock(zencxx::rw_lock::read), true);
-    BOOST_CHECK_EQUAL(l.can_lock(zencxx::rw_lock::write), true);
+    BOOST_CHECK_EQUAL(l.can_lock(rw_lock::read), true);
+    BOOST_CHECK_EQUAL(l.can_lock(rw_lock::write), true);
 }
 
 /// \todo One more test w/ custom matrix

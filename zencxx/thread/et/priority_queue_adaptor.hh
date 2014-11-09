@@ -34,7 +34,7 @@
 
 // Standard includes
 
-namespace zencxx { inline namespace thread {
+namespace zencxx { namespace thread {
 
 //BEGIN Explicit instantiation of adaptor w/ default_scheduler and exclusive_lock policy
 extern template class priority_queue_adaptor<default_scheduler<exclusive_lock>>;

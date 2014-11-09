@@ -30,6 +30,7 @@
 // Project specific includes
 #include <zencxx/type_traits/details/is_valid.hh>
 #include <zencxx/type_traits/is_iterator.hh>
+#include <zencxx/type_traits/begin_end.hh>
 #include <zencxx/mpl/v_and.hh>
 #include <zencxx/mpl/v_or.hh>
 
@@ -37,21 +38,7 @@
 #include <cstddef>                                          // for std::size_t
 #include <utility>                                          // for std::declval
 
-namespace zencxx { namespace details {
-
-template <typename T>
-using call_begin_member_t = decltype(std::declval<T&>().begin());
-
-template <typename T>
-using call_begin_adl_t = decltype(begin(std::declval<T&>()));
-
-template <typename T>
-using call_end_member_t = decltype(std::declval<T&>().end());
-
-template <typename T>
-using call_end_adl_t = decltype(end(std::declval<T&>()));
-
-}                                                           // namespace details
+namespace zencxx {
 
 /**
  * \brief Type checker to test is given type \c T can be iterated w/ range based \c for
@@ -73,16 +60,16 @@ template <typename T>
 struct is_range_iterable
   : mpl::v_or<
       mpl::v_and<
-          details::is_valid<details::call_begin_member_t, T>
-        , details::is_valid<details::call_end_member_t, T>
-        , is_iterator<typename details::is_valid<details::call_begin_member_t, T>::expression_type>
-        , is_iterator<typename details::is_valid<details::call_end_member_t, T>::expression_type>
+          has_begin_member<T>
+        , has_end_member<T>
+        , is_iterator<typename has_begin_member<T>::expression_type>
+        , is_iterator<typename has_end_member<T>::expression_type>
         >
     , mpl::v_and<
-          details::is_valid<details::call_begin_adl_t, T>
-        , details::is_valid<details::call_end_adl_t, T>
-        , is_iterator<typename details::is_valid<details::call_begin_adl_t, T>::expression_type>
-        , is_iterator<typename details::is_valid<details::call_end_adl_t, T>::expression_type>
+          has_begin_adl<T>
+        , has_end_adl<T>
+        , is_iterator<typename has_begin_adl<T>::expression_type>
+        , is_iterator<typename has_end_adl<T>::expression_type>
         >
     >::type
 {};
