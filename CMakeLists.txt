@@ -12,7 +12,9 @@ cmake_minimum_required(VERSION 3.1.2)
 # (used for unit tests)
 cmake_policy(SET CMP0002 OLD)
 cmake_policy(SET CMP0022 NEW)
+cmake_policy(SET CMP0028 NEW)
 cmake_policy(SET CMP0048 NEW)
+cmake_policy(SET CMP0054 NEW)
 
 # Include build number if specified
 # NOTE This feature used by build server to make a packages that
