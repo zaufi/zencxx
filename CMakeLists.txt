@@ -1,12 +1,12 @@
 # kate: hl cmake;
 #
-# Copyright 2011-2014 by Alex Turbov <i.zaufi@gmail.com>
+# Copyright 2011-2015 by Alex Turbov <i.zaufi@gmail.com>
 #
 
 #---------------------------------------------------------
 # Section: Init cmake
 #---------------------------------------------------------
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.1.2)
 
 # Enable non unique target names in different subdirs
 # (used for unit tests)
@@ -37,11 +37,13 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
 include(CTest)
 # Define install destination dirs
 include(GNUInstallDirs)
+set(ZENCXX_VERSIONED_PATH_SUFFIX "${PROJECT_NAME}-${PROJECT_VERSION}")
 # Fix some paths to allow this package to be multislotted (in terms of Gentoo)
-set(CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_INCLUDEDIR}/zencxx-${PROJECT_VERSION})
-set(CMAKE_INSTALL_PKGLIBDIR ${CMAKE_INSTALL_LIBDIR}/zencxx-${PROJECT_VERSION})
-set(CMAKE_INSTALL_DOCDIR ${CMAKE_INSTALL_DOCDIR}-${PROJECT_VERSION})
-set(CMAKE_INSTALL_CMAKE_MODULESDIR ${CMAKE_INSTALL_LIBDIR}/zencxx-${PROJECT_VERSION}/cmake)
+set(CMAKE_INSTALL_FULL_INCLUDEDIR "${CMAKE_INSTALL_FULL_INCLUDEDIR}/${ZENCXX_VERSIONED_PATH_SUFFIX}")
+set(CMAKE_INSTALL_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}/${ZENCXX_VERSIONED_PATH_SUFFIX}")
+set(CMAKE_INSTALL_PKGLIBDIR "${CMAKE_INSTALL_LIBDIR}/${ZENCXX_VERSIONED_PATH_SUFFIX}")
+set(CMAKE_INSTALL_DOCDIR "${CMAKE_INSTALL_DOCDIR}-${PROJECT_VERSION}")
+set(CMAKE_INSTALL_CMAKE_MODULESDIR "${CMAKE_INSTALL_LIBDIR}/${ZENCXX_VERSIONED_PATH_SUFFIX}/cmake")
 
 # Custom (from package's cmake/modules/ directory)
 include(AddBoostTests)
@@ -210,8 +212,9 @@ write_basic_package_version_file(
 
 #---------------------------------------------------------
 # Section: Package options
-# ALERT It should be after subdirs traversal
-#       to make sure that all vars r defined!
+# ALERT It should be BEFORE subdirs traversal
+#       cuz `add_package` defines corresponding
+#       component names used by nested `install`s.
 #---------------------------------------------------------
 
 # Obtain a distribution codename according LSB
@@ -394,7 +397,7 @@ define_skeleton_generation_targets(
     PROJECT_NAMESPACE "zencxx"
     PROJECT_PREFIX "ZenCxx"
     PROJECT_OWNER "Alex Turbov and contributors"
-    PROJECT_YEARS "2010-2014"
+    PROJECT_YEARS "2010-2015"
     ENABLE_TESTS
     USE_PRAGMA_ONCE
   )

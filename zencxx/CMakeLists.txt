@@ -22,6 +22,13 @@ add_library(
     ${ZENCXX_EXTRA_SOURCES}
   )
 
+target_include_directories(
+    zencxx
+    INTERFACE
+        ${Boost_INCLUDE_DIRS}
+        ${CMAKE_INSTALL_FULL_INCLUDEDIR}
+  )
+
 target_link_libraries(
     zencxx
     PUBLIC
@@ -31,18 +38,10 @@ target_link_libraries(
 
 generate_export_header(zencxx EXPORT_FILE_NAME details/export.hh)
 
-#BEGIN Export Component
 set_target_properties(
     zencxx
     PROPERTIES EXPORT_NAME "shared"
   )
-export(
-    TARGETS zencxx
-    NAMESPACE zencxx::
-    FILE zencxx-shared.cmake
-    EXPORT_LINK_INTERFACE_LIBRARIES
-  )
-#END Export Component
 
 # Install target library
 install(

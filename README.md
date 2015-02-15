@@ -11,9 +11,9 @@ code style and other bullshit...
 Requirements
 ============
 
-* gcc >= 4.8 (http://gcc.gnu.org)
+* gcc >= 4.9 (http://gcc.gnu.org)
 * boost >= 1.54.0 (http://boost.org)
-* cmake >= 2.8.12 (http://cmake.org)
+* cmake >= 3.1.2 (http://cmake.org)
 
 To build documentation:
 * doxygen >= 1.8 (http://doxygen.org)

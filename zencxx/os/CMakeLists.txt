@@ -19,6 +19,13 @@ add_library(
     utils.cc
   )
 
+target_include_directories(
+    zencxxos
+    INTERFACE
+        ${Boost_INCLUDE_DIRS}
+        ${CMAKE_INSTALL_FULL_INCLUDEDIR}
+  )
+
 target_link_libraries(
     zencxxos
     PUBLIC
@@ -29,19 +36,12 @@ target_link_libraries(
 
 generate_export_header(zencxxos EXPORT_FILE_NAME details/export.hh)
 
-#BEGIN Export Component
 set_target_properties(
     zencxxos
     PROPERTIES EXPORT_NAME "os"
   )
-export(
-    TARGETS zencxxos zencxx
-    NAMESPACE zencxx::
-    FILE zencxx-os.cmake
-    EXPORT_LINK_INTERFACE_LIBRARIES
- )
+
 write_export_dependencies(TARGET zencxxos DEPENDENCIES shared)
-#END Export Component
 
 # Install target library
 install(

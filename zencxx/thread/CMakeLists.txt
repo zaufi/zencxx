@@ -17,6 +17,13 @@ add_library(
     ${ZENCXX_THREAD_EXTRA_SOURCES}
   )
 
+target_include_directories(
+    zencxxthread
+    INTERFACE
+        ${Boost_INCLUDE_DIRS}
+        ${CMAKE_INSTALL_FULL_INCLUDEDIR}
+  )
+
 target_link_libraries(
     zencxxthread
     PUBLIC
@@ -27,19 +34,12 @@ target_link_libraries(
 
 generate_export_header(zencxxthread EXPORT_FILE_NAME details/export.hh)
 
-#BEGIN Export Component
 set_target_properties(
     zencxxthread
     PROPERTIES EXPORT_NAME "thread"
   )
-export(
-    TARGETS zencxxthread zencxxos zencxx
-    NAMESPACE zencxx::
-    FILE zencxx-thread.cmake
-    EXPORT_LINK_INTERFACE_LIBRARIES
-  )
+
 write_export_dependencies(TARGET zencxxthread DEPENDENCIES os)
-#END Export Component
 
 # Install target library
 install(
