@@ -53,7 +53,7 @@ typedef std::chrono::duration<int, std::ratio<86400>> days;
  * exceptions are turned ON for a given stream.
  *
  * \todo Need refactoring when gcc gets support for \c std::put_time.
- * \b Update: Really!? \C std::gmtime and \c std::localtime are not MT-safe!
+ * \b Update: Really!? \c std::gmtime and \c std::localtime are not MT-safe!
  */
 std::ostream& operator<<(
     std::ostream& os

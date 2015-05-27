@@ -184,11 +184,8 @@ public:
     /// Check if nested exception present
     bool has_nested_exception() const;
 
-    /**
-     * \brief Rethrow nested exception if any
-     * \todo Add <tt>[[notreturn]]</tt>
-     */
-    /*[[noreturn]]*/ void rethrow_nested_exception() const;
+    /// Rethrow nested exception if any
+    [[noreturn]] void rethrow_nested_exception() const;
     //@}
 
     /**

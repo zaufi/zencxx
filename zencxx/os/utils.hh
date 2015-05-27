@@ -27,7 +27,7 @@
 
 // Standard includes
 #include <sys/types.h>
-#include <string>                                           /// \todo Use forward declaration instead?
+#include <string>
 
 namespace zencxx { namespace os {
 

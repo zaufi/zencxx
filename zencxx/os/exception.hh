@@ -20,17 +20,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.";
  */
 
-#ifndef __ZENCXX__OS__EXCEPTION_HH__
-# define __ZENCXX__OS__EXCEPTION_HH__
+#pragma once
 
 // Project specific includes
-# include <zencxx/exception.hh>
-# include <zencxx/os/details/export.hh>
+#include <zencxx/exception.hh>
+#include <zencxx/os/details/export.hh>
 
 // Standard includes
-# include <boost/exception/errinfo_api_function.hpp>
-# include <boost/system/error_code.hpp>
-# include <cerrno>
+#include <boost/exception/errinfo_api_function.hpp>
+#include <boost/system/error_code.hpp>
+#include <cerrno>
 
 namespace zencxx { namespace os {
 /**
@@ -167,4 +166,3 @@ public:
 };
 
 }}                                                          // namespace os, zencxx
-#endif                                                      // __ZENCXX__OS__EXCEPTION_HH__
