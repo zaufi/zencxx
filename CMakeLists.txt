@@ -6,15 +6,17 @@
 #---------------------------------------------------------
 # Section: Init cmake
 #---------------------------------------------------------
-cmake_minimum_required(VERSION 3.1.2)
+cmake_minimum_required(VERSION 3.3)
 
 # Enable non unique target names in different subdirs
 # (used for unit tests)
 cmake_policy(SET CMP0002 OLD)
+cmake_policy(SET CMP0007 NEW)
 cmake_policy(SET CMP0022 NEW)
 cmake_policy(SET CMP0028 NEW)
 cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0054 NEW)
+cmake_policy(SET CMP0063 NEW)
 
 # Include build number if specified
 # NOTE This feature used by build server to make a packages that
@@ -26,11 +28,11 @@ elseif ($ENV{BUILD_NUMBER})
     set(_TWEAK_VERSION_TAIL ".$ENV{BUILD_NUMBER}")
 endif()
 
-project(zencxx VERSION 0.2.2${_TWEAK_VERSION_TAIL} LANGUAGES CXX)
+project(zencxx VERSION 0.3.2${_TWEAK_VERSION_TAIL} LANGUAGES CXX)
 
 message(STATUS "Configuring ${PROJECT_NAME} ${PROJECT_VERSION}")
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/modules")
 
 #---------------------------------------------------------
 # Section: Include aux cmake functions
@@ -40,12 +42,21 @@ include(CTest)
 # Define install destination dirs
 include(GNUInstallDirs)
 set(ZENCXX_VERSIONED_PATH_SUFFIX "${PROJECT_NAME}-${PROJECT_VERSION}")
+
+set(CMAKE_INSTALL_CMAKE_MODULESDIR "${CMAKE_INSTALL_LIBDIR}/cmake")
+set(CMAKE_INSTALL_FULL_CMAKE_MODULESDIR "${CMAKE_INSTALL_FULL_LIBDIR}/cmake")
+
 # Fix some paths to allow this package to be multislotted (in terms of Gentoo)
-set(CMAKE_INSTALL_FULL_INCLUDEDIR "${CMAKE_INSTALL_FULL_INCLUDEDIR}/${ZENCXX_VERSIONED_PATH_SUFFIX}")
-set(CMAKE_INSTALL_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}/${ZENCXX_VERSIONED_PATH_SUFFIX}")
-set(CMAKE_INSTALL_PKGLIBDIR "${CMAKE_INSTALL_LIBDIR}/${ZENCXX_VERSIONED_PATH_SUFFIX}")
-set(CMAKE_INSTALL_DOCDIR "${CMAKE_INSTALL_DOCDIR}-${PROJECT_VERSION}")
-set(CMAKE_INSTALL_CMAKE_MODULESDIR "${CMAKE_INSTALL_LIBDIR}/${ZENCXX_VERSIONED_PATH_SUFFIX}/cmake")
+include(MacroDefineVersionedInstallDirs)
+define_versioned_install_paths(
+    VERSIONED_PART
+        "${ZENCXX_VERSIONED_PATH_SUFFIX}"
+    PATHS
+        INCLUDEDIR
+        DATADIR
+        DOCDIR
+        CMAKE_MODULESDIR
+  )
 
 # Custom (from package's cmake/modules/ directory)
 include(AddBoostTests)
@@ -65,17 +76,22 @@ option(ENABLE_CURSES "Use curses library to get some terminal capabilities (like
 if(UNIX)
     set(ENABLE_CURSES ON)
 endif()
-set(WITH_SANITIZERS "" CACHE STRING "Instrument code with sanitizer(s) (comma separated list)")
+
 option(ENABLE_SHARED "Build shared libraries" OFF)
+
+set(WITH_SANITIZERS "" CACHE STRING "Instrument code with sanitizer(s) (comma separated list)")
 string(REPLACE "," ";" WITH_SANITIZERS "${WITH_SANITIZERS}")
-list(FIND "${WITH_SANITIZERS}" "thread" WANT_DYNAMIC_LIBS)
+if(thread IN_LIST WITH_SANITIZERS AND Boost_USE_STATIC_LIBS)
+    set(Boost_USE_STATIC_LIBS OFF)
+    message(STATUS "Note: Using thread sanitizer require dynamic libraries")
+endif()
 
 #---------------------------------------------------------
 # Section: Find used stuff
 #---------------------------------------------------------
 set(Boost_USE_MULTITHREADED ON)
 find_package(
-    Boost 1.53 REQUIRED COMPONENTS
+    Boost 1.57 REQUIRED COMPONENTS
     # Lets keep libs list sorted... :)
     system
     thread
@@ -117,6 +133,14 @@ add_definitions(-DBOOST_THREAD_VERSION=4)
 # If CMAKE_BUILD_TYPE is not set, try to guess it now
 include(GuessBuildType)
 
+# Use latest C++ standard!
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+# Setup exported symbols visibility
+set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
+set(CMAKE_CXX_VISIBILITY_PRESET hidden)
+
 # Do compiler dependent options tuning
 message(STATUS "Configuring options for C++ compiler: ${CMAKE_CXX_COMPILER_ID} on ${CMAKE_SYSTEM_NAME}")
 if(UNIX AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
@@ -144,10 +168,6 @@ if(UNIX AND CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQU
     # Set some compiler options
     use_compiler_option(-pipe OUTPUT COMPILER_HAS_PIPE_OPTION)
     use_compiler_option(-Wall OUTPUT COMPILER_HAS_WALL_OPTION)
-    use_compiler_option(-std=c++14 OUTPUT CXX_COMPILER_HAS_CPP14_OPTION)
-    if(NOT CXX_COMPILER_HAS_CPP14_OPTION)
-        message(FATAL_ERROR "C++14 compatible compiler required to build this project (gcc >= 4.9 or clang >= 3.5)")
-    endif()
 
     # Try to handle possible sanitizer options
     include(MacroEnableSanitizers)
@@ -180,9 +200,6 @@ else()
     message(FATAL_ERROR "This platform/compiler is not supported (yet ;-)")
 endif()
 
-# Add -fvisibility option if needed
-add_compiler_export_flags()
-
 #---------------------------------------------------------
 # Section: Misc actions
 #---------------------------------------------------------
@@ -204,12 +221,11 @@ configure_package_config_file(
         CMAKE_INSTALL_CMAKE_MODULESDIR
         CMAKE_INSTALL_INCLUDEDIR
         CMAKE_INSTALL_LIBDIR
-        CMAKE_INSTALL_PKGLIBDIR
   )
 write_basic_package_version_file(
     zencxx-config-version.cmake
     VERSION ${PROJECT_VERSION}
-    COMPATIBILITY AnyNewerVersion
+    COMPATIBILITY SameMajorVersion
   )
 
 #---------------------------------------------------------
