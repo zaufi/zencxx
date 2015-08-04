@@ -99,7 +99,7 @@ inline T peek_random_number_from_range(const T first, const T last)
  *
  */
 template <typename Iterator>
-inline auto peek_random_item_from_range(Iterator first, Iterator last) -> decltype(*first)
+inline auto peek_random_item_from_range(Iterator first, Iterator last)
 {
     auto size = std::distance(first, last);
     assert("Sanity check" && 0 < size);
@@ -116,7 +116,7 @@ inline auto peek_random_item_from_range(Iterator first, Iterator last) -> declty
  * \overload peek_random_item_from_range(Iterator first, Iterator last)
  */
 template <typename Range>
-auto peek_random_item_from_range(const Range& range) -> decltype(*std::begin(range))
+auto peek_random_item_from_range(const Range& range)
 {
     return peek_random_item_from_range(std::begin(range), std::end(range));
 }

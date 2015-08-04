@@ -94,34 +94,34 @@ public:
      */
     explicit exception(const unsigned drop_frames = 2)
     {
-        *this << trace_info(debug::backtrace(debug::backtrace::DEFAULT_STACK_DEPTH, drop_frames));
+        *this << trace_info{debug::backtrace(debug::backtrace::DEFAULT_STACK_DEPTH, drop_frames)};
     }
 
     /// \name Helper functions to attach strings (various type of) to exception
     //@{
     /// Helper function to produce \c reason_info_literal from literal string
     template <std::size_t N>
-    static reason_info_literal reason(const char* (&str)[N])
+    static auto reason(const char* (&str)[N])
     {
-        return reason_info_literal(str);
+        return reason_info_literal{str};
     }
     /// Helper function to produce \c ReasonInfoStr from \c std::string
-    static reason_info_string reason(const std::string& str)
+    static auto reason(const std::string& str)
     {
-        return reason_info_string(str);
+        return reason_info_string{str};
     }
     /// Helper function to produce \c reason_info_string from a movable \c std::string
-    static reason_info_string reason(std::string&& str)
+    static auto reason(std::string&& str)
     {
-        return reason_info_string(std::move(str));
+        return reason_info_string{std::move(str)};
     }
     /// Helper function to produce \c reason_info_string from \c boots::format
     static reason_info_string reason(const boost::format&);
     //@}
 
-    static nested_exception_info wrap(std::exception_ptr e)
+    static auto wrap(std::exception_ptr e)
     {
-        return nested_exception_info(e);
+        return nested_exception_info{e};
     }
 
     /**
@@ -145,10 +145,10 @@ public:
      * \sa \c has_nested_exception
      * \sa \c rethrow_nested_exception
      */
-    static nested_exception_info current_exception()
+    static auto current_exception()
     {
         assert("This function must be called w/ active exception!" && std::current_exception() != nullptr);
-        return nested_exception_info(std::current_exception());
+        return nested_exception_info{std::current_exception()};
     }
 
     /**
@@ -164,7 +164,7 @@ public:
     //@{
     /// Generic getter of attached data
     template <typename T>
-    const typename T::value_type* get() const
+    const auto get() const
     {
         return boost::get_error_info<T>(*this);
     }

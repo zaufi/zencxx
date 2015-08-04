@@ -35,7 +35,7 @@ constexpr auto EMPTY = debug::location{};
  */
 auto exception::reason(const boost::format& fmt) -> reason_info_string
 {
-    return reason_info_string(fmt.str());
+    return reason_info_string{fmt.str()};
 }
 
 /**
@@ -43,7 +43,7 @@ auto exception::reason(const boost::format& fmt) -> reason_info_string
  */
 const debug::backtrace& exception::trace() const
 {
-    const debug::backtrace* result = get<trace_info>();
+    const auto* result = get<trace_info>();
     assert("Backtrace data expected to be here" && result);
     return *result;
 }
@@ -55,7 +55,7 @@ std::string exception::origin_type_info() const
 {
     if (const char* const* result = get<original_type_info>())
         return debug::demangle_name(*result);
-    return std::string();
+    return {};
 }
 
 /**
@@ -65,11 +65,11 @@ std::string exception::origin_type_info() const
 std::string exception::reason() const
 {
     // Try reason_info_string first
-    if (const std::string* result = get<reason_info_string>())
+    if (const auto* result = get<reason_info_string>())
         return *result;                                     // Return if string was attached
     if (const char* const* result = get<reason_info_literal>())
         return *result;                                     // Make a string from char*
-    return std::string();                                   // ALERT RVO better than 'zero/empty object'
+    return {};                                              // ALERT RVO better than 'zero/empty object'
 }
 
 /**
@@ -77,7 +77,7 @@ std::string exception::reason() const
  */
 const debug::location& exception::where() const
 {
-    if (const debug::location* result = get<location_info>())
+    if (const auto* result = get<location_info>())
         return *result;
     return EMPTY;
 }
