@@ -106,8 +106,8 @@ ticker::job ticker::append_job(details::registered_job&& job_info)
 #  endif                                                    // NDEBUG
 
     auto l = boost::unique_lock<boost::mutex>{m_jobs_mut};
-    registered_jobs::iterator new_job = end(m_jobs);
-    unsigned id = 0;
+    auto new_job = end(m_jobs);
+    auto id = 0u;
     try
     {
         // Find unique ID for the job
@@ -131,7 +131,7 @@ ticker::job ticker::append_job(details::registered_job&& job_info)
     {
         if (new_job != end(m_jobs))                         // Remove registration if it was success
             m_jobs.erase(new_job);
-        ZENCXX_THROW(exception::resource_error()) << exception::reason("Not enough memory to register a job");
+        ZENCXX_THROW(exception::resource_error{}) << exception::reason("Not enough memory to register a job");
     }
     assert("Sanity check" && new_job != end(m_jobs));
     assert(
@@ -139,7 +139,7 @@ ticker::job ticker::append_job(details::registered_job&& job_info)
       && (details::registered_job::state::stopped == new_job->second.m_state
       || details::registered_job::state::scheduled == new_job->second.m_state
       ));
-    return job(shared_from_this(), id);
+    return {shared_from_this(), id};
 }
 
 void ticker::reschedule_job(registered_jobs::iterator job_it, const boost::unique_lock<boost::mutex>&)
@@ -188,7 +188,7 @@ void ticker::one_time_job_handler(registered_jobs::iterator job_it, const boost:
         // No! We didn't!
         std::function<void()> nulary_function;
         {
-            boost::unique_lock<boost::mutex> l(m_jobs_mut); // Guard iterator access under the lock
+            boost::unique_lock<boost::mutex> l{m_jobs_mut}; // Guard iterator access under the lock
             // Assert the job type and status
             assert(
                 "Type of job expected to be 'one-time'"
@@ -205,7 +205,7 @@ void ticker::one_time_job_handler(registered_jobs::iterator job_it, const boost:
             job_it->second.m_state = details::registered_job::state::running;
         }
         nulary_function();                                  // Ok! Ready to do the job...
-        boost::unique_lock<boost::mutex> l(m_jobs_mut);     // Guard iterator access under the lock
+        boost::unique_lock<boost::mutex> l{m_jobs_mut};     // Guard iterator access under the lock
         job_it->second.m_state = details::registered_job::state::scheduled_for_removal;
         remove_if_needed(job_it, l);                        // Don't need this job anymore...
     }
@@ -227,7 +227,7 @@ void ticker::periodic_job_handler(registered_jobs::iterator job_it, const boost:
         // No! We didn't!
         std::function<void()> nulary_function;
         {
-            boost::unique_lock<boost::mutex> l(m_jobs_mut); // Guard iterator access under the lock
+            boost::unique_lock<boost::mutex> l{m_jobs_mut}; // Guard iterator access under the lock
             // Assert the job type and status
             assert(
                 "Type of a job expected to be 'periodic'"
@@ -245,7 +245,7 @@ void ticker::periodic_job_handler(registered_jobs::iterator job_it, const boost:
         }
 
         nulary_function();                                  // Ok! Ready to do the job...
-        boost::unique_lock<boost::mutex> l(m_jobs_mut);     // Guard iterator access under the lock
+        boost::unique_lock<boost::mutex> l{m_jobs_mut};     // Guard iterator access under the lock
         // Check if job still needed to reschedule
         if (details::registered_job::state::running == job_it->second.m_state)
         {
@@ -293,10 +293,10 @@ void ticker::remove_job(registered_jobs::iterator job_it, boost::unique_lock<boo
       );
 
     // If this job is waiting on timer, we need to cancel it!
-    const bool need_to_cancel = details::registered_job::state::scheduled == job_it->second.m_state;
+    const auto need_to_cancel = details::registered_job::state::scheduled == job_it->second.m_state;
     // If this job is running right now, we have to just mark it, asio completion handler
     // would remove it after user provided functor finished.
-    const bool can_remove_right_now = details::registered_job::state::running != job_it->second.m_state;
+    const auto can_remove_right_now = details::registered_job::state::running != job_it->second.m_state;
     // Do not remove it! Just mark for deletion... Handler is responsible to
     // do actual remove...
     job_it->second.m_state = details::registered_job::state::scheduled_for_removal;
@@ -326,7 +326,7 @@ void ticker::pause_job(const unsigned job_id)
           );
 
         // If this job is not currently running, we need to cancel its' timer.
-        const bool need_to_cancel = details::registered_job::state::running != job_it->second.m_state;
+        const auto need_to_cancel = details::registered_job::state::running != job_it->second.m_state;
         // Anyway we must mark it as stopped before handler would be executed (yeah, w/ error code)
         // or user provided functor finished.
         job_it->second.m_state = details::registered_job::state::stopped;
@@ -337,7 +337,7 @@ void ticker::pause_job(const unsigned job_id)
             // the actual remove would happened...
         }
     }
-    else ZENCXX_THROW(exception::stale_job());
+    else ZENCXX_THROW(exception::stale_job{});
 }
 
 /// \todo What if timer already in the past?
@@ -353,7 +353,7 @@ void ticker::resume_job(const unsigned job_id)
           );
         reschedule_job(job_it, l);
     }
-    else ZENCXX_THROW(exception::stale_job());
+    else ZENCXX_THROW(exception::stale_job{});
 }
 
 }                                                           // namespace zencxx

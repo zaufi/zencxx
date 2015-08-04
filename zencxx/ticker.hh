@@ -71,7 +71,7 @@ public:
         friend class ticker;
 
         std::weak_ptr<ticker> m_ticker_wptr;                ///< Weak pointer to parent ticker
-        unsigned m_job_id;                                  ///< ID of the registered job (key in jobs container)
+        unsigned m_job_id = 0u;                             ///< ID of the registered job (key in jobs container)
 
         /// Make an instance of job from pointer to parent
         /// ticker and registered job iterator
@@ -82,11 +82,11 @@ public:
 
     public:
         /// Allows default initialization for STL containers compatibility
-        job() : m_job_id(0) {}
+        job() = default;
         job(const job&) = default;                          ///< Default copy ctor
         job& operator=(const job&) = default;               ///< Default copy-assign operator
-        job(job&&) noexcept;                          ///< Move ctor
-        job& operator=(job&&) noexcept;               ///< Move-assign operator
+        job(job&&) noexcept;                                ///< Move ctor
+        job& operator=(job&&) noexcept;                     ///< Move-assign operator
 
         enum struct start_type : unsigned
         {
@@ -104,7 +104,6 @@ public:
         void stop();                                        ///< Suspend given job from schedule
         void cancel();                                      ///< Remove job from scheduler
     };
-    friend class job;
     /// Ticker's exceptions group
     struct ZENCXX_EXPORT exception : public zencxx::exception
     {
@@ -140,7 +139,7 @@ public:
     /// Get count of registered tasks
     registered_jobs::size_type tasks_count() const;
 
-  private:
+private:
     /// Use I/O service
     ZENCXX_NO_EXPORT ticker(boost::asio::io_service&);
     /// Delete copy ctor
@@ -189,7 +188,7 @@ struct ZENCXX_EXPORT ticker::exception::resource_error : public ticker::exceptio
 
 struct ZENCXX_EXPORT ticker::exception::stale_job : public ticker::exception
 {
-    stale_job() : ticker::exception()
+    stale_job() : ticker::exception{}
     {
         *this << exception::reason("No such job registered in a ticker or latter is dead");
     }
@@ -199,14 +198,14 @@ inline ticker::job::job(
     std::weak_ptr<ticker>&& parent_ticker
   , const unsigned job_id
   )
-  : m_ticker_wptr(std::move(parent_ticker))
-  , m_job_id(job_id)
+  : m_ticker_wptr{std::move(parent_ticker)}
+  , m_job_id{job_id}
 {
 }
 
 inline ticker::job::job(job&& other) noexcept
-  : m_ticker_wptr(std::move(other.m_ticker_wptr))
-  , m_job_id(other.m_job_id)
+  : m_ticker_wptr{std::move(other.m_ticker_wptr)}
+  , m_job_id{other.m_job_id}
 {
 }
 
@@ -221,18 +220,18 @@ inline ticker::job& ticker::job::operator=(job&& other) noexcept
 
 inline void ticker::job::start()
 {
-    if (std::shared_ptr<ticker> tkr = m_ticker_wptr.lock())
+    if (auto tkr = m_ticker_wptr.lock())
         tkr->resume_job(m_job_id);
     else
-        ZENCXX_THROW(exception::stale_job());
+        ZENCXX_THROW(exception::stale_job{});
 }
 
 inline void ticker::job::stop()
 {
-    if (std::shared_ptr<ticker> tkr = m_ticker_wptr.lock())
+    if (auto tkr = m_ticker_wptr.lock())
         tkr->pause_job(m_job_id);
     else
-        ZENCXX_THROW(exception::stale_job());
+        ZENCXX_THROW(exception::stale_job{});
 }
 
 inline void ticker::job::cancel()
@@ -247,11 +246,11 @@ inline void ticker::job::cancel()
 
 inline std::shared_ptr<ticker> ticker::create(boost::asio::io_service& srv)
 {
-    return std::shared_ptr<ticker>(new ticker(srv));
+    return std::shared_ptr<ticker>{new ticker(srv)};
 }
 
 inline ticker::ticker(boost::asio::io_service& srv)
-  : m_srv(srv)
+  : m_srv{srv}
 {
 }
 
@@ -268,16 +267,14 @@ inline ticker::job ticker::call(
   )
 {
     return append_job(
-        details::registered_job(
-            std::unique_ptr<boost::asio::system_timer>(
-                // set absolute expiration time
-                new boost::asio::system_timer(m_srv, at_time)
-              )
+        details::registered_job{
+            // set absolute expiration time
+            std::make_unique<boost::asio::system_timer>(m_srv, at_time)
           , std::chrono::system_clock::duration::zero()     // Ignored parameter
           , std::move(nulary_functor)                       // Function to execute
           , details::registered_job::type::once             // No periodic runs required
           , details::registered_job::state::running         // Immediate schedule required
-          )
+          }
       );
 }
 
@@ -289,11 +286,9 @@ inline ticker::job ticker::call(
   )
 {
     return append_job(
-        details::registered_job(
-            std::unique_ptr<boost::asio::system_timer>(
-                // set expiration time relative to now
-                new boost::asio::system_timer(m_srv, interval)
-              )
+        details::registered_job{
+            // set expiration time relative to now
+            std::make_unique<boost::asio::system_timer>(m_srv, interval)
           , interval
           , std::move(nulary_functor)                       // Function to execute
           , details::registered_job::type::periodic         // Periodic runs required
@@ -302,7 +297,7 @@ inline ticker::job ticker::call(
                   ? details::registered_job::state::running
                   : details::registered_job::state::stopped
               )
-          )
+          }
       );
 }
 
@@ -314,13 +309,13 @@ inline boost::asio::io_service& ticker::service()
 /// \note This function can be used mostly for debug purposes in caller's code
 inline auto ticker::tasks_count() const -> registered_jobs::size_type
 {
-    boost::unique_lock<boost::mutex> l(m_jobs_mut);
+    auto l = boost::unique_lock<boost::mutex>{m_jobs_mut};  // Guard iterator access under the lock
     return m_jobs.size();
 }
 
 inline void ticker::remove_job(const unsigned job_id)
 {
-    boost::unique_lock<boost::mutex> l(m_jobs_mut);         // Guard iterator access under the lock
+    auto l = boost::unique_lock<boost::mutex>{m_jobs_mut};  // Guard iterator access under the lock
     auto job_it = m_jobs.find(job_id);
     if (job_it != end(m_jobs))
         remove_job(job_it, l);
